@@ -1,0 +1,8 @@
+export const loginApi = '/login/login' // 登录
+export const breakdownCodeApi = '/maint/fault_code' // 故障代码
+export const liftListApi = '/lift/list_info' // 电梯列表
+export const liftGetRunApi = '/lift/get_run' // 电梯监控-运行与统计-累加数据
+export const liftPushTroubleApi = '/lift/pushtrouble' // 电梯预警记录
+export const liftLiftAddApi = '/lift/lift_add' // 新增电梯
+export const knowledgeCategoryListApi = '/knowledge/categorylist' // 知识库类目表
+export const knowledgeDocumentListApi = '/knowledge/documentList' // 知识库文件列表
