@@ -128,6 +128,7 @@ $rpx-16: px2rpx(16);
 $rpx-18: px2rpx(18);
 $rpx-20: px2rpx(20);
 $rpx-24: px2rpx(24);
+$rpx-28: px2rpx(28);
 $rpx-32: px2rpx(32);
 
 $rpx-25: px2rpx(25);
@@ -194,29 +195,36 @@ $color-black-05: rgba(0, 0, 0, 0.05);
   letter-spacing: 0;
 }
 
-/* 小号字体 */
-%font-size-small {
+/* 超小号字体 */
+%font-size-xs {
   @extend %font-size;
   font-size: $rpx-12;
   line-height: $rpx-16;
 }
-/* 中等字体 */
-%font-size-medium {
+/* 标准字体 */
+%font-size-sm {
+  @extend %font-size;
+  font-size: $rpx-14;
+  line-height: $rpx-20;
+}
+/* 标准字体 */
+%font-size-base {
   @extend %font-size;
   font-size: $rpx-16;
-  line-height: $rpx-18;
+  line-height: $rpx-24;
 }
+
 /* 大号字体 */
-%font-size-large {
+%font-size-lg {
   @extend %font-size;
   font-size: $rpx-18;
-  line-height: $rpx-24;
+  line-height: $rpx-28;
 }
 /* 超大号字体 */
-%font-size-extra-large {
+%font-size-xl {
   @extend %font-size;
   font-size: $rpx-20;
-  line-height: $rpx-24;
+  line-height: $rpx-28;
 }
 
 /* 单行省略 */

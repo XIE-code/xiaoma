@@ -170,7 +170,7 @@ $rpx-53: px2rpx(53);
   }
 
   .title {
-    @extend %font-size-extra-large;
+    @extend %font-size-xl;
     @extend %flex-center;
     height: $rpx-32;
     font-family: Bebas Neue;
@@ -191,7 +191,7 @@ $rpx-53: px2rpx(53);
     padding: $rpx-16 $rpx-24;
 
     %input-label-font {
-      @extend %font-size-large;
+      @extend %font-size-lg;
       line-height: $rpx-26;
       color: $color-secondary-69;
     }
@@ -285,7 +285,7 @@ $rpx-53: px2rpx(53);
     /** 按钮 */
     .submit-btn {
       @extend %btn-reset;
-      @extend %font-size-large;
+      @extend %font-size-lg;
       @extend %flex-center;
       flex-shrink: 0;
       width: $rpx-167;

@@ -134,7 +134,7 @@ $rpx-144: px2rpx(144);
     height: $rpx-80;
 
     .text {
-      @extend %font-size-small;
+      @extend %font-size-xs;
       font-family: Bebas Neue;
       color: $color-white;
     }

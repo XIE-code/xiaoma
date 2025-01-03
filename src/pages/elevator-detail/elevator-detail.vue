@@ -230,7 +230,7 @@ $rpx-17: px2rpx(17);
     height: $rpx-20;
   }
   .title {
-    @extend %font-size-extra-large;
+    @extend %font-size-xl;
     @extend %flex-center;
     font-family: Bebas Neue;
     line-height: $rpx-40;

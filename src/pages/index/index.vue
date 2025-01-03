@@ -288,7 +288,7 @@ $rpx-72: px2rpx(72);
     border-radius: calc($rpx-40 / 2);
 
     .search-input {
-      @extend %font-size-small;
+      @extend %font-size-xs;
       flex-grow: 1;
       height: $rpx-24;
       color: rgb(108, 108, 108);
@@ -342,12 +342,12 @@ $rpx-72: px2rpx(72);
         gap: $rpx-8;
         height: $rpx-50;
         .text {
-          @extend %font-size-medium;
+          @extend %font-size-base;
           height: $rpx-18;
           color: rgb(38, 38, 38);
         }
         .number {
-          @extend %font-size-large;
+          @extend %font-size-lg;
           height: $rpx-24;
           color: rgb(38, 38, 38);
         }
@@ -366,12 +366,12 @@ $rpx-72: px2rpx(72);
         gap: $rpx-8;
         height: $rpx-50;
         .text {
-          @extend %font-size-medium;
+          @extend %font-size-base;
           height: $rpx-18;
           color: rgb(38, 38, 38);
         }
         .number {
-          @extend %font-size-large;
+          @extend %font-size-lg;
           height: $rpx-24;
           color: rgb(38, 38, 38);
         }
@@ -411,7 +411,7 @@ $rpx-72: px2rpx(72);
 
       .grid-item-text {
         margin-top: $rpx-8;
-        @extend %font-size-medium;
+        @extend %font-size-base;
         font-family: Bebas Neue; //TODO:字体不同
         line-height: $rpx-19;
         color: rgb(255, 176, 23);
@@ -439,7 +439,7 @@ $rpx-72: px2rpx(72);
     }
 
     .schedule-title {
-      @extend %font-size-extra-large;
+      @extend %font-size-xl;
       font-family: Bebas Neue; //TODO: 字体Bebas Neue;
       color: rgb(38, 38, 38);
     }
@@ -468,7 +468,7 @@ $rpx-72: px2rpx(72);
           height: px2rpx(50);
           .item-time {
             height: $rpx-24;
-            @extend %font-size-extra-large;
+            @extend %font-size-xl;
             font-family: 阿里巴巴普惠体; //TODO:字体
             color: rgb(28, 106, 228);
           }
@@ -476,7 +476,7 @@ $rpx-72: px2rpx(72);
             height: px2rpx(22);
             font-family: 阿里巴巴普惠体; //TODO:字体
             line-height: px2rpx(22);
-            @extend %font-size-extra-large;
+            @extend %font-size-xl;
           }
         }
       }
@@ -489,7 +489,7 @@ $rpx-72: px2rpx(72);
         @extend %flex-column;
         gap: $rpx-4;
         align-items: flex-start;
-        @extend %font-size-medium;
+        @extend %font-size-base;
         font-family: 阿里巴巴普惠体;
         line-height: $rpx-24;
       }

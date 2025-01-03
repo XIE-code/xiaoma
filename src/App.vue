@@ -4,15 +4,8 @@ import { useSystemStore } from './store'
 const useSystem = useSystemStore()
 
 onLaunch(() => {
-  console.log('App Launch')
+  // console.log('App Launch')
   getTopBarHeight()
-})
-onShow(() => {
-  console.log('App Show')
-})
-
-onHide(() => {
-  console.log('App Hide')
 })
 
 function getTopBarHeight() {

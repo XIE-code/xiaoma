@@ -154,7 +154,7 @@ $rpx-129: px2rpx(129);
 .time-header {
   flex-shrink: 0;
   .page-title {
-    @extend %font-size-extra-large;
+    @extend %font-size-xl;
     height: $rpx-32;
     margin-left: $rpx-9;
     font-family: Almarai; //TODO: 字体
