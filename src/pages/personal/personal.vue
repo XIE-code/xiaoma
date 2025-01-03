@@ -162,11 +162,11 @@ $rpx-144: px2rpx(144);
     font-size: $rpx-24;
     font-weight: 400;
 
-    color: rgb(255, 255, 255);
+    color: $color-white;
     text-align: center;
     letter-spacing: 0.5rem;
     background: rgba(47, 128, 237, 0.8);
-    border: $rpx-1 solid rgb(255, 255, 255);
+    border: $rpx-1 solid $color-white;
     border-radius: $rpx-7;
 
     box-shadow: 0px $rpx-4 $rpx-4 0px rgba(0, 0, 0, 0.25);

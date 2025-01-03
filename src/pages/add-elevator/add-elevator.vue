@@ -296,7 +296,7 @@ $rpx-53: px2rpx(53);
       font-size: $rpx-17;
       line-height: $rpx-24;
 
-      color: rgb(255, 255, 255);
+      color: $color-white;
       letter-spacing: $rpx-1;
 
       background: rgb(255, 176, 23);

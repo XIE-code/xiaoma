@@ -9,7 +9,7 @@
 <template>
   <wrapper paddingType="height" :paddingBottom="90">
     <!-- 导航栏 -->
-    <view class="navigation flex-center">
+    <view class="navigation">
       <image class="logo" :src="imgHomeLogo" mode="aspectFit">
         <template #error>
           <view class="error-wrap">加载失败</view>
@@ -20,7 +20,7 @@
           </view>
         </template>
       </image>
-      <view class="search-bar flex-center">
+      <view class="search-bar">
         <input
           confirm-type="search"
           class="search-input"
@@ -96,17 +96,15 @@
         <text class="schedule-title">今日维保计划</text>
         <view class="schedule-item" :key="item.id" v-for="item in todoList">
           <view class="item-header">
-            <image :src="getSvg(item.status)" mode="aspectFit" class="item-svg" />
+            <image
+              :src="getItemInfoByStatus('svg', item.status)"
+              mode="aspectFit"
+              class="item-svg"
+            />
             <view class="item-header-right">
               <view class="item-time">{{ item.time }}</view>
-              <view :class="['item-status', getItemTimeClass(item.status)]">
-                {{
-                  item.status === 'timeout'
-                    ? '已超时'
-                    : item.status === 'current'
-                      ? '进行中'
-                      : '待处理'
-                }}
+              <view :class="['item-status', getItemInfoByStatus('color', item.status)]">
+                {{ getItemInfoByStatus('text', item.status) }}
               </view>
             </view>
           </view>
@@ -230,20 +228,37 @@ const todoList = reactive<ITodoItem[]>([
     address: '广东省惠州市博罗县中心北路与文广路交叉口北200米',
   },
 ])
-const getSvg = (status: 'timeout' | 'current' | 'wait') => {
-  switch (status) {
-    case 'timeout':
-      return notificationErrorSvg
-    case 'current':
-      return notificationPrimarySvg
-    case 'wait':
-      return notificationSecondarySvg
-    default:
-      return notificationErrorSvg
-  }
+
+/* 根据item的svg状态返回svg、颜色、文字 */
+type itemType = 'svg' | 'color' | 'text'
+type itemStatus = 'timeout' | 'current' | 'wait'
+
+/* status-svg */
+const svgMap = {
+  timeout: notificationErrorSvg,
+  current: notificationPrimarySvg,
+  wait: notificationSecondarySvg,
 }
-const getItemTimeClass = (status: string) => {
-  return `font-${status}`
+/* status-文字 */
+const textMap = {
+  timeout: '已超时',
+  current: '进行中',
+  wait: '待处理',
+}
+
+/* 根据item的svg状态返回svg、颜色、文字 */
+const getItemInfoByStatus = (type: itemType, status: itemStatus) => {
+  if (type === 'svg') {
+    return svgMap[status]
+  }
+
+  if (type === 'color') {
+    return `font-color-${status}`
+  }
+
+  if (type === 'text') {
+    return textMap[status]
+  }
 }
 // const getPullData = () => {
 //   // 模拟网络请求
@@ -254,11 +269,24 @@ const getItemTimeClass = (status: string) => {
 </script>
 
 <style lang="scss" scoped>
+$rpx-1-5: px2rpx(1.5);
 $rpx-19: px2rpx(19);
+$rpx-22: px2rpx(22);
+
 $rpx-28: px2rpx(28);
 $rpx-40: px2rpx(40);
+$rpx-45: px2rpx(45);
 $rpx-55: px2rpx(55);
 $rpx-72: px2rpx(72);
+
+$color-svg: rgb(83, 157, 243);
+$color-border: rgb(227, 227, 227);
+$color-placeholder: rgb(108, 108, 108);
+$color-title: rgb(38, 38, 38);
+
+$color-svg-timeout: rgb(238, 61, 96);
+$color-svg-wait: rgb(30, 32, 34);
+$color-text-blue: rgb(28, 106, 228);
 
 .wrapper {
   @extend %flex-column;
@@ -268,10 +296,11 @@ $rpx-72: px2rpx(72);
 
 // 导航栏
 .navigation {
+  @extend %flex-center;
   flex-shrink: 0;
-  @extend %padding-base;
   gap: $rpx-16;
   height: $rpx-72;
+  @extend %padding-base;
 
   .logo {
     flex-shrink: 0;
@@ -280,18 +309,19 @@ $rpx-72: px2rpx(72);
   }
 
   .search-bar {
+    @extend %flex-center;
     flex-grow: 1;
     height: $rpx-40;
     padding: $rpx-8 $rpx-12;
-    background: rgb(255, 255, 255);
-    border: px2rpx(1) solid rgb(227, 227, 227);
-    border-radius: calc($rpx-40 / 2);
+    background: $color-white;
+    border: $rpx-1 solid $color-border;
+    border-radius: $rpx-20;
 
     .search-input {
       @extend %font-size-xs;
       flex-grow: 1;
       height: $rpx-24;
-      color: rgb(108, 108, 108);
+      color: $color-placeholder;
     }
 
     .search-btn {
@@ -300,9 +330,7 @@ $rpx-72: px2rpx(72);
       flex-shrink: 0;
       width: $rpx-24;
       height: $rpx-24;
-      line-height: $rpx-24;
-      background: rgb(83, 157, 243);
-      border: px2rpx(1) solid rgba(83, 157, 243, 0.3);
+      background: $color-svg;
       border-radius: $rpx-8;
       .search-icon {
         @extend %flex-center;
@@ -316,7 +344,6 @@ $rpx-72: px2rpx(72);
   .notification-icon {
     width: $rpx-20;
     height: $rpx-20;
-    // color: rgb(38, 38, 38); //TODO:color
   }
 }
 
@@ -387,7 +414,7 @@ $rpx-72: px2rpx(72);
     --wot-swiper-nav-dot-color: rgb(198, 198, 198);
     --wot-swiper-nav-dot-active-color: rgb(242, 101, 34);
     :deep(.custom-indicator-class) {
-      bottom: $rpx-16;
+      bottom: -$rpx-16;
     }
     :deep(.custom-item-class) {
       margin-right: $rpx-8;
@@ -410,11 +437,8 @@ $rpx-72: px2rpx(72);
       }
 
       .grid-item-text {
-        margin-top: $rpx-8;
         @extend %font-size-base;
-        font-family: Bebas Neue; //TODO:字体不同
-        line-height: $rpx-19;
-        color: rgb(255, 176, 23);
+        color: $color-secondary;
         text-align: center;
       }
     }
@@ -425,73 +449,79 @@ $rpx-72: px2rpx(72);
     @extend %flex-column;
     gap: $rpx-16;
     align-items: flex-start;
-    padding: $rpx-16 $rpx-24;
+    @extend %padding-base;
     margin-top: $rpx-16;
 
-    .font-timeout {
-      color: rgb(238, 61, 96);
+    .font-color-timeout {
+      color: $color-svg-timeout;
     }
-    .font-current {
-      color: rgb(83, 157, 243);
+
+    .font-color-current {
+      color: $color-primary;
     }
-    .font-wait {
-      color: rgb(30, 32, 34);
+
+    .font-color-wait {
+      color: $color-svg-wait;
     }
 
     .schedule-title {
       @extend %font-size-xl;
-      font-family: Bebas Neue; //TODO: 字体Bebas Neue;
-      color: rgb(38, 38, 38);
+      line-height: $rpx-24;
+      color: $color-title;
     }
 
     .schedule-item {
       @extend %flex-column;
       gap: $rpx-12;
+
       width: 100%;
       padding: $rpx-12;
-      background: rgb(255, 255, 255);
-      border: $rpx-1 solid rgb(238, 240, 235);
+
+      background: $color-white;
+      border: $rpx-1 solid $color-border;
       border-radius: $rpx-2;
+
       .item-header {
         @extend %flex-between;
-        height: px2rpx(50);
+        height: $rpx-50;
         .item-svg {
-          width: px2rpx(45);
-          height: px2rpx(45);
-          color: red;
+          width: $rpx-45;
+          height: $rpx-45;
         }
         .item-header-right {
           @extend %flex-column;
           gap: $rpx-4;
           align-items: flex-end;
+
           width: 50%;
-          height: px2rpx(50);
+          height: $rpx-50;
+
           .item-time {
             height: $rpx-24;
             @extend %font-size-xl;
-            font-family: 阿里巴巴普惠体; //TODO:字体
-            color: rgb(28, 106, 228);
+            line-height: $rpx-24;
+            color: $color-text-blue;
           }
+
           .item-status {
-            height: px2rpx(22);
-            font-family: 阿里巴巴普惠体; //TODO:字体
-            line-height: px2rpx(22);
-            @extend %font-size-xl;
+            height: $rpx-22;
+            @extend %font-size-base;
+            line-height: $rpx-22;
           }
         }
       }
+
       .item-divider {
         position: relative;
         width: 100%;
-        height: px2rpx(1.5);
+        height: $rpx-1-5;
       }
+
       .item-content {
         @extend %flex-column;
         gap: $rpx-4;
         align-items: flex-start;
         @extend %font-size-base;
-        font-family: 阿里巴巴普惠体;
-        line-height: $rpx-24;
       }
     }
   }

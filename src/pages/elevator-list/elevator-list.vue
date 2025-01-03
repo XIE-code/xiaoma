@@ -168,7 +168,7 @@ $rpx-48: px2rpx(48);
       color: rgb(108, 108, 108);
       text-align: left;
       letter-spacing: 0%;
-      background: rgb(255, 255, 255);
+      background: $color-white;
       border: $rpx-1 solid rgb(227, 227, 227);
       border-radius: $rpx-10;
     }
@@ -198,7 +198,7 @@ $rpx-48: px2rpx(48);
 
       gap: $rpx-16;
       padding-top: 0;
-      background: rgb(255, 255, 255);
+      background: $color-white;
       border-radius: $rpx-20 $rpx-20 0 0;
 
       .card-item {
@@ -208,7 +208,7 @@ $rpx-48: px2rpx(48);
         justify-content: flex-start;
         padding: $rpx-12 $rpx-16 $rpx-12 $rpx-14;
 
-        background: rgb(255, 255, 255);
+        background: $color-white;
         border-color: $color-secondary;
         border-style: solid;
         border-width: $rpx-1 $rpx-1 $rpx-1 $rpx-3;

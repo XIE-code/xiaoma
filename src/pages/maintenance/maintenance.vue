@@ -242,7 +242,7 @@ $rpx-129: px2rpx(129);
 
   margin-top: -$rpx-20;
   overflow: scroll;
-  background: rgb(255, 255, 255);
+  background: $color-white;
   border-radius: $rpx-20 $rpx-20 0 0;
   .scroll-box {
     @extend %flex-column;
@@ -267,7 +267,7 @@ $rpx-129: px2rpx(129);
       height: $rpx-129;
       padding: $rpx-12 $rpx-16 $rpx-12 $rpx-14;
 
-      background: rgb(255, 255, 255);
+      background: $color-white;
       border-style: solid;
       // border: $rpx-1 solid rgb(211, 47, 47);
       border-width: $rpx-1 $rpx-1 $rpx-1 $rpx-3;
