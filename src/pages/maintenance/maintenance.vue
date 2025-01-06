@@ -9,21 +9,21 @@
 <template>
   <wrapper paddingType="top" :paddingBottom="90">
     <view class="time-header">
-      <view class="page-title">2024年12月</view>
+      <view class="page-title">{{ currentDay.year }}年{{ currentDay.month }}月</view>
       <view class="week">
         <view
-          :class="`day ${idx === currentDay ? 'day-selected' : ''}`"
+          :class="`day ${idx === curDayIdx ? 'day-selected' : ''}`"
           v-for="(item, idx) in calendar"
           :key="idx"
           @click="handleClickDate(idx)"
         >
-          <span class="day-date">{{ item.date }}</span>
-          <span class="day-num">{{ item.num }}</span>
+          <span class="day-date">{{ item.week }}</span>
+          <span class="day-num">{{ item.day }}</span>
         </view>
       </view>
       <view class="card-head">
         <view class="head-circle"></view>
-        <view class="head-title">2024/12/7 周四</view>
+        <view class="head-title">{{ getCardHeadTime() }}</view>
       </view>
     </view>
 
@@ -54,8 +54,6 @@
 
 <script lang="ts" setup>
 /* component */
-import RequestComp from './components/request.vue'
-import UploadComp from './components/upload.vue'
 import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
 import wrapper from '@/layouts/wrapper.vue'
 
@@ -65,28 +63,30 @@ import cubeGreenSvg from '@/static/svg/cube-green.svg'
 import cubeBlueSvg from '@/static/svg/cube-blue.svg'
 import addressSvg from '@/static/svg/address.svg'
 
+/* tools */
+import { getWeekDates } from '@/utils/tools'
+import type { IWeekDate } from '@/utils/tools'
+
 onLoad(() => {
   uni.hideTabBar()
 })
+
 // week calendar
-interface ICalendar {
-  date: string
-  num: string
-}
-const calendar = reactive<ICalendar[]>([
-  { date: '周一', num: '02' },
-  { date: '周二', num: '03' },
-  { date: '周三', num: '04' },
-  { date: '周四', num: '05' },
-  { date: '周五', num: '06' },
-  { date: '周六', num: '07' },
-  { date: '周日', num: '08' },
-])
+const calendar = reactive<IWeekDate[]>(getWeekDates())
+const curDayIdx = ref<number>(new Date().getDay() - 1)
+const currentDay = computed(() => {
+  return calendar[curDayIdx.value]
+})
 
-const currentDay = ref(3)
-
+/* 更换当前日期 */
 const handleClickDate = (index: number) => {
-  currentDay.value = index
+  curDayIdx.value = index
+}
+
+/* 获取card头部时间 */
+const getCardHeadTime = () => {
+  const { year, month, day, week } = currentDay.value
+  return `${year}/${month}/${day} ${week}`
 }
 
 // 保养地址
