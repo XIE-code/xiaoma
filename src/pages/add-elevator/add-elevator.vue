@@ -9,10 +9,13 @@
 
 <template>
   <wrapper paddingType="top" :backgroundColor="COLOR_SECONDARY">
-    <view class="navigation" :style="{ height: px2rpx(capsule.height) }">
-      <view @click="handleClickLeft" class="nav-back">
-        <image class="nav-back" :src="backSvg" mode="scaleToFill"></image>
-      </view>
+    <view class="navigation" :style="{ height: px2rpx(capsule.height || 32) }">
+      <wd-icon
+        name="arrow-left"
+        @click="handleClickLeft"
+        :size="px2rpx(24)"
+        color="white"
+      ></wd-icon>
       <view class="title">电梯信息录入</view>
     </view>
     <!-- Form -->
@@ -73,31 +76,25 @@
 </template>
 
 <script lang="ts" setup>
-/* svg */
-import backSvg from '@/static/svg/back.svg'
+/* 第三方库 */
+import { useToast } from 'wot-design-uni'
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
-/* constant */
-import { COLOR_SECONDARY } from '@/common/constant'
-import { postLiftLiftAdd } from '@/service/elevator'
-import { useToast } from 'wot-design-uni'
 /* store */
 import { useSystemStore } from '@/store/system'
+/* service */
+import { postLiftLiftAdd } from '@/service/elevator'
 /* utils */
 import { px2rpx } from '@/utils/tools'
+/* constant */
+import { COLOR_SECONDARY } from '@/common/constant'
 
 const systemStore = useSystemStore()
 const { capsule } = systemStore.systemInfo
 
-onShow(() => {
-  console.log('addElevator :>> ')
-})
 // 导航栏
 function handleClickLeft() {
-  console.log('addElevator :>> click left')
-
-  // uni.navigateBack() //TODO: 是否会保留数据
-  uni.switchTab({ url: '/pages/index/index' })
+  uni.navigateBack() // TODO: 是否会保留数据
 }
 
 // 内容区域
@@ -208,14 +205,9 @@ $rpx-17: px2rpx(17);
 $rpx-26: px2rpx(26);
 $rpx-44: px2rpx(44);
 
+$rpx-53: px2rpx(53);
 $rpx-76: px2rpx(76);
 $rpx-167: px2rpx(167);
-$rpx-53: px2rpx(53);
-
-%border {
-  border: $rpx-2 solid $color-secondary;
-  border-radius: $rpx-10;
-}
 
 %input-label-font {
   @extend %font-size-lg;
@@ -231,16 +223,10 @@ $rpx-53: px2rpx(53);
   padding: 0 $rpx-24;
   background: $color-secondary;
 
-  .nav-back {
-    @extend %flex-center;
-    width: $rpx-20;
-    height: $rpx-20;
-  }
-
   .title {
     @extend %font-size-xl;
     @extend %flex-center;
-    height: $rpx-32;
+    height: $rpx-28;
     color: $color-white;
   }
 }
@@ -274,7 +260,7 @@ $rpx-53: px2rpx(53);
         top: $rpx-3;
         left: $rpx-25;
       }
-      // input
+
       .input-container {
         @extend %flex-center;
         @extend %input-label-font;
@@ -287,9 +273,6 @@ $rpx-53: px2rpx(53);
 
         .uni-input-input {
           height: $rpx-25;
-        }
-        .uni-input-placeholder {
-          color: $color-secondary-69;
         }
       }
     }
@@ -312,7 +295,7 @@ $rpx-53: px2rpx(53);
           padding: 0 $rpx-6;
 
           color: $color-secondary;
-          background-color: white;
+          background-color: $color-white;
         }
         .position-center {
           position: absolute;
@@ -328,8 +311,7 @@ $rpx-53: px2rpx(53);
           width: 100%;
           height: $rpx-60;
 
-          .uni-input-input,
-          .uni-input-placeholder {
+          .uni-input-input {
             @extend %input-label-font;
             height: $rpx-25;
             color: $color-secondary-69;
@@ -337,7 +319,7 @@ $rpx-53: px2rpx(53);
         }
       }
     }
-    /** 按钮 */
+
     .submit-btn {
       @extend %btn-reset;
       @extend %font-size-lg;

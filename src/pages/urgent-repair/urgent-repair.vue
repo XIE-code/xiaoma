@@ -10,24 +10,9 @@
 <template>
   <wrapper paddingType="top" :paddingBottom="90">
     <view class="p-6 text-center">
-      <view class="my-2">使用的是 laf 云后台</view>
-      <view class="text-green-400">我的推荐码，可以获得佣金</view>
+      <view class="my-2">急修页面-待开发</view>
 
-      <!-- #ifdef H5 -->
-      <view class="my-2">
-        <a class="my-2" :href="recommendUrl" target="_blank">{{ recommendUrl }}</a>
-      </view>
-      <!-- #endif -->
-
-      <!-- #ifndef H5 -->
-      <view class="my-2 text-left text-sm">{{ recommendUrl }}</view>
-      let x =
-      <view class="my-2 text-left text-sm">{{ outData }}</view>
-      <!-- #endif -->
-
-      <!-- http://localhost:9000/#/pages/index/request -->
-
-      <wd-button type="success" @click="handleClickBtn" class="my-6">获取数据</wd-button>
+      <!-- <wd-button type="success" @click="handleClickBtn" class="my-6">获取数据</wd-button>
       <wd-button type="success" @click="handleClickLiftListBtn" class="my-6">
         获取LiftList数据
       </wd-button>
@@ -41,14 +26,17 @@
       </wd-button>
       <wd-button type="success" @click="handleClickKnowledgeDocumentListBtn">
         获取知识库文件列表
-      </wd-button>
+      </wd-button> -->
     </view>
   </wrapper>
   <xm-tabbar></xm-tabbar>
 </template>
 
 <script lang="ts" setup>
-/* API */
+/* components */
+import wrapper from '@/layouts/wrapper.vue'
+import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
+/* api */
 import {
   postBreakdownCode,
   postKnowledgeCategoryList,
@@ -57,9 +45,6 @@ import {
   postLiftLiftAdd,
   postLiftList,
 } from '@/service/elevator'
-/* components */
-import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
-import wrapper from '@/layouts/wrapper.vue'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
 

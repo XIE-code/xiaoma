@@ -9,22 +9,22 @@ export interface ILoginParams {
 
 /* 登录接口返回类型 */
 export interface ILoginResponse {
-  user_id: number // 用户ID
+  userId: number // 用户ID
   token: string // 访问令牌
-  company_id: number // 公司ID
-  user_name: string // 用户名
+  companyId: number // 公司ID
+  userName: string // 用户名
   email: string // 邮箱
   realname: string // 姓名
   phone: string // 电话
-  office_phone: string // 工作电话
+  officePhone: string // 工作电话
   sex: number // 性别
   identity: string // 身份
-  head_img: string // 头像
+  headImg: string // 头像
   jobs: number // 职位
-  role_id: number // 角色ID
+  roleId: number // 角色ID
   role: number // 角色
-  company_type: number // 公司类型
-  company_name: string // 公司名称
+  companyType: number // 公司类型
+  companyName: string // 公司名称
 }
 
 /* 登录 */

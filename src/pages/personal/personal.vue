@@ -34,16 +34,15 @@
 </template>
 
 <script lang="ts" setup>
-/* img */
-import avatarImg from '@/static/image/person-avatar.png'
 /* components */
 import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
 import wrapper from '@/layouts/wrapper.vue'
-/* constant */
-import { COLOR_SECONDARY } from '@/common/constant'
-
 /* store */
 import { useSystemStore, useUserStore } from '@/store/index'
+/* img */
+import avatarImg from '@/static/image/person-avatar.png'
+/* constant */
+import { COLOR_SECONDARY } from '@/common/constant'
 
 defineOptions({
   name: 'personal',
@@ -54,8 +53,9 @@ onLoad(() => {
 })
 
 const userStore = useUserStore()
-const { user_name: userName, phone, company_name: companyName } = userStore.userInfo
+const { userName, phone, companyName } = userStore.userInfo
 
+console.log('useStore.userInfo :>> ', userStore.userInfo)
 interface IRouterItem {
   icon: string // 图标
   label: string // 标题

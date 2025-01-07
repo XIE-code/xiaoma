@@ -63,3 +63,20 @@ export const getWeekDates = () => {
 
   return result
 }
+
+/* 蛇形命名转换成驼峰命名 */
+export function convertSnakeToCamel(obj: any): any {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(convertSnakeToCamel)
+  }
+
+  return Object.keys(obj).reduce((acc, key) => {
+    const camelKey = key.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase())
+    acc[camelKey] = convertSnakeToCamel(obj[key])
+    return acc
+  }, {} as any)
+}

@@ -4,7 +4,7 @@
     :style="{
       backgroundColor: props?.backgroundColor,
       paddingTop: px2rpx(paddingTop),
-      height: `calc(100vh - ${px2rpx(props.paddingBottom)})`,
+      height: wrapperHeight,
     }"
   >
     <slot></slot>
@@ -12,10 +12,10 @@
 </template>
 
 <script lang="ts" setup>
-/* tools */
-import { px2rpx } from '@/utils/tools'
 /* store */
 import { useSystemStore } from '@/store'
+/* tools */
+import { px2rpx } from '@/utils/tools'
 
 /* 根据prop判断间距是Top,还是top+height */
 const props = withDefaults(
@@ -29,22 +29,23 @@ const props = withDefaults(
 
 // 获取屏幕边界到安全区域距离
 const useSystem = useSystemStore()
-const {
-  capsule: { top, height },
-} = useSystem.systemInfo
+const { top, height } = useSystem.systemInfo.capsule
 const paddingTop = props.paddingType === 'top' ? top : top + height
+const wrapperHeight = props?.paddingBottom
+  ? `calc(100vh - ${px2rpx(props?.paddingBottom)})`
+  : '100vh'
+
+console.log('props.paddingBottom :>> ', props?.paddingBottom, wrapperHeight)
+
 onShow(() => {
   console.log('paddingTop : top: height: >> ', paddingTop, top, height)
 })
 </script>
 
 <style lang="scss" scoped>
-//
 .wrapper {
   @extend %flex-column;
   justify-content: flex-start;
   overflow: scroll;
-
-  // border: 2px solid red;
 }
 </style>

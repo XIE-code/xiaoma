@@ -23,13 +23,13 @@
       <view class="search-bar">
         <input
           confirm-type="search"
-          class="search-input"
           @confirm="handleSearch"
+          class="search-input"
           placeholder="请输入"
         />
 
         <button class="search-btn">
-          <image :src="searchSvg" mode="aspectFit" class="search-icon" />
+          <wd-icon name="search" color="white" :size="px2rpx(12)"></wd-icon>
         </button>
       </view>
       <image :src="notificationSvg" mode="aspectFit" class="notification-icon" />
@@ -123,6 +123,9 @@
 <script lang="ts" setup>
 /* components */
 import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
+import Wrapper from '@/layouts/wrapper.vue'
+/* store */
+import { useSystemStore } from '@/store'
 /* tools */
 import { px2rpx } from '@/utils/tools'
 /* image */
@@ -139,9 +142,6 @@ import notificationErrorSvg from '@/static/svg/notification-error.svg'
 import notificationPrimarySvg from '@/static/svg/notification-primary.svg'
 import notificationSecondarySvg from '@/static/svg/notification-secondary.svg'
 import notificationSvg from '@/static/svg/notification.svg'
-import searchSvg from '@/static/svg/search.svg'
-import { useSystemStore } from '@/store'
-import Wrapper from '@/layouts/wrapper.vue'
 
 defineOptions({
   name: 'Home',
@@ -260,12 +260,6 @@ const getItemInfoByStatus = (type: itemType, status: itemStatus) => {
     return textMap[status]
   }
 }
-// const getPullData = () => {
-//   // 模拟网络请求
-//   setTimeout(() => {
-//     uni.stopPullDownRefresh()
-//   }, 2000)
-// }
 </script>
 
 <style lang="scss" scoped>
@@ -273,26 +267,13 @@ $rpx-1-5: px2rpx(1.5);
 $rpx-19: px2rpx(19);
 $rpx-22: px2rpx(22);
 
-$rpx-28: px2rpx(28);
-$rpx-40: px2rpx(40);
 $rpx-45: px2rpx(45);
 $rpx-55: px2rpx(55);
 $rpx-72: px2rpx(72);
 
-$color-svg: rgb(83, 157, 243);
-$color-border: rgb(227, 227, 227);
-$color-placeholder: rgb(108, 108, 108);
-$color-title: rgb(38, 38, 38);
-
 $color-svg-timeout: rgb(238, 61, 96);
 $color-svg-wait: rgb(30, 32, 34);
 $color-text-blue: rgb(28, 106, 228);
-
-.wrapper {
-  @extend %flex-column;
-
-  overflow: scroll;
-}
 
 // 导航栏
 .navigation {
@@ -330,14 +311,8 @@ $color-text-blue: rgb(28, 106, 228);
       flex-shrink: 0;
       width: $rpx-24;
       height: $rpx-24;
-      background: $color-svg;
+      background: $color-primary;
       border-radius: $rpx-8;
-      .search-icon {
-        @extend %flex-center;
-        width: $rpx-12;
-        height: $rpx-12;
-        color: $color-white;
-      }
     }
   }
 
@@ -349,11 +324,12 @@ $color-text-blue: rgb(28, 106, 228);
 
 .scroll-box {
   flex-grow: 1;
-  overflow: auto;
+  overflow: scroll;
+  @extend %padding-base;
 
   // 通知栏
   .notification {
-    padding: $rpx-8 $rpx-24;
+    margin-top: -$rpx-8;
     .notification-container {
       @extend %flex-center;
       gap: $rpx-16;
@@ -371,12 +347,12 @@ $color-text-blue: rgb(28, 106, 228);
         .text {
           @extend %font-size-base;
           height: $rpx-18;
-          color: rgb(38, 38, 38);
+          color: $color-title;
         }
         .number {
           @extend %font-size-lg;
           height: $rpx-24;
-          color: rgb(38, 38, 38);
+          color: $color-title;
         }
       }
 
@@ -395,20 +371,19 @@ $color-text-blue: rgb(28, 106, 228);
         .text {
           @extend %font-size-base;
           height: $rpx-18;
-          color: rgb(38, 38, 38);
+          color: $color-title;
         }
         .number {
           @extend %font-size-lg;
           height: $rpx-24;
-          color: rgb(38, 38, 38);
+          color: $color-title;
         }
       }
     }
   }
   // 轮播图
   .card-swiper {
-    padding-bottom: $rpx-16;
-    margin: $rpx-16 $rpx-24;
+    margin: $rpx-16 0;
     --wot-swiper-radius: $rpx-8;
     --wot-swiper-item-padding: 0 $rpx-24;
     --wot-swiper-nav-dot-color: rgb(198, 198, 198);
@@ -423,8 +398,7 @@ $color-text-blue: rgb(28, 106, 228);
   }
   // Grid宫格
   .custom-class-grid {
-    padding: 0 $rpx-24;
-
+    padding: $rpx-16 0;
     :deep(.custom-class-item) {
       padding: $rpx-16 $rpx-10 0 0;
 
@@ -449,7 +423,6 @@ $color-text-blue: rgb(28, 106, 228);
     @extend %flex-column;
     gap: $rpx-16;
     align-items: flex-start;
-    @extend %padding-base;
     margin-top: $rpx-16;
 
     .font-color-timeout {

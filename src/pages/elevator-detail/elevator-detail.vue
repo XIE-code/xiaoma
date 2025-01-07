@@ -10,10 +10,13 @@
 <template>
   <wrapper paddingType="top" :backgroundColor="COLOR_SECONDARY">
     <view class="navigation">
-      <view @click="handleClickLeft" class="nav-back">
-        <image class="nav-back" :src="backSvg" mode="scaleToFill"></image>
-      </view>
-      <view class="title">详细信息</view>
+      <wd-icon
+        name="arrow-left"
+        @click="handleClickLeft"
+        :size="px2rpx(24)"
+        color="white"
+      ></wd-icon>
+      <view class="title">电梯详细信息</view>
     </view>
 
     <view class="content">
@@ -46,22 +49,25 @@
 </template>
 
 <script lang="ts" setup>
-import { postBreakdownCode } from '@/service/elevator'
-import backSvg from '@/static/svg/back.svg'
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
+/* TODO: scrollBox */
 import scrollBox from '@/layouts/scroll-box.vue'
+/* service */
+import { postBreakdownCode } from '@/service/elevator'
+/* utils */
+import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
+/* svg */
+import backSvg from '@/static/svg/back.svg'
 onShow(() => {
   console.log('addElevator :>> ')
 })
 // 导航栏
 function handleClickLeft() {
-  console.log('addElevator :>> /pages/elevator-list/elevator-list')
-
-  // uni.navigateBack() // TODO: 是否会保留数据
-  uni.navigateTo({ url: '/pages/elevator-list/elevator-list' })
+  uni.navigateBack() // TODO: 是否会保留数据
+  // uni.navigateTo({ url: '/pages/elevator-list/elevator-list' })
 }
 
 // 内容区域
@@ -215,6 +221,11 @@ const getBreakdownInfo = () => {
 <style lang="scss" scoped>
 $rpx-17: px2rpx(17);
 
+%font-size-12 {
+  @extend %font-size-xs;
+  color: $color-black;
+}
+
 // 导航栏
 .navigation {
   @extend %flex-center;
@@ -224,16 +235,11 @@ $rpx-17: px2rpx(17);
   height: $rpx-32;
   padding: 0 $rpx-24;
   background: $color-secondary;
-  .nav-back {
-    @extend %flex-center;
-    width: $rpx-20;
-    height: $rpx-20;
-  }
+
   .title {
     @extend %font-size-xl;
     @extend %flex-center;
-    font-family: Bebas Neue;
-    line-height: $rpx-40;
+    line-height: $rpx-28;
     color: $color-white;
   }
 }
@@ -249,17 +255,6 @@ $rpx-17: px2rpx(17);
     gap: $rpx-24;
     padding-top: $rpx-30;
 
-    // padding: $rpx-16 $rpx-24;
-
-    %font-size-12 {
-      font-family: Lato;
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 1.4;
-      color: rgb(0, 0, 0);
-      letter-spacing: 0px;
-    }
-
     .base-info--text {
       :deep(.wd-cell__title, .wd-cell__value) {
         @extend %font-size-12;
@@ -268,7 +263,6 @@ $rpx-17: px2rpx(17);
 
     .tabs-info {
       background: $color-white;
-      // @extend %font-size-12;
       :deep(.wd-tabs__item.is-active) {
         font-weight: 400;
         color: $color-primary;

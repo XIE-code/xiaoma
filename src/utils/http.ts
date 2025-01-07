@@ -1,5 +1,6 @@
 import { CustomRequestOptions } from '@/interceptors/request'
 import { useUserStore } from '@/store/user'
+import { convertSnakeToCamel } from '@/utils/tools'
 
 const userStore = useUserStore()
 export const http = <T>(options: CustomRequestOptions) => {
@@ -18,7 +19,8 @@ export const http = <T>(options: CustomRequestOptions) => {
         // 状态码 2xx，参考 axios 的设计
         if (res.statusCode >= 200 && res.statusCode < 300) {
           // 2.1 提取核心数据 res.data
-          resolve(res.data as IResData<T>)
+          /* 格式化data的Key命名 */
+          resolve(convertSnakeToCamel(res.data) as IResData<T>)
         } else if (res.statusCode === 401) {
           // 401错误  -> 清理用户信息，跳转到登录页
           userStore.clearUserInfo()
