@@ -238,3 +238,8 @@ $color-black-05: rgba(0, 0, 0, 0.05);
 %padding-base {
   padding: $rpx-16 $rpx-24;
 }
+
+%border {
+  border: $rpx-2 solid $color-secondary;
+  border-radius: $rpx-10;
+}

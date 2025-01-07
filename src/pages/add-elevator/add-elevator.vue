@@ -9,7 +9,7 @@
 
 <template>
   <wrapper paddingType="top" :backgroundColor="COLOR_SECONDARY">
-    <view class="navigation">
+    <view class="navigation" :style="{ height: px2rpx(capsule.height) }">
       <view @click="handleClickLeft" class="nav-back">
         <image class="nav-back" :src="backSvg" mode="scaleToFill"></image>
       </view>
@@ -26,6 +26,7 @@
             <input
               class="uni-input-input"
               type="text"
+              placeholder-style="color: rgba(255, 176, 23, 0.69)"
               :placeholder="`请输入${item.placeholder}`"
               v-model="item.value"
               @input="item.value = item.value.replace(/^\s*/g, '')"
@@ -34,17 +35,16 @@
         </view>
         <view class="container medium-container">
           <view class="cell-container" v-for="(item, index) in contentMediumList" :key="index">
-            <!-- <view :class="['absolute', positionType == 'left' ? 'position-left' : 'position-center']"> -->
             <view class="input-label position-center">
               {{ item.label }}
             </view>
             <view class="cell-input-container">
               <input
                 class="uni-input-input"
-                type="text"
+                type="number"
                 style="text-align: center"
                 v-model="item.value"
-                @input="item.value = item.value.replace(/^\s*/g, '')"
+                @input="item.value = item.value.replace(/\./g, '')"
               />
             </view>
           </view>
@@ -57,13 +57,14 @@
             <input
               class="uni-input-input"
               type="text"
+              placeholder-style="color: rgba(255, 176, 23, 0.69)"
               :placeholder="`请输入${item.placeholder}`"
               v-model="item.value"
               @input="item.value = item.value.replace(/^\s*/g, '')"
             />
           </view>
         </view>
-        <button class="submit-btn">
+        <button class="submit-btn" @click="handleClickAddLift">
           <text>提交</text>
         </button>
       </view>
@@ -78,6 +79,15 @@ import backSvg from '@/static/svg/back.svg'
 import wrapper from '@/layouts/wrapper.vue'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
+import { postLiftLiftAdd } from '@/service/elevator'
+import { useToast } from 'wot-design-uni'
+/* store */
+import { useSystemStore } from '@/store/system'
+/* utils */
+import { px2rpx } from '@/utils/tools'
+
+const systemStore = useSystemStore()
+const { capsule } = systemStore.systemInfo
 
 onShow(() => {
   console.log('addElevator :>> ')
@@ -92,56 +102,105 @@ function handleClickLeft() {
 
 // 内容区域
 interface IInputItem {
+  name: string
   label: string
   placeholder: string
   value: string
 }
 
-const contentTopList = reactive<IInputItem[]>([
+/* TODO: 使用Form重构界面 */
+const initTopListData: IInputItem[] = [
   {
+    name: 'name',
     label: '电梯名称',
     placeholder: '电梯名称',
     value: '',
   },
   {
+    name: 'registerCode',
     label: '出厂编码',
     placeholder: '出厂编码',
     value: '',
   },
   {
+    name: 'deviceId',
     label: '设备代码',
     placeholder: '设备代码',
     value: '',
   },
-])
+]
 
-const contentMediumList = reactive<Omit<IInputItem, 'placeholder'>[]>([
+const initMediumListData: Omit<IInputItem, 'placeholder'>[] = [
   {
+    name: 'floor',
     label: '层',
     value: '',
   },
   {
+    name: 'station',
     label: '站',
     value: '',
   },
   {
+    name: 'door',
     label: '门',
     value: '',
   },
-])
+]
 
-const contentDownList = reactive<IInputItem[]>([
+const initDownListData: IInputItem[] = [
   {
+    name: 'speed',
     label: '速度',
     placeholder: '电梯速度',
     value: '',
   },
   {
+    name: 'load',
     label: '载重',
     placeholder: '电梯载重',
     value: '',
   },
-])
+]
+
+const contentTopList = reactive<IInputItem[]>(initTopListData)
+
+const contentMediumList = reactive<Omit<IInputItem, 'placeholder'>[]>(initMediumListData)
+
+const contentDownList = reactive<IInputItem[]>(initDownListData)
+
+/* 遍历数组，将数组内的对象的value置空 */
+const resetInputList = (list: Array<IInputItem | Omit<IInputItem, 'placeholder'>>) => {
+  list.forEach((item) => {
+    item.value = ''
+  })
+}
+
+const toast = useToast()
+
+/* 添加电梯 */
+const handleClickAddLift = () => {
+  if (contentTopList[0].value === '') return toast.show('请输入电梯名称')
+  postLiftLiftAdd({
+    name: contentTopList[0].value,
+    register_code: contentTopList[1].value,
+    devices_id: contentTopList[2].value,
+    floor: contentMediumList[0].value,
+    station: parseInt(contentMediumList[1].value),
+    door: parseInt(contentMediumList[2].value),
+    load: contentDownList[0].value,
+    speed: contentDownList[1].value,
+  })
+    .then((res) => {
+      resetInputList(contentTopList)
+      resetInputList(contentMediumList)
+      resetInputList(contentDownList)
+      toast.show('添加成功')
+    })
+    .catch((err) => {
+      console.log('err :>> ', err)
+    })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -153,13 +212,22 @@ $rpx-76: px2rpx(76);
 $rpx-167: px2rpx(167);
 $rpx-53: px2rpx(53);
 
+%border {
+  border: $rpx-2 solid $color-secondary;
+  border-radius: $rpx-10;
+}
+
+%input-label-font {
+  @extend %font-size-lg;
+  line-height: $rpx-26;
+  color: $color-secondary-69;
+}
 // 导航栏
 .navigation {
   @extend %flex-center;
   flex-shrink: 0;
   gap: $rpx-16;
   justify-content: flex-start;
-  height: $rpx-32;
   padding: 0 $rpx-24;
   background: $color-secondary;
 
@@ -173,7 +241,6 @@ $rpx-53: px2rpx(53);
     @extend %font-size-xl;
     @extend %flex-center;
     height: $rpx-32;
-    font-family: Bebas Neue;
     color: $color-white;
   }
 }
@@ -189,12 +256,6 @@ $rpx-53: px2rpx(53);
     @extend %flex-column;
     gap: $rpx-24;
     padding: $rpx-16 $rpx-24;
-
-    %input-label-font {
-      @extend %font-size-lg;
-      line-height: $rpx-26;
-      color: $color-secondary-69;
-    }
 
     .container {
       position: relative;
@@ -222,13 +283,13 @@ $rpx-53: px2rpx(53);
         width: 100%;
         height: $rpx-60;
         padding: $rpx-18 $rpx-44;
-        color: rgba(255, 176, 23, 0.69);
+        color: $color-secondary-69;
 
         .uni-input-input {
           height: $rpx-25;
         }
         .uni-input-placeholder {
-          color: rgba(255, 176, 23, 0.69);
+          color: $color-secondary-69;
         }
       }
     }
@@ -250,7 +311,7 @@ $rpx-53: px2rpx(53);
           @extend %input-label-font;
           padding: 0 $rpx-6;
 
-          color: rgb(255, 176, 23);
+          color: $color-secondary;
           background-color: white;
         }
         .position-center {
@@ -271,16 +332,10 @@ $rpx-53: px2rpx(53);
           .uni-input-placeholder {
             @extend %input-label-font;
             height: $rpx-25;
-            color: rgba(255, 176, 23, 0.69);
+            color: $color-secondary-69;
           }
         }
       }
-      // padding: $rpx-18 $rpx-4;
-    }
-
-    %border {
-      border: $rpx-2 solid rgb(255, 176, 23);
-      border-radius: $rpx-10;
     }
     /** 按钮 */
     .submit-btn {
@@ -292,14 +347,13 @@ $rpx-53: px2rpx(53);
       height: $rpx-53;
       margin: $rpx-25 auto 0;
 
-      font-family: 思源黑体;
       font-size: $rpx-17;
       line-height: $rpx-24;
 
       color: $color-white;
       letter-spacing: $rpx-1;
 
-      background: rgb(255, 176, 23);
+      background: $color-secondary;
 
       border-radius: $rpx-16;
     }
