@@ -11,6 +11,7 @@ interface NavigateToOptions {
        "/pages/elevator-list/elevator-list" |
        "/pages/maintenance/maintenance" |
        "/pages/personal/personal" |
+       "/pages/shop/shop" |
        "/pages/urgent-repair/urgent-repair";
 }
 interface RedirectToOptions extends NavigateToOptions {}

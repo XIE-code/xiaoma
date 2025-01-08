@@ -64,6 +64,7 @@
           :list="swiperList"
           :previousMargin="px2rpx(30)"
           :nextMargin="px2rpx(60)"
+          @click="handleSwiperItemClick"
         ></wd-swiper>
       </view>
       <!-- Gird -->
@@ -163,6 +164,10 @@ const swiperList = reactive([
   imgCarouselFirst,
   imgCarouselSecond,
 ])
+
+const handleSwiperItemClick = (params) => {
+  uni.navigateTo({ url: '/pages/shop/shop' })
+}
 
 // 电梯添加、档案资料、电梯监控
 const elevatorList = reactive([

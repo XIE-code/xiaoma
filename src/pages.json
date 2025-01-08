@@ -104,6 +104,14 @@
       }
     },
     {
+      "path": "pages/shop/shop",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "小马商城"
+      }
+    },
+    {
       "path": "pages/urgent-repair/urgent-repair",
       "type": "page",
       "layout": "demo",
