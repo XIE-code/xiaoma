@@ -59,9 +59,6 @@ importers:
       dayjs:
         specifier: 1.11.10
         version: 1.11.10
-      js-md5:
-        specifier: ^0.8.3
-        version: 0.8.3
       pinia:
         specifier: 2.0.36
         version: 2.0.36(typescript@5.7.2)(vue@3.4.21(typescript@5.7.2))
@@ -3792,9 +3789,6 @@ packages:
 
   jpeg-js@0.3.7:
     resolution: {integrity: sha512-9IXdWudL61npZjvLuVe/ktHiA41iE8qFyLB+4VDTblEsWBzeg8WQTlktdUK4CdncUqtUgUg0bbOmTE2bKBKaBQ==}
-
-  js-md5@0.8.3:
-    resolution: {integrity: sha512-qR0HB5uP6wCuRMrWPTrkMaev7MJZwJuuw4fnwAzRgP4J4/F8RwtodOKpGp4XpqsLBFzzgqIO42efFAyz2Et6KQ==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -10494,8 +10488,6 @@ snapshots:
   jiti@1.21.6: {}
 
   jpeg-js@0.3.7: {}
-
-  js-md5@0.8.3: {}
 
   js-tokens@4.0.0: {}
 

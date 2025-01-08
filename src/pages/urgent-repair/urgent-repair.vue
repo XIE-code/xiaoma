@@ -45,10 +45,6 @@ import {
   postLiftLiftAdd,
   postLiftList,
 } from '@/service/elevator'
-/* constant */
-import { COLOR_SECONDARY } from '@/common/constant'
-
-const recommendUrl = ref('http://laf.run/signup?code=ohaOgIX')
 
 const outData = ref({})
 

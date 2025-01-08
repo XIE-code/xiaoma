@@ -53,10 +53,6 @@ import { postLogin } from '@/service/login'
 import { md5 } from '@/utils/md5'
 // import 'weconsole/dist/npm/main/init'
 
-onShow(() => {
-  console.log('addElevator :>> ')
-})
-
 // 登录框
 const loginForm = reactive({
   account: 'test',

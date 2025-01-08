@@ -28,7 +28,8 @@
 - fix: 修复bugs
 - add: 新功能
 - update: 更新
-- style : 代码格式改变
+- style: 不涉及功能逻辑的变更，通常是为了统一代码风格、修复格式问题或遵循新的代码规范
 - test: 增加测试代码
 - revert: 撤销上一次的commit
 - build: 构建工具或构建过程等的变动，如：gulp 换成了 webpack，webpack 升级等
+- refactor: 重构代码，如：拆分大函数为多个小函数、简化复杂逻辑、引入设计模式

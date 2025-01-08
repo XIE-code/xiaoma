@@ -94,7 +94,7 @@ const { capsule } = systemStore.systemInfo
 
 // 导航栏
 function handleClickLeft() {
-  uni.navigateBack() // TODO: 是否会保留数据
+  uni.navigateBack()
 }
 
 // 内容区域

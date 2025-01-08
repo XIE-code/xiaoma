@@ -59,15 +59,9 @@ import { postBreakdownCode } from '@/service/elevator'
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
-/* svg */
-import backSvg from '@/static/svg/back.svg'
-onShow(() => {
-  console.log('addElevator :>> ')
-})
 // 导航栏
 function handleClickLeft() {
-  uni.navigateBack() // TODO: 是否会保留数据
-  // uni.navigateTo({ url: '/pages/elevator-list/elevator-list' })
+  uni.navigateBack()
 }
 
 // 内容区域

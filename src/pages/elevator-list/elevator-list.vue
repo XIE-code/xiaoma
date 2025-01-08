@@ -74,10 +74,6 @@ import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
 
-onShow(() => {
-  console.log('addElevator :>> ')
-})
-
 const systemStore = useSystemStore()
 const { capsule } = systemStore.systemInfo
 // 导航栏
