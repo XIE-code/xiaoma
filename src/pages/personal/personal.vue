@@ -42,12 +42,12 @@
         :title="item.label"
         :key="idx"
         class="item"
+        custom-title-class="item-title"
+        custom-value-class="item-value"
         v-for="(item, idx) in routerList"
       >
         <template #icon>
-          <view>
-            <image :src="item.icon" class="item-icon" mode="scaleToFill" />
-          </view>
+          <image :src="item.icon" class="item-icon" mode="aspectFit" />
         </template>
       </wd-cell>
     </view>
@@ -313,31 +313,30 @@ $color-bg-gold-50: rgba(255, 176, 23, 0.5);
   border: $rpx-1 solid $color-bg-gold-50;
   border-radius: $rpx-12;
 
-  :deep(.wd-cell.is-large .wd-cell__wrapper) {
+  :deep(.wd-cell.is-large.is-center) {
     height: $rpx-32;
     padding: 0;
-    .wd-cell__left {
-      gap: $rpx-12;
-      .wd-cell__title {
+    background-color: transparent;
+    .wd-cell__wrapper {
+      padding: 0;
+
+      .item-icon {
+        width: $rpx-32;
+        height: $rpx-32;
+      }
+
+      .item-title {
+        margin-left: $rpx-12;
+
         @extend %font-size-sm;
         font-weight: 600;
         line-height: $rpx-32;
         color: $color-gray-90;
       }
-    }
 
-    .wd-cell__arrow-right {
-      color: $color-gray-90;
-    }
-  }
-
-  .item {
-    padding: 0;
-    background-color: transparent;
-
-    .item-icon {
-      width: $rpx-32;
-      height: $rpx-32;
+      .wd-cell__arrow-right {
+        color: $color-gray-90;
+      }
     }
   }
 }
