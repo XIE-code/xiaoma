@@ -5,6 +5,9 @@
       backgroundColor: props?.backgroundColor,
       paddingTop: px2rpx(paddingTop),
       height: wrapperHeight,
+      paddingLeft: px2rpx(props?.paddingLeft),
+      paddingRight: px2rpx(props?.paddingRight),
+      gap: px2rpx(props?.gap),
     }"
   >
     <slot></slot>
@@ -23,14 +26,25 @@ const props = withDefaults(
     paddingType: 'top' | 'height'
     backgroundColor?: string
     paddingBottom?: number
+    paddingLeft?: number
+    paddingRight?: number
+    gap?: number
   }>(),
-  { paddingType: 'top', backgroundColor: 'white', paddingBottom: 0 },
+  {
+    paddingType: 'top',
+    backgroundColor: 'white',
+    paddingBottom: 0,
+    paddingLeft: 0,
+    paddingRight: 0,
+    gap: 0,
+  },
 )
 
 // 获取屏幕边界到安全区域距离
 const useSystem = useSystemStore()
 const { top, height } = useSystem.systemInfo.capsule
 const paddingTop = props.paddingType === 'top' ? top : top + height
+
 const wrapperHeight = props?.paddingBottom
   ? `calc(100vh - ${px2rpx(props?.paddingBottom)})`
   : '100vh'

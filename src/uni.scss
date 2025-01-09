@@ -43,11 +43,6 @@ view {
   margin: 0;
 }
 
-a {
-  color: #333;
-  text-decoration: none;
-}
-
 img {
   vertical-align: top;
 }
@@ -60,10 +55,8 @@ li {
 :root,
 page {
   // 修改按主题色
-  // --wot-color-theme: #37c2bc;
 
   // 修改按钮背景色
-  // --wot-button-primary-bg-color: green;
 }
 
 /* 自定义CSS变量
@@ -97,10 +90,12 @@ $rpx-16: px2rpx(16);
 $rpx-18: px2rpx(18);
 $rpx-20: px2rpx(20);
 $rpx-24: px2rpx(24);
-$rpx-28: px2rpx(28);
-$rpx-32: px2rpx(32);
-
 $rpx-25: px2rpx(25);
+$rpx-28: px2rpx(28);
+
+$rpx-32: px2rpx(32);
+$rpx-48: px2rpx(48);
+$rpx-64: px2rpx(64);
 
 $rpx-30: px2rpx(30);
 $rpx-40: px2rpx(40);
@@ -114,6 +109,7 @@ $rpx-90: px2rpx(90);
 
 /* 全局颜色变量 */
 $color-white: rgb(255, 255, 255);
+$color-white-50: rgb(255, 255, 255, 0.5);
 $color-black: rgb(0, 0, 0);
 $color-black-05: rgba(0, 0, 0, 0.05);
 $color-primary: rgb(83, 157, 243);
@@ -122,21 +118,29 @@ $color-secondary-69: rgba(255, 176, 23, 0.69);
 $color-placeholder: rgb(108, 108, 108);
 $color-border: rgb(227, 227, 227);
 $color-title: rgb(38, 38, 38);
+$color-card-head: rgb(52, 52, 52);
+$color-gray-90: rgb(52, 52, 52);
+$color-gray-70: rgb(148, 148, 148);
+
+$color-bg-red: rgb(235, 77, 87);
+$color-bg-red-50: rgba(235, 77, 87, 0.5);
+
+a {
+  color: #333;
+  text-decoration: none;
+}
 /* 占位符选择器
 ----------------------------- */
 
-/* 按钮样式重置 */
-%btn-reset {
-  padding: 0;
-  margin: 0;
-  font-size: inherit;
-  border: 0;
-  border-radius: 0;
-  &::before,
-  &::after {
-    display: none !important;
-    border: none !important;
-  }
+/* absolute */
+
+%absolute {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  content: '';
 }
 
 /* flex布局居中 */
@@ -197,6 +201,20 @@ $color-title: rgb(38, 38, 38);
   @extend %font-size;
   font-size: $rpx-20;
   line-height: $rpx-28;
+}
+
+/* 按钮样式重置 */
+%btn-reset {
+  padding: 0;
+  margin: 0;
+  font-size: inherit;
+  border: 0;
+  border-radius: 0;
+  &::before,
+  &::after {
+    display: none !important;
+    border: none !important;
+  }
 }
 
 /* 单行省略 */

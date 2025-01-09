@@ -129,7 +129,6 @@ $rpx-11: px2rpx(11);
 $rpx-17: px2rpx(17);
 $rpx-19: px2rpx(19);
 
-$rpx-48: px2rpx(48);
 $rpx-92: px2rpx(92);
 
 .header {

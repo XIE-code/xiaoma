@@ -48,7 +48,7 @@
 import loginTop from '@/static/image/login-top.png'
 import loginMedium from '@/static/image/login-medium.png'
 import loginBottom from '@/static/image/login-bottom.png'
-import { useUserStore } from '@/store'
+import { useUserStore, useSystemStore } from '@/store'
 import { postLogin } from '@/service/login'
 import { md5 } from '@/utils/md5'
 // import 'weconsole/dist/npm/main/init'
@@ -61,12 +61,14 @@ const loginForm = reactive({
 
 /* userStore */
 const userStore = useUserStore()
+const systemStore = useSystemStore()
 const handleLoginBtn = () => {
   postLogin({
     name: loginForm.account,
     password: md5(loginForm.password),
   })
     .then((res) => {
+      systemStore.resetTabBarIdx()
       userStore.setUserInfo({
         ...res.data,
       })

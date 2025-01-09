@@ -216,7 +216,7 @@ $rpx-129: px2rpx(129);
 
     padding: $rpx-11 $rpx-10 $rpx-27;
     margin-top: $rpx-38;
-    background: rgb(52, 52, 52);
+    background: $color-card-head;
     border-radius: $rpx-20 $rpx-20 0 0;
     .head-circle {
       width: $rpx-8;
