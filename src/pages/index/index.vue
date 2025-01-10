@@ -187,7 +187,7 @@ const elevatorList = reactive([
     id: 3,
     name: '电梯知识库',
     url: knowledgeSvg,
-    path: '',
+    path: '/pages/knowledge-company/knowledge-company',
   },
   {
     id: 4,

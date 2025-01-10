@@ -8,8 +8,7 @@
 <template>
   <wrapper paddingType="top" :paddingBottom="90" :paddingLeft="20" :paddingRight="20" :gap="24">
     <view class="info">
-      <!-- TODO： 上线: 更新成线上图片 -->
-      <image class="avatar" :src="getAvatar" mode="scaleToFill"></image>
+      <image class="avatar" :src="`${SERVER_BASEURL}${headImg}`" mode="scaleToFill"></image>
       <view class="info-data">
         <view class="info-name">{{ userName }}</view>
         <view class="info-other">{{ phone }}&nbsp;|&nbsp;{{ companyName }}</view>
@@ -62,7 +61,6 @@
 <script lang="ts" setup>
 /* components */
 import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
-
 import wrapper from '@/layouts/wrapper.vue'
 /* store */
 import { useSystemStore, useUserStore } from '@/store/index'
@@ -85,15 +83,6 @@ onLoad(() => {
 
 const userStore = useUserStore()
 const { userName, phone, companyName, headImg } = userStore.userInfo
-
-console.log('useStore.userInfo :>> ', userStore.userInfo)
-console.log('headImg :>> ', `${SERVER_BASEURL}/${headImg}`)
-const getAvatar = computed(() => {
-  return avatarImg
-})
-// const getAvatar = computed(() => {
-//   return headImg ? `${SERVER_BASEURL}/${headImg}` : avatarImg
-// })
 
 const elevatorList = reactive([
   {

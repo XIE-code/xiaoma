@@ -90,6 +90,22 @@
       }
     },
     {
+      "path": "pages/knowledge-company/knowledge-company",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "电梯知识库"
+      }
+    },
+    {
+      "path": "pages/knowledge-list/knowledge-list",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "电梯知识库"
+      }
+    },
+    {
       "path": "pages/maintenance/maintenance",
       "type": "page",
       "style": {
