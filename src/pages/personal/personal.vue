@@ -8,7 +8,8 @@
 <template>
   <wrapper paddingType="top" :paddingBottom="90" :paddingLeft="20" :paddingRight="20" :gap="24">
     <view class="info">
-      <image class="avatar" :src="`${SERVER_BASEURL}${headImg}`" mode="scaleToFill"></image>
+      <!-- TODO: 动态图片引入 -->
+      <image class="avatar" :src="getServerImg(headImg)" mode="scaleToFill"></image>
       <view class="info-data">
         <view class="info-name">{{ userName }}</view>
         <view class="info-other">{{ phone }}&nbsp;|&nbsp;{{ companyName }}</view>
@@ -23,6 +24,7 @@
     </view>
 
     <view class="certificate">
+      <!-- TODO: 静态图片引入 -->
       <image class="certificate-star" src="@/static/svg/star.svg" mode="scaleToFill" />
       <view class="certificate-left">
         <image class="certificate-icon" src="@/static/svg/certificate.svg" mode="scaleToFill" />
@@ -64,8 +66,8 @@ import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
 import wrapper from '@/layouts/wrapper.vue'
 /* store */
 import { useSystemStore, useUserStore } from '@/store/index'
-/* constant */
-import { SERVER_BASEURL } from '@/common/constant'
+/* utils */
+import { getServerImg } from '@/utils/tools'
 /* svg */
 import myNewsSVG from '@/static/svg/my-news.svg'
 import aboutUsSvg from '@/static/svg/about-us.svg'

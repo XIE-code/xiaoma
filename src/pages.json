@@ -90,6 +90,14 @@
       }
     },
     {
+      "path": "pages/knowledge-category/knowledge-category",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "电梯知识库次级目录"
+      }
+    },
+    {
       "path": "pages/knowledge-company/knowledge-company",
       "type": "page",
       "layout": "default",
@@ -98,11 +106,11 @@
       }
     },
     {
-      "path": "pages/knowledge-list/knowledge-list",
+      "path": "pages/knowledge-file/knowledge-file",
       "type": "page",
       "layout": "default",
       "style": {
-        "navigationBarTitleText": "电梯知识库"
+        "navigationBarTitleText": "电梯知识库次级目录"
       }
     },
     {

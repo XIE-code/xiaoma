@@ -46,13 +46,13 @@
             :iconSize="px2rpx(55)"
             custom-class="custom-class-item"
             link-type="navigateTo"
-            :url="`/pages/knowledge-list/knowledge-list?id=${recommendCompany.id}`"
+            :url="navigatorToSecondaryCategory(recommendCompany)"
           >
             <template #icon>
               <image
                 class="grid-item-img"
-                :src="`${SERVER_BASEURL}${recommendCompany.logoUrl}`"
-                @error="handleError"
+                :src="getServerImg(recommendCompany.logoUrl)"
+                @error="handleLoadImgError"
                 mode="aspectFit"
               />
             </template>
@@ -77,12 +77,12 @@
               :key="company.id"
               :title="company.name"
               is-link
-              :to="`/pages/knowledge-list/knowledge-list?id=${company.id}`"
+              :to="navigatorToSecondaryCategory(company)"
             >
               <template #icon>
                 <image
-                  :src="company.logoUrl ? `${SERVER_BASEURL}${company.logoUrl}` : homeLogo"
-                  @error="handleError"
+                  :src="getServerImg(company.logoUrl)"
+                  @error="handleLoadImgError"
                   class="item-icon"
                   mode="aspectFit"
                 />
@@ -97,7 +97,6 @@
 
 <script lang="ts" setup>
 /* 第三方库 */
-import { useToast } from 'wot-design-uni'
 import { pinyin } from 'pinyin-pro'
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
@@ -107,20 +106,11 @@ import { useSystemStore } from '@/store'
 import { postKnowledgeCategoryList } from '@/service/elevator'
 import type { IKnowledgeCategoryListResponse } from '@/service/elevator'
 /* utils */
-import { px2rpx } from '@/utils/tools'
+import { getServerImg, px2rpx, handleLoadImgError } from '@/utils/tools'
 /* constant */
-import { COLOR_SECONDARY, SERVER_BASEURL } from '@/common/constant'
-/* img */
-import homeLogo from '@/static/image/home-logo.png'
+import { COLOR_SECONDARY } from '@/common/constant'
 
 const systemStore = useSystemStore()
-const { capsule } = systemStore.systemInfo
-
-const handleError = (event) => {
-  event.target.src = homeLogo
-}
-
-const toast = useToast()
 // 导航栏
 function handleClickLeft() {
   systemStore.resetTabBarIdx()
@@ -129,6 +119,11 @@ function handleClickLeft() {
 
 function handleSearch() {
   console.log('触发搜索事件 :>> ')
+}
+
+/* TODO: 提取公共模块 */
+const navigatorToSecondaryCategory = (company: IKnowledgeCategoryListResponse) => {
+  return `/pages/knowledge-category/knowledge-category?id=${company.id}&name=${company.name}`
 }
 
 // 内容区域
@@ -188,9 +183,7 @@ postKnowledgeCategoryList({
     )
 
     indexBarList.sort(sortByPinYinIndex)
-    indexBarList.forEach((item) => {
-      item.data.sort(sortByPinYin)
-    })
+    indexBarList.forEach((item) => item.data.sort(sortByPinYin))
     companyList.value = indexBarList
   })
   .catch((err) => {

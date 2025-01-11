@@ -9,8 +9,9 @@ interface NavigateToOptions {
        "/pages/add-elevator/add-elevator" |
        "/pages/elevator-detail/elevator-detail" |
        "/pages/elevator-list/elevator-list" |
+       "/pages/knowledge-category/knowledge-category" |
        "/pages/knowledge-company/knowledge-company" |
-       "/pages/knowledge-list/knowledge-list" |
+       "/pages/knowledge-file/knowledge-file" |
        "/pages/maintenance/maintenance" |
        "/pages/personal/personal" |
        "/pages/shop/shop" |

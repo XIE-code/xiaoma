@@ -1,3 +1,17 @@
+/* 第三方库 */
+import { useToast } from 'wot-design-uni'
+/* constant */
+import { SERVER_BASEURL } from '@/common/constant'
+/* img */
+import homeLogo from '@/static/image/home-logo.png'
+/* 提示信息 */
+export const showToast = (message: string) => {
+  const toast = useToast()
+  toast.show({
+    msg: message,
+  })
+}
+
 /**
  * @function px2rpx
  * 1. 设计稿转换px为rpx
@@ -79,4 +93,14 @@ export function convertSnakeToCamel(obj: any): any {
     acc[camelKey] = convertSnakeToCamel(obj[key])
     return acc
   }, {} as any)
+}
+
+/* 获取服务器图片 */
+export const getServerImg = (path: string) => {
+  return path ? `${SERVER_BASEURL}/${path}` : homeLogo
+}
+
+/* 加载服务器图片出错 */
+export const handleLoadImgError = (event) => {
+  event.target.src = homeLogo
 }
