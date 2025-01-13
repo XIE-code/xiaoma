@@ -57,7 +57,7 @@
             size="small"
             custom-class="item-value__btn"
           >
-            主要按钮
+            立即查看
           </wd-button>
         </wd-cell>
       </view>
