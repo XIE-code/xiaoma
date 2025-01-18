@@ -16,12 +16,13 @@
       </view>
     </view>
 
-    <view class="state">
+    <!-- 暂时不展示 -->
+    <!-- <view class="state">
       <view class="box" v-for="item in elevatorList" :key="item.name">
         <text class="box-name">{{ item.name }}</text>
         <text class="box-value">{{ item.value }}</text>
       </view>
-    </view>
+    </view> -->
 
     <view class="certificate">
       <!-- TODO: 静态图片引入 -->

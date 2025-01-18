@@ -1,11 +1,9 @@
 import { CustomRequestOptions } from '@/interceptors/request'
-import { useUserStore } from '@/store/user'
 import { convertSnakeToCamel } from '@/utils/tools'
 
-const userStore = useUserStore()
 export const http = <T>(options: CustomRequestOptions) => {
   // 1. 返回 Promise 对象
-  return new Promise<IResData<T>>((resolve, reject) => {
+  return new Promise<T>((resolve, reject) => {
     console.log('options :>> ', options)
     uni.request({
       ...options,
@@ -16,25 +14,18 @@ export const http = <T>(options: CustomRequestOptions) => {
       timeout: 120000,
       // 响应成功
       success(res) {
-        // 状态码 2xx，参考 axios 的设计
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          // 2.1 提取核心数据 res.data
-          if (res.data.code === '0') {
-            console.log('res.data.msg :>> ', res.data.msg)
-            userStore.clearUserInfo()
-            uni.navigateTo({ url: '/pages/login/login' })
-            reject(res)
-          }
-          /* 格式化data的Key命名 */
-          resolve(convertSnakeToCamel(res.data) as IResData<T>)
-        } else {
-          // 其他错误 -> 根据后端错误信息轻提示
+        const successResult = res.data as IResData<T>
+
+        // 其他错误 -> 根据后端错误信息轻提示
+        if (successResult.code !== '1') {
           !options.hideErrorToast &&
             uni.showToast({
               icon: 'none',
-              title: (res.data as IResData<T>).msg || '请求错误',
+              title: successResult.msg || '请求错误',
             })
-          reject(res)
+        } else {
+          /* 格式化data的Key命名 */
+          resolve(convertSnakeToCamel(successResult.data))
         }
       },
       // 响应失败

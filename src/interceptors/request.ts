@@ -57,6 +57,20 @@ const httpInterceptor = {
       options.header.token = token
     }
   },
+  success(res: UniApp.RequestSuccessCallbackResult) {
+    // 效仿axios
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      const data = res.data as { code: string }
+      if (data.code === '0') {
+        const userStore = useUserStore()
+        userStore.clearUserInfo()
+        uni.navigateTo({ url: '/pages/login/login' })
+        return Promise.reject(res)
+      }
+    }
+
+    return Promise.resolve(res)
+  },
 }
 
 export const requestInterceptor = {

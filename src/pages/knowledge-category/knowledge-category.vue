@@ -95,7 +95,7 @@ onLoad((options) => {
   companyName = options.name
   getPageKnowledgeCategoryList(options.id)
     .then((result) => {
-      categoryList.value = result.data
+      categoryList.value = result
     })
     .catch((err) => {
       console.log('getPageKnowledgeCategoryList err :>> ', err)

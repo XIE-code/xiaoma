@@ -70,7 +70,7 @@ const handleLoginBtn = () => {
     .then((res) => {
       systemStore.resetTabBarIdx()
       userStore.setUserInfo({
-        ...res.data,
+        ...res,
       })
       uni.switchTab({ url: '/pages/index/index' })
     })

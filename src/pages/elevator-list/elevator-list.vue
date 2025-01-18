@@ -68,7 +68,7 @@ import wrapper from '@/layouts/wrapper.vue'
 /* store */
 import { useSystemStore } from '@/store'
 /* service */
-import { ILiftListResponse } from '@/service/elevator'
+import { ILiftListResponse, postLiftList } from '@/service/elevator'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */
@@ -98,7 +98,22 @@ const staticLiftData: ILiftListResponse = {
   serverIp: '::1',
 }
 // 内容区域
-const liftList = reactive<ILiftListResponse[]>([...Array(9)].map(() => staticLiftData))
+const liftList = ref<ILiftListResponse[]>([])
+
+// TODO： 下拉刷新
+postLiftList({
+  village_id: '',
+  lift_name: '',
+  limit: '999',
+  page: '1',
+  // state: '0',
+})
+  .then((result) => {
+    liftList.value = result
+  })
+  .catch((err) => {
+    console.log('postLiftList err :>> ', err)
+  })
 
 /* 根据 is_online 获取颜色、文字 */
 const getItemOnline = (item: ILiftListResponse, type: 'color' | 'text' | 'class' | 'icon') => {
@@ -120,7 +135,7 @@ const getItemOnline = (item: ILiftListResponse, type: 'color' | 'text' | 'class'
 /* 点击电梯信息、跳转电梯详情页 */
 const handleClickItem = (item: ILiftListResponse) => {
   console.log('addElevator :>> click item', item)
-  uni.navigateTo({ url: '/pages/elevator-detail/elevator-detail' })
+  uni.navigateTo({ url: `/pages/elevator-detail/elevator-detail?elevatorId=${item.elevatorId}` })
 }
 </script>
 
@@ -208,7 +223,6 @@ $rpx-92: px2rpx(92);
 
       .item-title {
         height: $rpx-19;
-        font-family: Almarai;
         font-size: 16px;
         font-weight: 700;
         line-height: 120%;

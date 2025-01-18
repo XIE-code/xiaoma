@@ -138,6 +138,14 @@
     {
       "path": "pages/urgent-repair/urgent-repair",
       "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "急修列表"
+      }
+    },
+    {
+      "path": "pages/urgent-repair copy/urgent-repair",
+      "type": "page",
       "layout": "demo",
       "style": {
         "navigationBarTitleText": "急修"

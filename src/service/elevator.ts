@@ -15,25 +15,22 @@ export interface IBreakdownCodeParams {
 
 /* 故障代码响应接口定义 */
 export interface IBreakdownCodeResponse {
-  faultId: string // 故障类型名称
-  child: {
-    devicesId: string // 故障型号ID
-    fId: string // 故障代码ID
-    eCode: string // 故障编码
-    faultId: string // 故障类型ID
-    syn: string // 备注信息
-    solve: string // 解决办法
-    fault: string // 故障描述
-  }
+  devicesId: string // 故障型号ID
+  fId: string // 故障代码ID
+  eCode: string // 故障编码
+  faultId: string // 故障类型ID
+  syn: string // 备注信息
+  solve: string // 解决办法
+  fault: string // 故障描述
 }
 
 /* 电梯列表参数 */
 export interface ILiftListParams {
-  village_id: string // 小区id；可为空
-  lift_name: string // 电梯名字；可为空
+  village_id?: string // 小区id；可为空
+  lift_name?: string // 电梯名字；可为空
   limit: string // 单页展示数量
   page: string // 分页页码
-  state: string // 0:离线 1:在线 2:正常 3:故障
+  state?: string // 0:离线 1:在线 2:正常 3:故障
 }
 
 /* 电梯列表返回值 */
@@ -139,11 +136,11 @@ export interface IKnowledgeDocumentListResponse {
 
 /* 故障代码 */
 export const postBreakdownCode = (params: IBreakdownCodeParams) => {
-  return http.post<IBreakdownCodeResponse>(breakdownCodeApi, params)
+  return http.post<IBreakdownCodeResponse[]>(breakdownCodeApi, params)
 }
 /* 电梯列表 */
 export const postLiftList = (params: ILiftListParams) => {
-  return http.post<ILiftListResponse>(liftListApi, params)
+  return http.post<ILiftListResponse[]>(liftListApi, params)
 }
 
 /* 电梯监控-运行与统计-累加数据 */

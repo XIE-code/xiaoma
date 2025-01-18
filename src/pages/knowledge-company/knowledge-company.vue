@@ -159,7 +159,7 @@ postKnowledgeCategoryList({
   parent_id: 0,
 })
   .then((result) => {
-    const indexBarList = result.data.reduce(
+    const indexBarList = result.reduce(
       (arrList: IIndexList[], current: IKnowledgeCategoryListResponse) => {
         const index = getUpperCaseByName(current.name)
         const hasIndexList = arrList.find((current) => current.index === index)

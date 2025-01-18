@@ -67,6 +67,9 @@
 </template>
 
 <script lang="ts" setup>
+/* 第三方库 */
+// import VConsole from 'vconsole'
+
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
 import empty from '@/components/empty/empty.vue'
@@ -80,6 +83,9 @@ import type {
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY, SERVER_BASEURL } from '@/common/constant'
+
+// const vConsole = new VConsole()
+// console.log('vConsole :>> ', vConsole)
 
 // 导航栏
 function handleClickLeft() {
@@ -99,10 +105,6 @@ const pageObj = ref<IKnowledgeDocumentListParams>({
   page: 1,
 })
 const categoryList = ref<IKnowledgeDocumentListResponse[]>([])
-/* qs */
-const navigatorToDocument = (file: IKnowledgeDocumentListResponse) => {
-  return `/pages/web-viewer/web-viewer?url=${file.filePath}`
-}
 /* 获取知识库二级目录列表 */
 const getPageKnowledgeDocumentList = (item: number) => {
   return postKnowledgeDocumentList(pageObj.value)
@@ -113,7 +115,7 @@ onLoad((options) => {
   pageObj.value.category_id = options.id
   getPageKnowledgeDocumentList(options.id)
     .then((result) => {
-      categoryList.value = result.data
+      categoryList.value = result
       console.log('getPageKnowledgeDocumentList :>> ', result)
     })
     .catch((err) => {
