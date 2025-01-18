@@ -41,12 +41,12 @@
         <view class="notification-container">
           <view class="fix-elevator-number">
             <text class="text">今日维保电梯数量</text>
-            <text class="number">100</text>
+            <text class="number">{{ count }}</text>
           </view>
           <view class="separator"></view>
           <view class="breakdown-elevator-number">
             <text class="text">故障电梯数量</text>
-            <text class="number">10</text>
+            <text class="number">{{ faultCount }}</text>
           </view>
         </view>
       </view>
@@ -96,23 +96,13 @@
       <view class="schedule">
         <text class="schedule-title">今日维保计划</text>
         <view class="schedule-item" :key="item.id" v-for="item in todoList">
-          <view class="item-header">
-            <image
-              :src="getItemInfoByStatus('svg', item.status)"
-              mode="aspectFit"
-              class="item-svg"
-            />
-            <view class="item-header-right">
-              <view class="item-time">{{ item.time }}</view>
-              <view :class="['item-status', getItemInfoByStatus('color', item.status)]">
-                {{ getItemInfoByStatus('text', item.status) }}
-              </view>
-            </view>
-          </view>
-          <image :src="dashedSvg" class="item-divider" mode="scaleToFill" />
-          <view class="item-content">
-            <view class="item-elevator-name">电梯名称：{{ item.name }}</view>
-            <view class="item-elevator-address">详细地址：{{ item.address }}</view>
+          <view class="item-elevator-name">电梯名称：{{ item.eleName }}</view>
+          <view class="item-elevator-name">保养类型：{{ item.maintType }}</view>
+          <view class="item-elevator-name">
+            <text>保养状态：</text>
+            <text :class="[getItemInfoByMaintenanceType('color', item.isMaintain)]">
+              {{ getItemInfoByMaintenanceType('text', item.isMaintain) }}
+            </text>
           </view>
         </view>
       </view>
@@ -125,6 +115,7 @@
 /* components */
 import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
 import Wrapper from '@/layouts/wrapper.vue'
+import dayjs from 'dayjs'
 /* store */
 import { useSystemStore } from '@/store'
 /* tools */
@@ -135,14 +126,11 @@ import imgCarouselFirst from '../../static/image/image1.png'
 import imgCarouselSecond from '../../static/image/image2.png'
 /* svg */
 import addElevatorSvg from '@/static/svg/add-elevator.svg'
-import dashedSvg from '@/static/svg/dashed.svg'
 import filesSvg from '@/static/svg/files.svg'
 import knowledgeSvg from '@/static/svg/knowledge.svg'
 import monitorSvg from '@/static/svg/monitor.svg'
-import notificationErrorSvg from '@/static/svg/notification-error.svg'
-import notificationPrimarySvg from '@/static/svg/notification-primary.svg'
-import notificationSecondarySvg from '@/static/svg/notification-secondary.svg'
 import notificationSvg from '@/static/svg/notification.svg'
+import { IMaintenanceItem, isMaintainType, postMaintenanceList } from '@/service/elevator'
 
 defineOptions({
   name: 'Home',
@@ -196,73 +184,39 @@ const elevatorList = reactive([
     path: '/pages/add-elevator/add-elevator',
   },
 ])
-// 点击事件
-function handleItemClick(event: Event) {
-  console.log('event :>> ', event)
-}
 
-// schedule
-interface ITodoItem {
-  id: number
-  name: string
-  address: string
-  time: string
-  status: 'timeout' | 'current' | 'wait'
-}
+const count = ref(0)
+const faultCount = ref(0)
+const todoList = ref<IMaintenanceItem[]>([])
 
-const todoList = reactive<ITodoItem[]>([
-  {
-    id: 1,
-    time: '10：00-10：40',
-    status: 'timeout',
-    name: '园洲镇丰园酒店2号',
-    address: '广东省惠州市博罗县中心北路与文广路交叉口北200米',
-  },
-  {
-    id: 2,
-    time: '11：00-11：40',
-    status: 'current',
-    name: '园洲镇丰园酒店2号',
-    address: '广东省惠州市博罗县中心北路与文广路交叉口北200米',
-  },
-  {
-    id: 3,
-    time: '13：00-13：40',
-    status: 'wait',
-    name: '园洲镇丰园酒店2号',
-    address: '广东省惠州市博罗县中心北路与文广路交叉口北200米',
-  },
-])
+/* TODO： 下拉加载 */
+postMaintenanceList({
+  time: dayjs().format('YYYY-MM-DD'),
+  limit: 99,
+  page: 1,
+})
+  .then((result) => {
+    todoList.value = result.list
+    count.value = result.count
+  })
+  .catch((err) => {
+    console.log('postMaintenanceList err :>> ', err)
+  })
+
+/* maintenanceType */
+type itemType = 'color' | 'text'
+// 维保状态 1：待维保， 2：已维保 ：3：进行中：4：逾期签到
+const textArray = ['待维保', '已维保', '进行中', '逾期签到']
+const maintenanceColorArray = ['wait', 'finish', 'current', 'timeout']
 
 /* 根据item的svg状态返回svg、颜色、文字 */
-type itemType = 'svg' | 'color' | 'text'
-type itemStatus = 'timeout' | 'current' | 'wait'
-
-/* status-svg */
-const svgMap = {
-  timeout: notificationErrorSvg,
-  current: notificationPrimarySvg,
-  wait: notificationSecondarySvg,
-}
-/* status-文字 */
-const textMap = {
-  timeout: '已超时',
-  current: '进行中',
-  wait: '待处理',
-}
-
-/* 根据item的svg状态返回svg、颜色、文字 */
-const getItemInfoByStatus = (type: itemType, status: itemStatus) => {
-  if (type === 'svg') {
-    return svgMap[status]
-  }
-
+const getItemInfoByMaintenanceType = (type: itemType, isMaintain: isMaintainType) => {
   if (type === 'color') {
-    return `font-color-${status}`
+    return `font-${maintenanceColorArray[isMaintain - 1]}`
   }
 
   if (type === 'text') {
-    return textMap[status]
+    return textArray[isMaintain - 1]
   }
 }
 </script>
@@ -430,18 +384,6 @@ $color-text-blue: rgb(28, 106, 228);
     align-items: flex-start;
     margin-top: $rpx-16;
 
-    .font-color-timeout {
-      color: $color-svg-timeout;
-    }
-
-    .font-color-current {
-      color: $color-primary;
-    }
-
-    .font-color-wait {
-      color: $color-svg-wait;
-    }
-
     .schedule-title {
       @extend %font-size-xl;
       line-height: $rpx-24;
@@ -450,56 +392,27 @@ $color-text-blue: rgb(28, 106, 228);
 
     .schedule-item {
       @extend %flex-column;
-      gap: $rpx-12;
-
+      gap: $rpx-4;
+      align-items: flex-start;
       width: 100%;
       padding: $rpx-12;
-
+      @extend %font-size-base;
+      font-weight: 600;
       background: $color-white;
       border: $rpx-1 solid $color-border;
       border-radius: $rpx-2;
 
-      .item-header {
-        @extend %flex-between;
-        height: $rpx-50;
-        .item-svg {
-          width: $rpx-45;
-          height: $rpx-45;
-        }
-        .item-header-right {
-          @extend %flex-column;
-          gap: $rpx-4;
-          align-items: flex-end;
-
-          width: 50%;
-          height: $rpx-50;
-
-          .item-time {
-            height: $rpx-24;
-            @extend %font-size-xl;
-            line-height: $rpx-24;
-            color: $color-text-blue;
-          }
-
-          .item-status {
-            height: $rpx-22;
-            @extend %font-size-base;
-            line-height: $rpx-22;
-          }
-        }
+      .font-wait {
+        color: $color-secondary;
       }
-
-      .item-divider {
-        position: relative;
-        width: 100%;
-        height: $rpx-1-5;
+      .font-finish {
+        color: $color-primary;
       }
-
-      .item-content {
-        @extend %flex-column;
-        gap: $rpx-4;
-        align-items: flex-start;
-        @extend %font-size-base;
+      .font-current {
+        color: $color-green;
+      }
+      .font-timeout {
+        color: $color-bg-red;
       }
     }
   }
