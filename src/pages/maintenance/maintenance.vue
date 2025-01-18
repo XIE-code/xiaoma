@@ -29,17 +29,15 @@
 
     <view class="content">
       <view class="scroll-box">
-        <view
-          :class="`card-item ${getItemBorderColor(item.status)}`"
-          v-for="(item, idx) in maintenanceAddress"
-          :key="idx"
-        >
-          <view class="item-time">
-            <image :src="getItemSvg(item.status)" class="item-time-svg" mode="scaleToFill" />
-            <text class="item-time-text">{{ item.time }}</text>
+        <view class="card-item" v-for="(item, idx) in maintenanceList" :key="idx">
+          <view class="item-title">{{ item.eleName }}</view>
+          <view class="item-maintenance">保养类型：{{ item.maintType }}</view>
+          <view class="item-maintenance">
+            保养状态：
+            <text :class="getItemInfoByMaintenanceType('color', item.isMaintain)">
+              {{ getItemInfoByMaintenanceType('text', item.isMaintain) }}
+            </text>
           </view>
-          <view class="item-title">{{ item.title }}</view>
-          <view class="item-maintenance">保养类型：{{ item.maintenanceType }}</view>
           <view class="item-address">
             <image class="item-address-svg" :src="addressSvg" mode="scaleToFill"></image>
             <text class="item-address-text">{{ item.address }}</text>
@@ -56,16 +54,14 @@
 /* component */
 import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
 import wrapper from '@/layouts/wrapper.vue'
-
+import dayjs from 'dayjs'
 // svg
-import cubeRedSvg from '@/static/svg/cube-red.svg'
-import cubeGreenSvg from '@/static/svg/cube-green.svg'
-import cubeBlueSvg from '@/static/svg/cube-blue.svg'
 import addressSvg from '@/static/svg/address.svg'
 
 /* tools */
 import { getWeekDates } from '@/utils/tools'
 import type { IWeekDate } from '@/utils/tools'
+import { IMaintenanceItem, isMaintainType, postMaintenanceList } from '@/service/elevator'
 
 onLoad(() => {
   uni.hideTabBar()
@@ -74,13 +70,14 @@ onLoad(() => {
 // week calendar
 const calendar = reactive<IWeekDate[]>(getWeekDates())
 const curDayIdx = ref<number>(new Date().getDay() - 1)
-const currentDay = computed(() => {
-  return calendar[curDayIdx.value]
-})
+const currentDay = computed(() => calendar[curDayIdx.value])
 
 /* 更换当前日期 */
 const handleClickDate = (index: number) => {
   curDayIdx.value = index
+  getMaintenanceList(
+    currentDay.value.year + '-' + currentDay.value.month + '-' + currentDay.value.day,
+  )
 }
 
 /* 获取card头部时间 */
@@ -89,50 +86,40 @@ const getCardHeadTime = () => {
   return `${year}/${month}/${day} ${week}`
 }
 
-// 保养地址
-interface IMaintenanceAddress {
-  status: string
-  time: string
-  title: string
-  maintenanceType: string
-  address: string
-}
-const maintenanceAddress = reactive<IMaintenanceAddress[]>([
-  {
-    status: '已完成',
-    time: '10:00 - 10:30',
-    title: '博罗县园洲镇均富房地产中介服务部',
-    maintenanceType: '季度保养',
-    address: '广东省惠州市博罗县中心北路与文广路交叉口北200米',
-  },
-  {
-    status: '进行中',
-    time: '11:30 - 12:30',
-    title: '园洲花园10栋客梯',
-    maintenanceType: '半月保养',
-    address: '广东省惠州市博罗县中心北路与文广路交叉口北200米',
-  },
-  {
-    status: '等待',
-    time: '13:00  - 13:30',
-    title: '园洲镇丰园酒店2号',
-    maintenanceType: '半月保养',
-    address: '广东省惠州市博罗县中心北路与文广路交叉口北200米',
-  },
-  {
-    status: '已完成',
-    time: '13:00  - 13:30',
-    title: '园洲镇丰园酒店2号',
-    maintenanceType: '半月保养',
-    address: '广东省惠州市博罗县中心北路与文广路交叉口北200米',
-  },
-])
+const maintenanceList = ref<IMaintenanceItem[]>([])
 
-const getItemSvg = (status: string) => {
-  return status === '已完成' ? cubeRedSvg : status === '进行中' ? cubeBlueSvg : cubeGreenSvg
+const getMaintenanceList = (dateString: string) => {
+  /* TODO： 下拉加载 */
+  postMaintenanceList({
+    time: dateString,
+    limit: 99,
+    page: 1,
+  })
+    .then((result) => {
+      maintenanceList.value = result.list
+    })
+    .catch((err) => {
+      console.log('postMaintenanceList err :>> ', err)
+    })
 }
-const getItemBorderColor = (status: string) => {
-  return status === '已完成' ? 'color-red' : status === '进行中' ? 'color-cyan' : 'color-blue'
+
+onLoad(() => {
+  getMaintenanceList(dayjs().format('YYYY-MM-DD'))
+})
+
+/* 根据item的状态返回颜色、文字 */
+type itemType = 'color' | 'text'
+const maintenanceColorArray = ['wait', 'finish', 'current', 'timeout']
+const maintenanceTypeArray = ['待维保', '已维保', '进行中', '逾期签到']
+/* 根据item的状态返回颜色、文字 */
+const getItemInfoByMaintenanceType = (type: itemType, isMaintain: isMaintainType) => {
+  if (type === 'color') {
+    return `font-${maintenanceColorArray[isMaintain - 1]}`
+  }
+
+  if (type === 'text') {
+    return maintenanceTypeArray[isMaintain - 1]
+  }
 }
 </script>
 
@@ -149,18 +136,26 @@ $rpx-38: px2rpx(38);
 $rpx-58: px2rpx(58);
 $rpx-64: px2rpx(64);
 
-$rpx-129: px2rpx(129);
-
+$rpx-130: px2rpx(130);
+$color-maintenance-title: rgb(51, 51, 51);
+$color-day-border: rgb(248, 237, 226);
+$color-date: rgb(171, 171, 171);
+$color-date-num: rgb(121, 121, 121);
+$color-date-select-bg: rgb(121, 121, 121);
+$color-date-select-border: rgb(169, 139, 152);
+$color-card-item-border: rgb(137, 175, 255);
+$color-card-item-box-shadow: rgba(28, 37, 44, 0.05);
+$color-card-item-maintenance: rgb(88, 90, 102);
+$color-address: rgb(20, 21, 17);
 .time-header {
   flex-shrink: 0;
   .page-title {
     @extend %font-size-xl;
     height: $rpx-32;
     margin-left: $rpx-9;
-    font-family: Almarai; //TODO: 字体
     font-weight: 700;
     line-height: 1.6;
-    color: rgb(51, 51, 51);
+    color: $color-maintenance-title;
   }
   // 周日历
   .week {
@@ -172,38 +167,36 @@ $rpx-129: px2rpx(129);
 
     .day {
       @extend %flex-column;
+      align-items: center;
       width: calc((100% - ($rpx-12 * 6)) / 7);
       height: inherit;
       padding: $rpx-4 $rpx-8;
-      border: $rpx-1 solid rgb(248, 237, 226);
+      border: $rpx-1 solid $color-day-border;
       border-radius: $rpx-8;
       .day-date {
         width: $rpx-28;
         height: $rpx-23;
 
-        // font-family: Lato; //TODO: app端字体缺失？
-        font-size: $rpx-14;
-
+        @extend %font-size-sm;
         font-weight: 300;
         line-height: 160%;
-        color: rgb(171, 171, 171);
+
+        color: $color-date;
         text-align: center;
-        letter-spacing: 0%;
       }
+
       .day-num {
-        font-family: Lato;
-        font-size: 16px;
+        @extend %font-size;
         font-weight: 500;
         line-height: 160%;
-        color: rgb(121, 121, 121);
+        color: $color-date-num;
         text-align: center;
-
-        letter-spacing: 0%;
       }
     }
+
     .day-selected {
-      background: rgb(248, 237, 226);
-      border-color: rgb(169, 139, 152);
+      background: $color-day-border;
+      border-color: $color-date-select-border;
     }
   }
   // card
@@ -222,17 +215,14 @@ $rpx-129: px2rpx(129);
       width: $rpx-8;
       height: $rpx-8;
       margin-left: $rpx-9;
-      background: rgb(169, 139, 152);
+      background: $color-date-select-border;
       border-radius: 50%;
     }
     .head-title {
-      font-family: Lato;
-      font-size: 16px;
+      @extend %font-size-base;
       font-weight: 500;
       line-height: 160%;
       color: rgb(236, 236, 236);
-      text-align: left;
-      letter-spacing: 0%;
     }
   }
 }
@@ -250,79 +240,63 @@ $rpx-129: px2rpx(129);
     width: 100%;
     padding: $rpx-20 $rpx-30;
     overflow: scroll;
-    .color-red {
-      border-color: rgb(211, 47, 47);
-    }
-    .color-cyan {
-      border-color: rgb(38, 191, 191);
-    }
-    .color-blue {
-      border-color: rgb(137, 175, 255);
-    }
 
     .card-item {
       @extend %flex-column;
       gap: $rpx-6;
       justify-content: flex-start;
-      height: $rpx-129;
+      height: $rpx-130;
       padding: $rpx-12 $rpx-16 $rpx-12 $rpx-14;
 
       background: $color-white;
+      border-color: $color-card-item-border;
       border-style: solid;
       // border: $rpx-1 solid rgb(211, 47, 47);
       border-width: $rpx-1 $rpx-1 $rpx-1 $rpx-3;
       // border-radius: $rpx-12;
       border-radius: $rpx-14 $rpx-12 $rpx-12 $rpx-14; //TODO:待优化
       /* Small Drop */
-      box-shadow: 0px $rpx-4 $rpx-8 0px rgba(28, 37, 44, 0.05);
+      box-shadow: 0px $rpx-4 $rpx-8 0px $color-card-item-box-shadow;
 
-      .item-time {
-        @extend %flex-center;
-        gap: $rpx-12;
-        justify-content: flex-start;
-        height: $rpx-18;
-        .item-time-svg {
-          width: $rpx-16;
-          height: $rpx-16;
-        }
-        .item-time-text {
-          font-family: Lato;
-          font-size: 14px;
-          font-weight: 400;
-          line-height: 140%;
-          color: rgba(154, 154, 154, 0.9);
-          text-align: left;
-          letter-spacing: 0px;
-        }
-      }
       .item-title {
-        height: $rpx-19;
-        font-family: Almarai;
-        font-size: 16px;
+        height: $rpx-20;
+        @extend %font-size-base;
         font-weight: 700;
-        line-height: 120%;
-        color: rgb(0, 0, 0);
-        text-align: left;
-        letter-spacing: 0px;
+        line-height: 1.2;
+        @extend %ellipsis;
+        color: $color-black;
       }
+
       .item-maintenance {
         display: flex;
         align-items: flex-end;
         justify-content: flex-start;
         height: $rpx-32;
-        font-family: Lato;
-        font-size: $rpx-12;
-        font-weight: 400;
-        line-height: 140%;
-        color: rgb(88, 90, 102);
-        text-align: left;
-        letter-spacing: 0px;
+        @extend %font-size-xs;
+        line-height: 1.4;
+
+        color: $color-card-item-maintenance;
       }
+
+      .font-wait {
+        color: $color-secondary;
+      }
+      .font-finish {
+        color: $color-primary;
+      }
+      .font-current {
+        color: $color-green;
+      }
+      .font-timeout {
+        color: $color-bg-red;
+      }
+
       .item-address {
         @extend %flex-center;
         gap: $rpx-10;
         justify-content: flex-start;
         height: $rpx-23;
+
         .item-address-svg {
           width: $rpx-18;
           height: $rpx-18;
@@ -330,10 +304,9 @@ $rpx-129: px2rpx(129);
         .item-address-text {
           @extend %ellipsis;
           @extend %font-size;
-          font-family: 阿里巴巴普惠体;
           font-size: $rpx-11;
           line-height: $rpx-20;
-          color: rgb(20, 21, 17);
+          color: $color-address;
         }
       }
     }

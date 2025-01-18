@@ -206,7 +206,7 @@ postMaintenanceList({
 /* maintenanceType */
 type itemType = 'color' | 'text'
 // 维保状态 1：待维保， 2：已维保 ：3：进行中：4：逾期签到
-const textArray = ['待维保', '已维保', '进行中', '逾期签到']
+const maintenanceTypeArray = ['待维保', '已维保', '进行中', '逾期签到']
 const maintenanceColorArray = ['wait', 'finish', 'current', 'timeout']
 
 /* 根据item的svg状态返回svg、颜色、文字 */
@@ -216,16 +216,12 @@ const getItemInfoByMaintenanceType = (type: itemType, isMaintain: isMaintainType
   }
 
   if (type === 'text') {
-    return textArray[isMaintain - 1]
+    return maintenanceTypeArray[isMaintain - 1]
   }
 }
 </script>
 
 <style lang="scss" scoped>
-$rpx-1-5: px2rpx(1.5);
-$rpx-19: px2rpx(19);
-$rpx-22: px2rpx(22);
-
 $rpx-45: px2rpx(45);
 $rpx-55: px2rpx(55);
 $rpx-72: px2rpx(72);
