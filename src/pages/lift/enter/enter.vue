@@ -2,7 +2,7 @@
 {
   layout: 'default',
   style: {
-    navigationBarTitleText: '增加电梯',
+    navigationBarTitleText: '电梯信息录入',
   },
 }
 </route>

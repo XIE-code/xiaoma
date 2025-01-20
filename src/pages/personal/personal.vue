@@ -75,6 +75,7 @@ import archiveSVG from '@/static/svg/archive.svg'
 import changePwdSVG from '@/static/svg/change-password.svg'
 /* img */
 import avatarImg from '@/static/image/person-avatar.png'
+import { liftListPage, loginPage } from '@/common/pages'
 defineOptions({
   name: 'personal',
 })
@@ -126,7 +127,7 @@ const routerList = reactive<IRouterItem[]>([
     icon: archiveSVG,
     label: '档案资料',
     value: '',
-    path: '/pages/elevator-list/elevator-list',
+    path: liftListPage,
   },
   {
     icon: changePwdSVG,
@@ -150,7 +151,7 @@ function handleClickRouteItem(item: IRouterItem) {
 
 const systemStore = useSystemStore()
 const handleLoginOut = () => {
-  uni.navigateTo({ url: '/pages/login/login' })
+  uni.navigateTo({ url: loginPage })
   systemStore.resetTabBarIdx()
 }
 </script>

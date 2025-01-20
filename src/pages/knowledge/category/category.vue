@@ -2,7 +2,7 @@
 {
   layout: 'default',
   style: {
-    navigationBarTitleText: '电梯知识库次级目录',
+    navigationBarTitleText: '电梯知识库文件夹目录',
   },
 }
 </route>
@@ -70,6 +70,7 @@ import { px2rpx } from '@/utils/tools'
 import { COLOR_SECONDARY } from '@/common/constant'
 /* img */
 import documentImg from '@/static/image/document.png'
+import { knowledgeFilePage } from '@/common/pages'
 
 // 导航栏
 function handleClickLeft() {
@@ -82,7 +83,7 @@ let companyName = ''
 const categoryList = ref<IKnowledgeCategoryListResponse[]>([])
 /* qs */
 const navigatorToDocument = (category: IKnowledgeCategoryListResponse) => {
-  return `/pages/knowledge-file/knowledge-file?id=${category.id}&name=${category.name}&companyName=${companyName}`
+  return `${knowledgeFilePage}?id=${category.id}&name=${category.name}&companyName=${companyName}`
 }
 /* 获取知识库二级目录列表 */
 const getPageKnowledgeCategoryList = (item: number) => {

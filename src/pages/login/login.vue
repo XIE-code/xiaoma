@@ -53,6 +53,7 @@ import { useUserStore, useSystemStore } from '@/store'
 import { postLogin } from '@/service/login'
 import { md5 } from '@/utils/md5'
 import { showToast } from '@/utils/tools'
+import { indexPage } from '@/common/pages'
 // import 'weconsole/dist/npm/main/init'
 
 // 登录框
@@ -61,19 +62,21 @@ const loginForm = reactive({
   password: '',
 })
 
+// todo: 测试
+// loginForm.account = 'test'
+// loginForm.password = '123456'
+
 /* userStore */
 const userStore = useUserStore()
 const systemStore = useSystemStore()
 const handleLoginBtn = () => {
   if (!loginForm.account || !loginForm.password) {
-    const emptyStr =
-      !loginForm.account && !loginForm.password
-        ? '账号和密码'
-        : !loginForm.account
-          ? '账号'
-          : '密码'
-    return uni.showToast({ title: `请输入${emptyStr}`, icon: 'none' })
-    // return
+    const emptyFields = []
+    !loginForm.account && emptyFields.push('账号')
+    !loginForm.password && emptyFields.push('密码')
+
+    uni.showToast({ title: `请输入${emptyFields.join('和')}`, icon: 'none' })
+    return
   }
 
   postLogin({
@@ -85,7 +88,7 @@ const handleLoginBtn = () => {
       userStore.setUserInfo({
         ...res,
       })
-      uni.switchTab({ url: '/pages/index/index' })
+      uni.switchTab({ url: indexPage })
     })
     .catch((err) => {
       uni.showToast({

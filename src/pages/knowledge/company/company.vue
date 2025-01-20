@@ -109,12 +109,13 @@ import type { IKnowledgeCategoryListResponse } from '@/service/elevator'
 import { getServerImg, px2rpx, handleLoadImgError } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
+import { indexPage, knowledgeCategoryPage } from '@/common/pages'
 
 const systemStore = useSystemStore()
 // 导航栏
 function handleClickLeft() {
   systemStore.resetTabBarIdx()
-  uni.switchTab({ url: '/pages/index/index' })
+  uni.switchTab({ url: indexPage })
 }
 
 function handleSearch() {
@@ -123,7 +124,7 @@ function handleSearch() {
 
 /* TODO: 提取公共模块 */
 const navigatorToSecondaryCategory = (company: IKnowledgeCategoryListResponse) => {
-  return `/pages/knowledge-category/knowledge-category?id=${company.id}&name=${company.name}`
+  return `${knowledgeCategoryPage}?id=${company.id}&name=${company.name}`
 }
 
 // 内容区域

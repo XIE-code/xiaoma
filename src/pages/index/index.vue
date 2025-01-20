@@ -133,6 +133,7 @@ import knowledgeSvg from '@/static/svg/knowledge.svg'
 import monitorSvg from '@/static/svg/monitor.svg'
 import notificationSvg from '@/static/svg/notification.svg'
 import { IMaintenanceItem, isMaintainType, postMaintenanceList } from '@/service/elevator'
+import { knowledgeCompanyPage, liftEnterPage, liftListPage, shopPage } from '@/common/pages'
 
 defineOptions({
   name: 'Home',
@@ -158,7 +159,7 @@ const handleSwiperItemClick = (params) => {
     urlParams = '/columnGoods/goods_list/index?id=39&title=整梯销售'
   }
 
-  uni.navigateTo({ url: `/pages/shop/shop?urlParams=${urlParams}` })
+  uni.navigateTo({ url: `${shopPage}?urlParams=${urlParams}` })
 }
 
 // 电梯添加、档案资料、电梯监控
@@ -173,19 +174,19 @@ const elevatorList = reactive([
     id: 2,
     name: '档案资料',
     url: filesSvg,
-    path: '/pages/elevator-list/elevator-list',
+    path: liftListPage,
   },
   {
     id: 3,
     name: '电梯知识库',
     url: knowledgeSvg,
-    path: '/pages/knowledge-company/knowledge-company',
+    path: knowledgeCompanyPage,
   },
   {
     id: 4,
     name: '添加电梯',
     url: addElevatorSvg,
-    path: '/pages/add-elevator/add-elevator',
+    path: liftEnterPage,
   },
 ])
 

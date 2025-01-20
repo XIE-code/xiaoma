@@ -6,17 +6,17 @@
 interface NavigateToOptions {
   url: "/pages/login/login" |
        "/pages/index/index" |
-       "/pages/add-elevator/add-elevator" |
-       "/pages/elevator-detail/elevator-detail" |
-       "/pages/elevator-list/elevator-list" |
-       "/pages/knowledge-category/knowledge-category" |
-       "/pages/knowledge-company/knowledge-company" |
-       "/pages/knowledge-file/knowledge-file" |
        "/pages/maintenance/maintenance" |
        "/pages/personal/personal" |
        "/pages/shop/shop" |
+       "/pages/urgent-repair/urgent-repair copy" |
        "/pages/urgent-repair/urgent-repair" |
-       "/pages/urgent-repair copy/urgent-repair";
+       "/pages/knowledge/category/category" |
+       "/pages/knowledge/company/company" |
+       "/pages/knowledge/file/file" |
+       "/pages/lift/detail/detail" |
+       "/pages/lift/enter/enter" |
+       "/pages/lift/list/list";
 }
 interface RedirectToOptions extends NavigateToOptions {}
 

@@ -2,7 +2,7 @@
 {
   layout: 'default',
   style: {
-    navigationBarTitleText: '急修列表',
+    navigationBarTitleText: '电梯列表',
   },
 }
 </route>
@@ -11,7 +11,13 @@
   <wrapper paddingType="top" :backgroundColor="COLOR_SECONDARY">
     <view class="header">
       <view class="header-nav">
-        <view class="title">急修列表</view>
+        <wd-icon
+          name="arrow-left"
+          @click="handleClickLeft"
+          :size="px2rpx(24)"
+          color="white"
+        ></wd-icon>
+        <view class="title">电梯列表</view>
       </view>
       <view class="search-bar">
         <input
@@ -54,13 +60,10 @@
       </view>
     </view>
   </wrapper>
-  <xm-tabbar></xm-tabbar>
 </template>
 
 <script lang="ts" setup>
 /* components */
-import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
-
 import wrapper from '@/layouts/wrapper.vue'
 /* store */
 import { useSystemStore } from '@/store'
@@ -70,10 +73,15 @@ import { ILiftListResponse, postLiftList } from '@/service/elevator'
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
-import { liftListPage } from '@/common/pages'
+import { indexPage, liftDetailPage } from '@/common/pages'
 
 const systemStore = useSystemStore()
 const { capsule } = systemStore.systemInfo
+// 导航栏
+function handleClickLeft() {
+  systemStore.resetTabBarIdx()
+  uni.switchTab({ url: indexPage })
+}
 
 function handleSearch() {
   console.log('触发搜索事件 :>> ')
@@ -94,19 +102,19 @@ const staticLiftData: ILiftListResponse = {
 const liftList = ref<ILiftListResponse[]>([])
 
 // TODO： 下拉刷新
-// postLiftList({
-//   village_id: '',
-//   lift_name: '',
-//   limit: '999',
-//   page: '1',
-//   // state: '0',
-// })
-//   .then((result) => {
-//     liftList.value = result
-//   })
-//   .catch((err) => {
-//     console.log('postLiftList err :>> ', err)
-//   })
+postLiftList({
+  village_id: '',
+  lift_name: '',
+  limit: '999',
+  page: '1',
+  // state: '0',
+})
+  .then((result) => {
+    liftList.value = result
+  })
+  .catch((err) => {
+    console.log('postLiftList err :>> ', err)
+  })
 
 /* 根据 is_online 获取颜色、文字 */
 const getItemOnline = (item: ILiftListResponse, type: 'color' | 'text' | 'class' | 'icon') => {
@@ -128,7 +136,7 @@ const getItemOnline = (item: ILiftListResponse, type: 'color' | 'text' | 'class'
 /* 点击电梯信息、跳转电梯详情页 */
 const handleClickItem = (item: ILiftListResponse) => {
   console.log('addElevator :>> click item', item)
-  uni.navigateTo({ url: `${liftListPage}?elevatorId=${item.elevatorId}` })
+  uni.navigateTo({ url: `${liftDetailPage}?elevatorId=${item.elevatorId}` })
 }
 </script>
 
@@ -216,7 +224,6 @@ $rpx-92: px2rpx(92);
 
       .item-title {
         height: $rpx-19;
-        font-family: Almarai;
         font-size: 16px;
         font-weight: 700;
         line-height: 120%;

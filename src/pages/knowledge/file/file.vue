@@ -2,7 +2,7 @@
 {
   layout: 'default',
   style: {
-    navigationBarTitleText: '电梯知识库次级目录',
+    navigationBarTitleText: '电梯知识库文件目录',
   },
 }
 </route>

@@ -1,0 +1,12 @@
+export const loginPage = '/pages/login/login' // 登录
+export const indexPage = '/pages/index/index' // 首页
+export const maintenancePage = '/pages/maintenance/maintenance' // 维保
+export const urgentRepairPage = '/pages/urgent-repair/urgent-repair' // 急修
+export const personalPage = '/pages/personal/personal' // 我的
+export const shopPage = '/pages/shop/shop' // 小马商城
+export const knowledgeCategoryPage = '/pages/knowledge/category/category' // 知识分类
+export const knowledgeCompanyPage = '/pages/knowledge/company/company' // 知识公司
+export const knowledgeFilePage = '/pages/knowledge/file/file' // 知识文件
+export const liftDetailPage = '/pages/lift/detail/detail' // 电梯详情
+export const liftEnterPage = '/pages/lift/enter/enter' // 电梯进入
+export const liftListPage = '/pages/lift/list/list' // 电梯列表

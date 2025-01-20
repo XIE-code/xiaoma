@@ -23,6 +23,7 @@ import urgentRepairSvg from '@/static/svg/urgent-repair.svg'
 import urgentRepairSelectSvg from '@/static/svg/urgent-repair-select.svg'
 import personSvg from '@/static/svg/person.svg'
 import personSelectSvg from '@/static/svg/person-select.svg'
+import { indexPage, maintenancePage, personalPage, urgentRepairPage } from '@/common/pages'
 
 const systemStore = useSystemStore()
 const systemInfo = systemStore.systemInfo
@@ -35,19 +36,19 @@ const tabBarIdx = computed(() => systemInfo.tabBarIdx)
 
 const tabBars = [
   // 示例数据
-  { idx: 0, svg: homeSvg, selectSvg: homeSelectSvg, path: '/pages/index/index', text: '首页' },
+  { idx: 0, svg: homeSvg, selectSvg: homeSelectSvg, path: indexPage, text: '首页' },
   {
     idx: 1,
     svg: maintenanceSvg,
     selectSvg: maintenanceSelectSvg,
-    path: '/pages/maintenance/maintenance',
+    path: maintenancePage,
     text: '保养',
   },
   {
     idx: 2,
     svg: urgentRepairSvg,
     selectSvg: urgentRepairSelectSvg,
-    path: '/pages/urgent-repair/urgent-repair',
+    path: urgentRepairPage,
     text: '急修',
   },
 
@@ -55,7 +56,7 @@ const tabBars = [
     idx: 3,
     svg: personSvg,
     selectSvg: personSelectSvg,
-    path: '/pages/personal/personal',
+    path: personalPage,
     text: '个人',
   },
 ]

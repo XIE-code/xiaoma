@@ -66,54 +66,6 @@
       }
     },
     {
-      "path": "pages/add-elevator/add-elevator",
-      "type": "page",
-      "layout": "default",
-      "style": {
-        "navigationBarTitleText": "增加电梯"
-      }
-    },
-    {
-      "path": "pages/elevator-detail/elevator-detail",
-      "type": "page",
-      "layout": "default",
-      "style": {
-        "navigationBarTitleText": "电梯详情"
-      }
-    },
-    {
-      "path": "pages/elevator-list/elevator-list",
-      "type": "page",
-      "layout": "default",
-      "style": {
-        "navigationBarTitleText": "电梯列表"
-      }
-    },
-    {
-      "path": "pages/knowledge-category/knowledge-category",
-      "type": "page",
-      "layout": "default",
-      "style": {
-        "navigationBarTitleText": "电梯知识库次级目录"
-      }
-    },
-    {
-      "path": "pages/knowledge-company/knowledge-company",
-      "type": "page",
-      "layout": "default",
-      "style": {
-        "navigationBarTitleText": "电梯知识库"
-      }
-    },
-    {
-      "path": "pages/knowledge-file/knowledge-file",
-      "type": "page",
-      "layout": "default",
-      "style": {
-        "navigationBarTitleText": "电梯知识库次级目录"
-      }
-    },
-    {
       "path": "pages/maintenance/maintenance",
       "type": "page",
       "style": {
@@ -136,6 +88,14 @@
       }
     },
     {
+      "path": "pages/urgent-repair/urgent-repair copy",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "急修列表"
+      }
+    },
+    {
       "path": "pages/urgent-repair/urgent-repair",
       "type": "page",
       "layout": "default",
@@ -144,11 +104,51 @@
       }
     },
     {
-      "path": "pages/urgent-repair copy/urgent-repair",
+      "path": "pages/knowledge/category/category",
       "type": "page",
-      "layout": "demo",
+      "layout": "default",
       "style": {
-        "navigationBarTitleText": "急修"
+        "navigationBarTitleText": "电梯知识库文件夹目录"
+      }
+    },
+    {
+      "path": "pages/knowledge/company/company",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "电梯知识库"
+      }
+    },
+    {
+      "path": "pages/knowledge/file/file",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "电梯知识库文件目录"
+      }
+    },
+    {
+      "path": "pages/lift/detail/detail",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "电梯详情"
+      }
+    },
+    {
+      "path": "pages/lift/enter/enter",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "电梯信息录入"
+      }
+    },
+    {
+      "path": "pages/lift/list/list",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "电梯列表"
       }
     }
   ],
