@@ -8,9 +8,14 @@
 </route>
 
 <template>
-  <web-view src="https://shop.sharemarttech.com/pages/index/index"></web-view>
+  <web-view :src="webViewUrl"></web-view>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const webViewUrl = ref('https://shop.sharemarttech.com/pages')
+onLoad((options) => {
+  webViewUrl.value = webViewUrl.value + options.urlParams
+})
+</script>
 
 <style lang="scss" scoped></style>

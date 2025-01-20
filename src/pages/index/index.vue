@@ -62,11 +62,13 @@
           custom-indicator-class="custom-indicator-class"
           :indicator="{ type: 'dots-bar' }"
           :list="swiperList"
+          @click="handleSwiperItemClick"
           :previousMargin="px2rpx(30)"
           :nextMargin="px2rpx(60)"
-          @click="handleSwiperItemClick"
         ></wd-swiper>
+        <!-- :loop="false" -->
       </view>
+
       <!-- Gird -->
       <view style="overflow: auto" class="custom-class-grid">
         <wd-grid :column="2" clickable>
@@ -122,8 +124,8 @@ import { useSystemStore } from '@/store'
 import { px2rpx } from '@/utils/tools'
 /* image */
 import imgHomeLogo from '@img/home-logo.png'
-import imgCarouselFirst from '../../static/image/image1.png'
-import imgCarouselSecond from '../../static/image/image2.png'
+import lifeCycleSwiper from '../../static/image/life-cycle-swiper.png'
+import liftSwiper from '../../static/image/lift-swiper.png'
 /* svg */
 import addElevatorSvg from '@/static/svg/add-elevator.svg'
 import filesSvg from '@/static/svg/files.svg'
@@ -146,15 +148,17 @@ function handleSearch() {
 
 //  轮播图
 const current = ref(0)
-const swiperList = reactive([
-  imgCarouselFirst,
-  imgCarouselSecond,
-  imgCarouselFirst,
-  imgCarouselSecond,
-])
+const swiperList = reactive([lifeCycleSwiper, liftSwiper, lifeCycleSwiper, liftSwiper])
 
 const handleSwiperItemClick = (params) => {
-  uni.navigateTo({ url: '/pages/shop/shop' })
+  let urlParams = ''
+  if (params.item === lifeCycleSwiper) {
+    urlParams = '/index/index'
+  } else if (params.item === liftSwiper) {
+    urlParams = '/columnGoods/goods_list/index?id=39&title=整梯销售'
+  }
+
+  uni.navigateTo({ url: `/pages/shop/shop?urlParams=${urlParams}` })
 }
 
 // 电梯添加、档案资料、电梯监控

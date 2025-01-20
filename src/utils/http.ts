@@ -18,11 +18,13 @@ export const http = <T>(options: CustomRequestOptions) => {
 
         // 其他错误 -> 根据后端错误信息轻提示
         if (successResult.code !== '1') {
-          !options.hideErrorToast &&
-            uni.showToast({
-              icon: 'none',
-              title: successResult.msg || '请求错误',
-            })
+          // 登录接口返回的错误格式不是{msg,code,data}，暂不处理
+          reject(successResult)
+          // !options.hideErrorToast &&
+          //   uni.showToast({
+          //     icon: 'none',
+          //     title: successResult.msg || '请求错误',
+          //   })
         } else {
           /* 格式化data的Key命名 */
           resolve(convertSnakeToCamel(successResult.data))

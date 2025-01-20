@@ -21,6 +21,7 @@
           class="login-input-value"
           placeholder="请输入账号"
           type="text"
+          placeholder-style="color: rgba(255, 176, 23, 0.69)"
           v-model="loginForm.account"
         />
       </view>
@@ -31,7 +32,7 @@
           class="login-input-value"
           type="text"
           password
-          placeholder-style="{color: rgba(255, 176, 23, 0.69)}"
+          placeholder-style="color: rgba(255, 176, 23, 0.69)"
           placeholder="请输入密码"
           v-model="loginForm.password"
         />
@@ -51,18 +52,30 @@ import loginBottom from '@/static/image/login-bottom.png'
 import { useUserStore, useSystemStore } from '@/store'
 import { postLogin } from '@/service/login'
 import { md5 } from '@/utils/md5'
+import { showToast } from '@/utils/tools'
 // import 'weconsole/dist/npm/main/init'
 
 // 登录框
 const loginForm = reactive({
-  account: 'test',
-  password: '123456',
+  account: '',
+  password: '',
 })
 
 /* userStore */
 const userStore = useUserStore()
 const systemStore = useSystemStore()
 const handleLoginBtn = () => {
+  if (!loginForm.account || !loginForm.password) {
+    const emptyStr =
+      !loginForm.account && !loginForm.password
+        ? '账号和密码'
+        : !loginForm.account
+          ? '账号'
+          : '密码'
+    return uni.showToast({ title: `请输入${emptyStr}`, icon: 'none' })
+    // return
+  }
+
   postLogin({
     name: loginForm.account,
     password: md5(loginForm.password),
@@ -75,7 +88,11 @@ const handleLoginBtn = () => {
       uni.switchTab({ url: '/pages/index/index' })
     })
     .catch((err) => {
-      console.log('err :>> ', err)
+      uni.showToast({
+        icon: 'none',
+        title: '输入的账号或密码有误',
+      })
+      console.log('getLogin err :>> ', err)
     })
 }
 </script>
@@ -172,10 +189,6 @@ $rpx-250: px2rpx(250);
 
         border: $rpx-1 solid $color-secondary;
         border-radius: $rpx-10;
-      }
-
-      .uni-input-placeholder {
-        color: $color-secondary-69;
       }
     }
 

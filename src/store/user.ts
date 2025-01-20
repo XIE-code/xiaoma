@@ -23,9 +23,9 @@ const initState: ILoginResponse = {
 export const useUserStore = defineStore(
   'user',
   () => {
-    const userInfo = ref<any>({ ...initState })
+    const userInfo = ref<ILoginResponse>({ ...initState })
 
-    const setUserInfo = (val: any) => {
+    const setUserInfo = (val: ILoginResponse) => {
       userInfo.value = val
     }
 

@@ -8,10 +8,9 @@
 <template>
   <wrapper paddingType="top" :paddingBottom="90" :paddingLeft="20" :paddingRight="20" :gap="24">
     <view class="info">
-      <!-- TODO: 动态图片引入 -->
       <image class="avatar" :src="getServerImg(headImg)" mode="scaleToFill"></image>
       <view class="info-data">
-        <view class="info-name">{{ userName }}</view>
+        <view class="info-name">{{ realname }}</view>
         <view class="info-other">{{ phone }}&nbsp;|&nbsp;{{ companyName }}</view>
       </view>
     </view>
@@ -85,7 +84,7 @@ onLoad(() => {
 })
 
 const userStore = useUserStore()
-const { userName, phone, companyName, headImg } = userStore.userInfo
+const { realname, phone, companyName, headImg } = userStore.userInfo
 
 const elevatorList = reactive([
   {
