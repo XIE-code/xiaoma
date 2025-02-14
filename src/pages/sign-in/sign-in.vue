@@ -2,7 +2,7 @@
 {
   layout: 'default',
   style: {
-    navigationBarTitleText: '电梯列表',
+    navigationBarTitleText: '签到打卡',
   },
 }
 </route>
@@ -17,46 +17,29 @@
           :size="px2rpx(24)"
           color="white"
         ></wd-icon>
-        <view class="title">电梯列表</view>
-      </view>
-      <view class="search-bar">
-        <input
-          confirm-type="search"
-          @confirm="handleSearch"
-          class="search-input"
-          placeholder="请输入"
-        />
-        <button class="search-btn">
-          <wd-icon name="search" color="white" :size="px2rpx(12)"></wd-icon>
-        </button>
+        <view class="title">签到页面</view>
       </view>
     </view>
 
     <!-- 内容区域 -->
     <view class="scroll-box">
       <view class="container">
-        <view
-          class="card-item"
-          v-for="(item, idx) in liftList"
-          :key="idx"
-          @click="handleClickItem(item)"
-        >
-          <view class="item-title">{{ item.name }}</view>
-          <view class="item-status">
-            <wd-icon
-              :name="getItemOnline(item, 'icon')"
-              :size="px2rpx(16)"
-              :color="getItemOnline(item, 'color')"
-            ></wd-icon>
-            <text :class="['item-status-text', getItemOnline(item, 'class')]">
-              {{ getItemOnline(item, 'text') }}
-            </text>
-          </view>
-          <view class="item-text">电梯编号：{{ item.elevatorNumber }}</view>
-          <view class="item-text">使用单位：{{ item.companyName }}</view>
-          <view class="item-text">维保人员：{{ item.realname }}</view>
-          <view class="item-text">电梯地址：{{ item.address }}</view>
-        </view>
+        <view>地点： {{ liftInfo.address }}</view>
+        <view>电梯名称： {{ liftInfo.name }}</view>
+        <view>维保类型： {{ maintenance.maintType }}</view>
+        <view>电梯经度： {{ liftInfo.longitude }}</view>
+        <view>电梯维度： {{ liftInfo.latitude }}</view>
+        <view>当前经度： {{ currentPosition.longitude }}</view>
+        <view>当前纬度： {{ currentPosition.latitude }}</view>
+        <view>距离签到点： {{ signInDistance }} 米</view>
+
+        <!-- #ifdef MP-WEIXIN -->
+        <button hover-class="button-hover" @click="getLocation">获取位置</button>
+        <!-- #endif -->
+
+        <!-- #ifdef H5 -->
+        <button>请在微信小程序授权获取定位</button>
+        <!-- #endif -->
       </view>
     </view>
   </wrapper>
@@ -65,11 +48,15 @@
 <script lang="ts" setup>
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
+/* API */
+
+import QQMapWX from './qqmap-wx-jssdk'
+
 /* store */
 import { useSystemStore } from '@/store'
 /* service */
-import { postLiftList } from '@/service/lift/lift'
-import { ILiftListResponse } from '@/service/lift/type'
+import { postLiftList, postMaintenanceDetail } from '@/service/lift/lift'
+import { IElevatorInfo, ILiftListResponse, IMaintenanceBasis } from '@/service/lift/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */
@@ -78,45 +65,142 @@ import { indexPage, liftDetailPage } from '@/common/pages'
 
 const systemStore = useSystemStore()
 const { capsule } = systemStore.systemInfo
+
+const qqmapsdk = new QQMapWX({
+  key: 'DJXBZ-NDSKQ-UB35D-23TNB-O3WYJ-GBBQ5',
+})
+
+console.log('new QQMapWX:>> ', QQMapWX)
+console.log('qqmapsdk :>> ', qqmapsdk)
+
 // 导航栏
 function handleClickLeft() {
   systemStore.resetTabBarIdx()
   uni.switchTab({ url: indexPage })
 }
 
-function handleSearch() {
-  console.log('触发搜索事件 :>> ')
-}
-const staticLiftData: ILiftListResponse = {
-  elevatorId: 1584,
-  registerCode: '',
-  name: ' 测 试 电 梯 1',
-  elevatorNumber: 230000043,
-  address: '重庆市市辖区九龙坡区石油路',
-  isOnline: '0',
-  companyName: '重庆使用单位',
-  realname: '朱渝光',
-  phone: 13883587879,
-  serverIp: '::1',
-}
-// 内容区域
-const liftList = ref<ILiftListResponse[]>([])
-
-// TODO: 下拉刷新
-
-postLiftList({
-  village_id: '',
-  lift_name: '',
-  limit: '999',
-  page: '1',
-  // state: '0',
+const liftInfo = ref<Partial<IElevatorInfo>>({
+  longitude: 0,
+  latitude: 0,
 })
-  .then((result) => {
-    liftList.value = result
+
+const maintenance = ref<Partial<IMaintenanceBasis>>({
+  maintType: '',
+})
+
+/* 地理位置 */
+const currentPosition = ref({
+  longitude: 0,
+  latitude: 0,
+})
+
+// 定位距离
+const signInDistance = ref(0)
+
+onLoad((options) => {
+  const liftId = options.id
+  postMaintenanceDetail({ id: liftId })
+    .then((result) => {
+      liftInfo.value = result.ele
+      maintenance.value = result.basis
+    })
+    .catch((err) => {
+      console.log('postLiftGetRun err:>> ', err)
+    })
+})
+
+// #ifdef MP-WEIXIN
+wx.getSetting({
+  success(res) {
+    if (!res.authSetting['scope.userLocation']) {
+      wx.authorize({
+        scope: 'scope.userLocation',
+        success() {
+          // 用户已授权，可以调用wx.getLocation
+          getLocation()
+          calculateDistance()
+        },
+        fail() {
+          // 用户拒绝授权
+          wx.showToast({
+            title: '需要开启定位权限',
+            icon: 'none',
+          })
+        },
+      })
+    } else {
+      // 用户已授权，直接调用wx.getLocation
+      getLocation()
+      calculateDistance()
+    }
+  },
+})
+
+// 计算距离
+function calculateDistance() {
+  if (!currentPosition.value.latitude || !currentPosition.value.longitude) {
+    console.log('成功获取用户定位 :>> ')
+  }
+  const origin = {
+    // 起点经纬度
+    latitude: currentPosition.value.latitude, // 示例纬度
+    longitude: currentPosition.value.longitude, // 示例经度
+  }
+  const destination = {
+    // 终点经纬度
+    latitude: liftInfo.value.latitude,
+    longitude: liftInfo.value.longitude,
+  }
+
+  qqmapsdk.calculateDistance({
+    from: `${origin.latitude},${origin.longitude}`,
+    to: `${destination.latitude},${destination.longitude}`,
+    mode: 'straight', // 计算直线距离
+    success: (res) => {
+      signInDistance.value = res.result.elements[0].distance
+
+      console.log('计算距离成功', res)
+    },
+    fail: (err) => {
+      console.error('计算距离失败', err)
+    },
   })
-  .catch((err) => {
-    console.log('postLiftList err :>> ', err)
+}
+
+// 获取定位
+function getLocation() {
+  wx.getLocation({
+    type: 'wgs84', // 返回GPS坐标
+    success(res) {
+      currentPosition.value.longitude = res.longitude // 经度
+      currentPosition.value.latitude = res.latitude // 纬度
+      console.log(`当前纬度：${res.latitude}, 当前经度：${res.longitude}`)
+    },
+    fail(err) {
+      console.error('获取定位失败', err)
+    },
   })
+}
+
+// 获取详细地址信息
+function getAddress(latitude, longitude) {
+  qqmapsdk.reverseGeocoder({
+    location: {
+      latitude,
+      longitude,
+    },
+    success(res) {
+      console.log('详细地址信息', res)
+      const address = res.result.formatted_addresses.recommend
+      console.log('详细地址', address)
+    },
+    fail(err) {
+      console.error('获取地址失败', err)
+    },
+  })
+}
+
+// #endif
 
 /* 根据 is_online 获取颜色、文字 */
 const getItemOnline = (item: ILiftListResponse, type: 'color' | 'text' | 'class' | 'icon') => {

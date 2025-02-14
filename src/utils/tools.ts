@@ -4,6 +4,7 @@ import { useToast } from 'wot-design-uni'
 import { SERVER_BASEURL } from '@/common/constant'
 /* img */
 import homeLogo from '@/static/image/home-logo.png'
+
 /* 提示信息 */
 export const showToast = (message: string) => {
   const toast = useToast()
@@ -32,7 +33,7 @@ export interface IWeekDate {
  * 1. 获取当前日期，调整到周一
  * 2. 返回本周的周日历
  */
-/* TODO：dayjs优化 */
+/* TODO: dayjs优化 */
 export const getWeekDates = () => {
   // 定义一周的映射关系
   const weekObj = [

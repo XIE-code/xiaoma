@@ -9,6 +9,7 @@ interface NavigateToOptions {
        "/pages/maintenance/maintenance" |
        "/pages/personal/personal" |
        "/pages/shop/shop" |
+       "/pages/sign-in/sign-in" |
        "/pages/urgent-repair/urgent-repair copy" |
        "/pages/urgent-repair/urgent-repair" |
        "/pages/knowledge/category/category" |

@@ -2,6 +2,7 @@ export const loginPage = '/pages/login/login' // 登录
 export const indexPage = '/pages/index/index' // 首页
 export const maintenancePage = '/pages/maintenance/maintenance' // 维保
 export const urgentRepairPage = '/pages/urgent-repair/urgent-repair' // 急修
+export const signInPage = '/pages/sign-in/sign-in' // 签到打卡
 export const personalPage = '/pages/personal/personal' // 我的
 export const shopPage = '/pages/shop/shop' // 小马商城
 export const knowledgeCategoryPage = '/pages/knowledge/category/category' // 知识分类

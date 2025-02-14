@@ -14,32 +14,37 @@
     <image :src="loginBottom" class="login-bg-bottom" mode="scaleToFill" />
 
     <image class="login-logo" src="@/static/image/login-logo.png" mode="scaleToFill" />
-    <view class="container">
-      <view class="login-input-group">
-        <view class="login-input-label">账号</view>
-        <input
-          class="login-input-value"
-          placeholder="请输入账号"
-          type="text"
-          placeholder-style="color: rgba(255, 176, 23, 0.69)"
-          v-model="loginForm.account"
-        />
+    <form @submit="handleFormSubmit">
+      <view class="container">
+        <view class="login-input-group">
+          <view class="login-input-label">账号</view>
+          <input
+            class="login-input-value"
+            placeholder="请输入账号"
+            type="text"
+            name="account"
+            placeholder-style="color: rgba(255, 176, 23, 0.69)"
+            v-model="loginForm.account"
+          />
+        </view>
+        <!-- 密码 -->
+        <view class="login-input-group">
+          <view class="login-input-label">密码</view>
+          <input
+            name="password"
+            class="login-input-value"
+            type="text"
+            password
+            placeholder-style="color: rgba(255, 176, 23, 0.69)"
+            placeholder="请输入密码"
+            v-model="loginForm.password"
+          />
+        </view>
+        <view class="forgot">Forgot Password?</view>
       </view>
-      <!-- 密码 -->
-      <view class="login-input-group">
-        <view class="login-input-label">密码</view>
-        <input
-          class="login-input-value"
-          type="text"
-          password
-          placeholder-style="color: rgba(255, 176, 23, 0.69)"
-          placeholder="请输入密码"
-          v-model="loginForm.password"
-        />
-      </view>
-      <view class="forgot">Forgot Password?</view>
-    </view>
-    <button class="login-btn" @click="handleLoginBtn">登录</button>
+      <button form-type="submit" class="login-btn" @click="handleLoginBtn">登录</button>
+    </form>
+
     <!-- <weconsole></weconsole> -->
   </view>
 </template>
@@ -50,7 +55,7 @@ import loginTop from '@/static/image/login-top.png'
 import loginMedium from '@/static/image/login-medium.png'
 import loginBottom from '@/static/image/login-bottom.png'
 import { useUserStore, useSystemStore } from '@/store'
-import { postLogin } from '@/service/login'
+import { postLogin } from '@/service/login/login'
 import { md5 } from '@/utils/md5'
 import { showToast } from '@/utils/tools'
 import { indexPage } from '@/common/pages'
@@ -62,14 +67,23 @@ const loginForm = reactive({
   password: '',
 })
 
-// todo: 测试
-// loginForm.account = 'test'
-// loginForm.password = '123456'
-
 /* userStore */
 const userStore = useUserStore()
 const systemStore = useSystemStore()
+
+const handleFormSubmit = (event) => {
+  // 阻止表单的默认提交行为
+  // event.preventDefault()
+  // handleLoginBtn()
+}
+
 const handleLoginBtn = () => {
+  // 测试自动进入
+  // #ifdef MP-WEIXIN
+  // loginForm.account = 'test'
+  // loginForm.password = '123456'
+  // #endif
+
   if (!loginForm.account || !loginForm.password) {
     const emptyFields = []
     !loginForm.account && emptyFields.push('账号')

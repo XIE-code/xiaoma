@@ -22,7 +22,7 @@ module.exports = {
       env: {
         node: true,
       },
-      files: ['.eslintrc.{js,cjs}'],
+      files: ['.eslintrc.{js,cjs}', './src/pages/sign-in/qqmap-*'],
       parserOptions: {
         sourceType: 'script',
       },

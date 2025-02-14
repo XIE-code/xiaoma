@@ -6,6 +6,7 @@
   },
 }
 </route>
+
 <template>
   <wrapper paddingType="height" :paddingBottom="90">
     <!-- 导航栏 -->
@@ -97,7 +98,12 @@
       <!-- 待办事项 -->
       <view class="schedule">
         <text class="schedule-title">今日维保计划</text>
-        <view class="schedule-item" :key="item.id" v-for="item in todoList">
+        <view
+          class="schedule-item"
+          @click="handleSignIn(item)"
+          :key="item.id"
+          v-for="item in todoList"
+        >
           <view class="item-elevator-name">电梯名称：{{ item.eleName }}</view>
           <view class="item-elevator-name">保养类型：{{ item.maintType }}</view>
           <view class="item-elevator-name">
@@ -121,7 +127,7 @@ import dayjs from 'dayjs'
 /* store */
 import { useSystemStore } from '@/store'
 /* tools */
-import { px2rpx } from '@/utils/tools'
+import { px2rpx, convertSnakeToCamel } from '@/utils/tools'
 /* image */
 import imgHomeLogo from '@img/home-logo.png'
 import lifeCycleSwiper from '../../static/image/life-cycle-swiper.png'
@@ -132,8 +138,15 @@ import filesSvg from '@/static/svg/files.svg'
 import knowledgeSvg from '@/static/svg/knowledge.svg'
 import monitorSvg from '@/static/svg/monitor.svg'
 import notificationSvg from '@/static/svg/notification.svg'
-import { IMaintenanceItem, isMaintainType, postMaintenanceList } from '@/service/elevator'
-import { knowledgeCompanyPage, liftEnterPage, liftListPage, shopPage } from '@/common/pages'
+import { postMaintenanceDetail, postMaintenanceList } from '@/service/lift/lift'
+import { IMaintenanceItem, isMaintainType } from '@/service/lift/type'
+import {
+  knowledgeCompanyPage,
+  liftEnterPage,
+  liftListPage,
+  shopPage,
+  signInPage,
+} from '@/common/pages'
 
 defineOptions({
   name: 'Home',
@@ -159,6 +172,7 @@ const handleSwiperItemClick = (params) => {
     urlParams = '/columnGoods/goods_list/index?id=39&title=整梯销售'
   }
 
+  // TODO: 封装navigateTo请求方式，query传参还是params传参
   uni.navigateTo({ url: `${shopPage}?urlParams=${urlParams}` })
 }
 
@@ -194,19 +208,33 @@ const count = ref(0)
 const faultCount = ref(0)
 const todoList = ref<IMaintenanceItem[]>([])
 
-/* TODO： 下拉加载 */
-postMaintenanceList({
-  time: dayjs().format('YYYY-MM-DD'),
-  limit: 99,
-  page: 1,
-})
-  .then((result) => {
-    todoList.value = result.list
-    count.value = result.count
-  })
-  .catch((err) => {
-    console.log('postMaintenanceList err :>> ', err)
-  })
+/* TODO: 下拉加载 */
+// postMaintenanceList({
+//   time: dayjs().format('YYYY-MM-DD'),
+//   limit: 99,
+//   page: 1,
+// })
+//   .then((result) => {
+//     todoList.value = result.list
+//     count.value = result.count
+//   })
+//   .catch((err) => {
+//     console.log('postMaintenanceList err :>> ', err)
+//   })
+
+// FIXME：测试签到，后续自动获取每日排班
+const todo = {
+  id: 8,
+  ele_name: '广东佳登曼办公室电梯',
+  maint_time: '2025-02-14',
+  address: '广东省惠州市博罗县园洲镇',
+  elevator_number: 230100001,
+  register_code: '',
+  is_maintain: 1,
+  is_maintain_tan: 0,
+  maint_type: '国标半月保',
+}
+todoList.value.push(convertSnakeToCamel(todo))
 
 /* maintenanceType */
 type itemType = 'color' | 'text'
@@ -223,6 +251,11 @@ const getItemInfoByMaintenanceType = (type: itemType, isMaintain: isMaintainType
   if (type === 'text') {
     return maintenanceTypeArray[isMaintain - 1]
   }
+}
+
+// TODO: 封装签到，传入
+const handleSignIn = (todo: IMaintenanceItem) => {
+  uni.navigateTo({ url: signInPage + `?id=${todo.id}` })
 }
 </script>
 

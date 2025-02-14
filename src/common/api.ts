@@ -7,3 +7,4 @@ export const liftLiftAddApi = '/lift/lift_add' // 新增电梯
 export const knowledgeCategoryListApi = '/knowledge/categorylist' // 知识库类目表
 export const knowledgeDocumentListApi = '/knowledge/documentList' // 知识库文件列表
 export const maintenanceListApi = '/maint/main_order' // 今日维保列表
+export const maintenanceDetailApi = '/maint/maint_one' // 获取维保计划详情

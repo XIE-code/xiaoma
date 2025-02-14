@@ -1,1 +1,4 @@
 src/uni_modules/
+
+# 引入的sdk
+src/pages/sign-in/qqmap-*

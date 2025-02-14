@@ -1,6 +1,3 @@
-import { http } from '@/utils/http'
-import { loginApi } from '@/common/api'
-
 /* 登录接口参数 */
 export interface ILoginParams {
   name: string
@@ -25,9 +22,4 @@ export interface ILoginResponse {
   role: number // 角色
   companyType: number // 公司类型
   companyName: string // 公司名称
-}
-
-/* 登录 */
-export const postLogin = (params: ILoginParams) => {
-  return http.post<ILoginResponse>(loginApi, params)
 }

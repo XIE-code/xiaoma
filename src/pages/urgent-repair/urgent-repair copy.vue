@@ -65,7 +65,8 @@ import wrapper from '@/layouts/wrapper.vue'
 /* store */
 import { useSystemStore } from '@/store'
 /* service */
-import { ILiftListResponse, postLiftList } from '@/service/elevator'
+import { postLiftList } from '@/service/lift/lift'
+import { ILiftListResponse } from '@/service/lift/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */
@@ -93,7 +94,8 @@ const staticLiftData: ILiftListResponse = {
 // 内容区域
 const liftList = ref<ILiftListResponse[]>([])
 
-// TODO： 下拉刷新
+// TODO: 下拉刷新
+
 // postLiftList({
 //   village_id: '',
 //   lift_name: '',
@@ -211,7 +213,7 @@ $rpx-92: px2rpx(92);
       border-color: $color-secondary;
       border-style: solid;
       border-width: $rpx-1 $rpx-1 $rpx-1 $rpx-3;
-      border-radius: $rpx-14 $rpx-12 $rpx-12 $rpx-14; //TODO:待优化
+      border-radius: $rpx-14 $rpx-12 $rpx-12 $rpx-14; //TODO: 待优化
       box-shadow: 0px $rpx-4 $rpx-8 0px rgba(28, 37, 44, 0.05);
 
       .item-title {

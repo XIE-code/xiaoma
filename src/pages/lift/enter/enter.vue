@@ -83,7 +83,7 @@ import wrapper from '@/layouts/wrapper.vue'
 /* store */
 import { useSystemStore } from '@/store/system'
 /* service */
-import { postLiftLiftAdd } from '@/service/elevator'
+import { postLiftLiftAdd } from '@/service/lift/lift'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */

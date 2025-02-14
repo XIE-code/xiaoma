@@ -62,8 +62,8 @@
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
 /* service */
-import { postKnowledgeCategoryList } from '@/service/elevator'
-import type { IKnowledgeCategoryListResponse } from '@/service/elevator'
+import { postKnowledgeCategoryList } from '@/service/lift/lift'
+import type { IKnowledgeCategoryListResponse } from '@/service/lift/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */

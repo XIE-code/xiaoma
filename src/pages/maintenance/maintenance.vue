@@ -61,7 +61,8 @@ import addressSvg from '@/static/svg/address.svg'
 /* tools */
 import { getWeekDates } from '@/utils/tools'
 import type { IWeekDate } from '@/utils/tools'
-import { IMaintenanceItem, isMaintainType, postMaintenanceList } from '@/service/elevator'
+import { postMaintenanceList } from '@/service/lift/lift'
+import { IMaintenanceItem, isMaintainType } from '@/service/lift/type'
 
 onLoad(() => {
   uni.hideTabBar()
@@ -89,7 +90,7 @@ const getCardHeadTime = () => {
 const maintenanceList = ref<IMaintenanceItem[]>([])
 
 const getMaintenanceList = (dateString: string) => {
-  /* TODO： 下拉加载 */
+  // TODO: 下拉刷新
   postMaintenanceList({
     time: dateString,
     limit: 99,

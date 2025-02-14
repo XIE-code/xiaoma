@@ -116,6 +116,18 @@ export default defineManifestConfig({
     },
     usingComponents: true,
     // __usePrivacyCheck__: true,
+    permission: {
+      'scope.userLocation': {
+        desc: '你的位置信息将用于小程序位置接口的效果展示',
+      },
+      'scope.userLocationBackground': {
+        desc: '你的位置信息将在后台用于小程序位置接口的效果展示',
+      },
+      'scope.userFuzzyLocation': {
+        desc: '你的模糊位置信息将用于小程序位置接口的效果展示',
+      },
+    },
+    requiredPrivateInfos: ['getLocation'],
   },
   'mp-alipay': {
     usingComponents: true,

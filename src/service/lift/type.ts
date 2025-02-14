@@ -1,20 +1,9 @@
-import {
-  breakdownCodeApi,
-  liftGetRunApi,
-  liftListApi,
-  liftPushTroubleApi,
-  liftLiftAddApi,
-  knowledgeCategoryListApi,
-  knowledgeDocumentListApi,
-  maintenanceListApi,
-} from '@/common/api'
-import { http } from '@/utils/http'
-/* 故障代码 */
+/* 故障代码请求参数 */
 export interface IBreakdownCodeParams {
   devices_id: string // 故障类型ID
 }
 
-/* 故障代码响应接口定义 */
+/* 故障代码返回类型 */
 export interface IBreakdownCodeResponse {
   devicesId: string // 故障型号ID
   fId: string // 故障代码ID
@@ -25,12 +14,7 @@ export interface IBreakdownCodeResponse {
   fault: string // 故障描述
 }
 
-/* 故障代码 */
-export const postBreakdownCode = (params: IBreakdownCodeParams) => {
-  return http.post<IBreakdownCodeResponse[]>(breakdownCodeApi, params)
-}
-
-/* 电梯列表参数 */
+/* 电梯列表请求参数 */
 export interface ILiftListParams {
   village_id?: string // 小区id；可为空
   lift_name?: string // 电梯名字；可为空
@@ -39,7 +23,7 @@ export interface ILiftListParams {
   state?: string // 0:离线 1:在线 2:正常 3:故障
 }
 
-/* 电梯列表返回值 */
+/* 电梯列表返回类型 */
 export interface ILiftListResponse {
   elevatorId?: number // 电梯ID
   registerCode?: string // 电梯注册码
@@ -53,17 +37,12 @@ export interface ILiftListResponse {
   serverIp?: string // 服务器IP
 }
 
-/* 电梯列表 */
-export const postLiftList = (params: ILiftListParams) => {
-  return http.post<ILiftListResponse[]>(liftListApi, params)
-}
-
-/* 电梯运行信息参数 */
+/* 电梯运行信息请求参数 */
 export interface ILiftGetRunParams {
   code: string // 电梯编码
 }
 
-/* 电梯运行信息返回值 */
+/* 电梯运行信息返回类型 */
 export interface ILiftGetRunResponse {
   elevatorId: number // 电梯编码
   rTimes: number // 运行次数
@@ -74,12 +53,7 @@ export interface ILiftGetRunResponse {
   serialNumber: number // 序列号
 }
 
-/* 电梯监控-运行与统计-累加数据 */
-export const postLiftGetRun = (params: ILiftGetRunParams) => {
-  return http.post<ILiftGetRunResponse>(liftGetRunApi, params)
-}
-
-/* 电梯预警记录请求参数接口 */
+/* 电梯预警记录请求参数 */
 export interface ILiftPushTroubleParams {
   tid: string // 业务识别id，每次请求不重复
   troubleCode: string // 故障隐患编码
@@ -91,17 +65,12 @@ export interface ILiftPushTroubleParams {
   }> // 故障声音详情
 }
 
-/* 电梯预警记录返回值接口 */
+/* 电梯预警记录返回类型 */
 export interface ILiftPushTroubleResponse {
   tid: string // 业务识别id，来自请求数据
 }
 
-/* 电梯预警记录 */
-export const postLiftPushTrouble = (params: ILiftPushTroubleParams) => {
-  return http.post<ILiftPushTroubleResponse>(liftPushTroubleApi, params)
-}
-
-/* 新增电梯信息请求参数接口 */
+/* 新增电梯信息请求参数 */
 export interface ILiftLiftAddParams {
   name: string // 电梯名称
   register_code?: string // 出厂编码
@@ -113,21 +82,15 @@ export interface ILiftLiftAddParams {
   speed?: string // 速度
 }
 
-/* 新增电梯信息返回参数接口 */
-// export interface ILiftLiftAddResponse {}
+/* 新增电梯信息返回类型 */
 export type ILiftLiftAddResponse = any
 
-/* 新增电梯 */
-export const postLiftLiftAdd = (params: ILiftLiftAddParams) => {
-  return http.post<ILiftLiftAddResponse>(liftLiftAddApi, params)
-}
-
-/* 知识库类目表请求参数接口 */
+/* 知识库类目表请求参数 */
 export interface IKnowledgeCategoryListParams {
   parent_id: number // 目录父级ID，一级目录传0
 }
 
-/* 知识库类目表返回值接口 */
+/* 知识库类目表返回类型 */
 export interface IKnowledgeCategoryListResponse {
   id: number // 类目ID
   parentId: number // 父级ID
@@ -137,19 +100,14 @@ export interface IKnowledgeCategoryListResponse {
   updatedTime: number // 更新时间
 }
 
-/* 知识库类目表 */
-export const postKnowledgeCategoryList = (params: IKnowledgeCategoryListParams) => {
-  return http.post<IKnowledgeCategoryListResponse[]>(knowledgeCategoryListApi, params)
-}
-
-/* 知识库文件列表请求参数接口 */
+/* 知识库文件列表请求参数 */
 export interface IKnowledgeDocumentListParams {
   category_id: number // 目录ID
   limit: number // 查询数量
   page: number // 当前页
 }
 
-/* 知识库文件列表返回值接口 */
+/* 知识库文件列表返回类型 */
 export interface IKnowledgeDocumentListResponse {
   id: number // 文档ID
   categoryId: number // 目录ID
@@ -159,22 +117,18 @@ export interface IKnowledgeDocumentListResponse {
   createdTime: number // 创建时间
   updatedTime: number // 更新时间
 }
-/* 知识库文件列表 */
-export const postKnowledgeDocumentList = (params: IKnowledgeDocumentListParams) => {
-  return http.post<IKnowledgeDocumentListResponse[]>(knowledgeDocumentListApi, params)
-}
 
-/* 维修列表请求参数接口 */
+/* 维修列表请求参数 */
 export interface IMaintenanceListParams {
   time?: string // 维保日期，格式：2025-01-16
   limit: number // 查询数量
   page: number // 当前页
 }
 
-/* 维保状态 */
+/* 维修状态类型 */
 export type isMaintainType = 1 | 2 | 3 | 4
 
-/* 维修对象 */
+/* 维修列表返回类型 */
 export interface IMaintenanceItem {
   id: number // 维保计划ID
   eleName: string // 电梯名称
@@ -186,13 +140,68 @@ export interface IMaintenanceItem {
   maintType?: string // 维保类型
 }
 
-/* 维修列表返回值接口 */
 export interface IMaintenanceListResponse {
   list: IMaintenanceItem[] // 维保计划列表
   count: number
 }
 
-/* 维修列表 */
-export const postMaintenanceList = (params: IMaintenanceListParams) => {
-  return http.post<IMaintenanceListResponse>(maintenanceListApi, params)
+/* 维修详情请求参数 */
+export interface IMaintenanceDetailParams {
+  id: number // 维保计划ID
+}
+
+/* 电梯信息 */
+export interface IElevatorInfo {
+  elevatorNumber: number // 电梯编码
+  name: string // 电梯名称
+  villageName: string // 小区名称
+  longitude: number // 经度
+  latitude: number // 纬度
+  address: string // 地址
+  varietyType: string // 电梯类型
+  companyId: number // 维保公司ID
+}
+
+/* 维保状态类型 */
+export type IsMaintainType = 1 | 2 | 3 | 4
+export type IsMaintainTanType = 0 | 1
+export type IsQualifiedType = 1 | 2 | 0
+export type IsCompleteType = 1 | 0
+export type IsIdenType = 1 | 0
+export type IsOrdersType = 1 | 0
+export type IsAuthorityType = 1 | 0
+
+/* 维保基础信息 */
+export interface IMaintenanceBasis {
+  id: number // 维保计划ID
+  maintSn: string // 维保单号
+  maintType: string // 维保类型
+  signatureImgOne: string // 签名图片1 安全员
+  signatureImgTwo: string // 签名图片2 维保员
+  signatureImgThree: string // 签名图片3 物业
+  isMaintain: IsMaintainType // 维保状态 1：待维保， 2：已维保 ：3：进行中：4：逾期签到
+  isMaintainTan: IsMaintainTanType // 提交维保记录 0：未提交，1：已提交
+  userName: string // 维保员名称
+  qualified: IsQualifiedType // 是否合格 1不合格；2合格；0未审核
+  all: number // 总数
+  complete: IsCompleteType // 是否完成 1已完成 0未完成
+  iden: IsIdenType // 是否签到 1已签到 0未签到
+  maintTime: string // 维保时间
+  remark: string | null // 备注信息
+  maintEndTime: string // 维保完成时间
+  isOrders: IsOrdersType // 是否接单 1已接单 0未接单
+  isAuthority: IsAuthorityType // 是否有权限
+}
+
+/* 维保日志时间 */
+export interface IMaintenanceLogTime {
+  time: string // 记录时间
+  type: string // 状态类型
+}
+
+/* 维修详情返回类型 */
+export interface IMaintenanceDetail {
+  ele: IElevatorInfo // 电梯信息
+  basis: IMaintenanceBasis // 维保基础信息
+  logTime: IMaintenanceLogTime[] // 维保日志时间
 }

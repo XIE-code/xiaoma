@@ -88,6 +88,14 @@
       }
     },
     {
+      "path": "pages/sign-in/sign-in",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleText": "签到打卡"
+      }
+    },
+    {
       "path": "pages/urgent-repair/urgent-repair copy",
       "type": "page",
       "layout": "default",
