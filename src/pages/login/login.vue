@@ -78,10 +78,10 @@ const handleFormSubmit = (event) => {
 }
 
 const handleLoginBtn = () => {
-  // 测试自动进入
+  // FIXME: 测试自动进入
   // #ifdef MP-WEIXIN
-  // loginForm.account = 'test'
-  // loginForm.password = '123456'
+  loginForm.account = 'test'
+  loginForm.password = '123456'
   // #endif
 
   if (!loginForm.account || !loginForm.password) {

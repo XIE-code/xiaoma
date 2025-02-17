@@ -17,7 +17,7 @@
           :size="px2rpx(24)"
           color="white"
         ></wd-icon>
-        <view class="title">签到页面</view>
+        <view class="title">签到打卡</view>
       </view>
     </view>
 
@@ -27,18 +27,41 @@
         <view>地点： {{ liftInfo.address }}</view>
         <view>电梯名称： {{ liftInfo.name }}</view>
         <view>维保类型： {{ maintenance.maintType }}</view>
-        <view>电梯经度： {{ liftInfo.longitude }}</view>
-        <view>电梯维度： {{ liftInfo.latitude }}</view>
-        <view>当前经度： {{ currentPosition.longitude }}</view>
-        <view>当前纬度： {{ currentPosition.latitude }}</view>
-        <view>距离签到点： {{ signInDistance }} 米</view>
+        <view>维保状态： {{ getMaintenanceType(maintenance.isMaintain) }}</view>
 
-        <!-- #ifdef MP-WEIXIN -->
-        <button hover-class="button-hover" @click="getLocation">获取位置</button>
-        <!-- #endif -->
+        <view v-if="maintenance.isMaintain === 1">
+          <!-- TODO: 区分运行环境 -->
+          <button hover-class="button-hover" @click="handleSignIn" class="btn-sign">
+            <!-- :disabled="signInDistance > 500" -->
+            {{ `${signInDistance <= 500 ? '点击签到' : '距离过远'}` }}
+          </button>
+          <view>当前位置： {{ currentPosition.address }}</view>
+        </view>
+        <view v-else-if="maintenance.isMaintain === 2">
+          <view>
+            <button @click="takePhoto">拍照上传</button>
+            <view>
+              <canvas canvas-id="myCanvas" style="width: 300px; height: 300px"></canvas>
+            </view>
+          </view>
+          <view>
+            <view>
+              <canvas
+                canvas-id="signatureCanvas"
+                style="width: 300px; height: 200px; border: 1px solid #000"
+                @touchstart="startSign"
+                @touchmove="moveSign"
+                @touchend="endSign"
+              ></canvas>
+            </view>
+            <button @click="saveSignature">保存签名</button>
+          </view>
+          <button>确认</button>
+        </view>
+        <view v-else-if="maintenance.isMaintain === 3">已完成维保</view>
 
         <!-- #ifdef H5 -->
-        <button>请在微信小程序授权获取定位</button>
+        <!-- <button>请在微信小程序授权获取定位</button> -->
         <!-- #endif -->
       </view>
     </view>
@@ -49,7 +72,7 @@
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
 /* API */
-
+import gcoord from 'gcoord'
 import QQMapWX from './qqmap-wx-jssdk'
 
 /* store */
@@ -67,11 +90,8 @@ const systemStore = useSystemStore()
 const { capsule } = systemStore.systemInfo
 
 const qqmapsdk = new QQMapWX({
-  key: 'DJXBZ-NDSKQ-UB35D-23TNB-O3WYJ-GBBQ5',
+  key: 'ND2BZ-7BL3U-6JKV7-GSGY3-QBI57-VHF7R',
 })
-
-console.log('new QQMapWX:>> ', QQMapWX)
-console.log('qqmapsdk :>> ', qqmapsdk)
 
 // 导航栏
 function handleClickLeft() {
@@ -88,10 +108,27 @@ const maintenance = ref<Partial<IMaintenanceBasis>>({
   maintType: '',
 })
 
+const getMaintenanceType = (type: number) => {
+  // 1：待维保， 2：已维保 ：3：进行中：4：逾期签到
+  switch (type) {
+    case 1:
+      return '待维保'
+    case 2:
+      return '已维保'
+    case 3:
+      return '进行中'
+    case 4:
+      return '逾期签到'
+    default:
+      return ''
+  }
+}
+
 /* 地理位置 */
 const currentPosition = ref({
   longitude: 0,
   latitude: 0,
+  address: '',
 })
 
 // 定位距离
@@ -103,66 +140,47 @@ onLoad((options) => {
     .then((result) => {
       liftInfo.value = result.ele
       maintenance.value = result.basis
+      getSetting()
     })
     .catch((err) => {
       console.log('postLiftGetRun err:>> ', err)
     })
 })
 
-// #ifdef MP-WEIXIN
-wx.getSetting({
-  success(res) {
-    if (!res.authSetting['scope.userLocation']) {
-      wx.authorize({
-        scope: 'scope.userLocation',
-        success() {
-          // 用户已授权，可以调用wx.getLocation
-          getLocation()
-          calculateDistance()
-        },
-        fail() {
-          // 用户拒绝授权
-          wx.showToast({
-            title: '需要开启定位权限',
-            icon: 'none',
-          })
-        },
-      })
-    } else {
-      // 用户已授权，直接调用wx.getLocation
-      getLocation()
-      calculateDistance()
-    }
-  },
-})
+// onPullDownRefresh() {
+//     // 执行下拉刷新操作
+//     console.log('执行下拉刷新操作');
 
-// 计算距离
-function calculateDistance() {
-  if (!currentPosition.value.latitude || !currentPosition.value.longitude) {
-    console.log('成功获取用户定位 :>> ')
-  }
-  const origin = {
-    // 起点经纬度
-    latitude: currentPosition.value.latitude, // 示例纬度
-    longitude: currentPosition.value.longitude, // 示例经度
-  }
-  const destination = {
-    // 终点经纬度
-    latitude: liftInfo.value.latitude,
-    longitude: liftInfo.value.longitude,
-  }
+//     // 模拟数据请求
+//     setTimeout(() => {
+//       // 停止下拉刷新动画
+//       uni.stopPullDownRefresh();
+//     }, 2000);
+//   }
 
-  qqmapsdk.calculateDistance({
-    from: `${origin.latitude},${origin.longitude}`,
-    to: `${destination.latitude},${destination.longitude}`,
-    mode: 'straight', // 计算直线距离
-    success: (res) => {
-      signInDistance.value = res.result.elements[0].distance
-
-      console.log('计算距离成功', res)
-    },
-    fail: (err) => {
-      console.error('计算距离失败', err)
+// 定义一个名为 getSetting 的函数，用于获取设置信息
+function getSetting() {
+  wx.getSetting({
+    success(res) {
+      if (!res.authSetting['scope.userLocation']) {
+        wx.authorize({
+          scope: 'scope.userLocation',
+          success() {
+            // 用户已授权，判断是否开启手机定位
+            getLocation()
+          },
+          fail() {
+            // 用户拒绝授权
+            wx.showToast({
+              title: '需要开启定位权限',
+              icon: 'none',
+            })
+          },
+        })
+      } else {
+        // 用户已授权，直接调用wx.getLocation
+        getLocation()
+      }
     },
   })
 }
@@ -170,59 +188,241 @@ function calculateDistance() {
 // 获取定位
 function getLocation() {
   wx.getLocation({
-    type: 'wgs84', // 返回GPS坐标
+    type: 'gcj02',
+    isHighAccuracy: true, // 开启高精度定位
     success(res) {
       currentPosition.value.longitude = res.longitude // 经度
       currentPosition.value.latitude = res.latitude // 纬度
-      console.log(`当前纬度：${res.latitude}, 当前经度：${res.longitude}`)
+      console.log('维度、经度 :>> ', res.latitude, res.longitude)
+      calculateDistance()
+      getAddress()
     },
     fail(err) {
-      console.error('获取定位失败', err)
+      if (err.errMsg.includes('auth deny') || err.errMsg.includes('auth denied')) {
+        // 用户拒绝授权
+        wx.showToast({
+          title: '定位权限被拒绝',
+          icon: 'none',
+        })
+      } else if (err.errMsg.includes('位置服务未开启')) {
+        // 位置服务未开启
+        wx.showModal({
+          title: '提示',
+          content: '请开启手机定位服务',
+          showCancel: false,
+        })
+      } else {
+        // 其他错误
+        wx.showToast({
+          title: '获取位置失败',
+          icon: 'none',
+        })
+      }
     },
   })
 }
 
-// 获取详细地址信息
-function getAddress(latitude, longitude) {
+// 计算距离
+// 注：坐标系采用gcj02坐标系
+// 起点坐标，格式：lat,lng;lat,lng…   from=39.071510,117.190091
+// 终点坐标，格式：lat,lng;lat,lng…  to=39.071510,117.190091;
+function calculateDistance() {
+  if (!currentPosition.value.latitude || !currentPosition.value.longitude) {
+    console.log('获取用户定位失败 :>> ')
+    return
+  }
+  const from = `${currentPosition.value.latitude},${currentPosition.value.longitude}`
+  const to = gcoord.transform(
+    [liftInfo.value.latitude, liftInfo.value.longitude],
+    gcoord.BD09,
+    gcoord.GCJ02,
+  )
+
+  // // #ifdef MP-WEIXIN
+  qqmapsdk.calculateDistance({
+    from,
+    to: `${to[0]},${to[1]}`,
+    mode: 'straight', // 计算直线距离
+    success: (res) => {
+      signInDistance.value = res.result.elements[0].distance
+      console.log('距离签到位置 :>> ', signInDistance.value)
+    },
+    fail: (err) => {
+      console.error('计算距离失败', err)
+    },
+  })
+  // #endif
+}
+
+// 定义一个名为 getAddress 的函数，用于根据经纬度获取详细地址信息
+// 调用 qqmapsdk 的 reverseGeocoder 方法进行逆地理编码
+function getAddress() {
   qqmapsdk.reverseGeocoder({
     location: {
-      latitude,
-      longitude,
+      latitude: currentPosition.value.latitude, // 纬度
+      longitude: currentPosition.value.longitude, // 经度
     },
+    // 成功回调函数，当逆地理编码成功时执行
     success(res) {
-      console.log('详细地址信息', res)
-      const address = res.result.formatted_addresses.recommend
-      console.log('详细地址', address)
+      // 从返回结果中提取推荐格式的详细地址
+      const addressComponent = res.result.address_component
+      const addressReference = res.result.address_reference
+      currentPosition.value.address = `${addressComponent.nation}${addressComponent.province}${addressComponent.city}${addressComponent.district}${addressReference.town.title}${addressReference.landmark_l2.title}`
+      // 在控制台输出提取到的详细地址
+      console.log('详细地址', currentPosition.value.address)
     },
+    // 失败回调函数，当逆地理编码失败时执行
     fail(err) {
+      // 在控制台输出错误信息
       console.error('获取地址失败', err)
     },
   })
 }
 
-// #endif
+// 点击签到
+function handleSignIn() {
+  // 切换签到状态
 
-/* 根据 is_online 获取颜色、文字 */
-const getItemOnline = (item: ILiftListResponse, type: 'color' | 'text' | 'class' | 'icon') => {
-  const isOnline = item.isOnline === '1'
-  switch (type) {
-    case 'color':
-      return isOnline ? 'rgb(83, 157, 243)' : 'rgb(171, 171, 171)'
-    case 'class':
-      return isOnline ? 'item-online' : 'item-offline'
-    case 'icon':
-      return isOnline ? 'check-circle-filled' : 'close-circle-filled'
-    case 'text':
-      return isOnline ? '在线' : '离线'
-    default:
-      return '' // 防止未知类型的意外情况
+  maintenance.value.isMaintain = 2
+
+  // postSignIn({ id: liftInfo.value.id })
+  //   .then((result) => {
+  //     uni.showToast({
+  //       title: '签到成功',
+  //       icon: 'none',
+  //     })
+  //     uni.navigateBack()
+  //   })
+  //   .catch((err) => {
+  //     console.log('postSignIn err:>> ', err)
+  //   })
+}
+
+const imageSrc = ref('')
+
+// 定义一个名为 takePhoto 的函数，用于拍照操作
+function takePhoto() {
+  wx.chooseMedia({
+    count: 1,
+    mediaType: ['image'],
+    sourceType: ['camera'],
+    // camera: 'back',
+    success: (res) => {
+      const tempFiles = res.tempFiles
+      imageSrc.value = tempFiles[0].tempFilePath
+      drawWatermark()
+      // uploadImage(imageSrc.value)
+    },
+    fail: (err) => {
+      console.error('拍照失败', err)
+    },
+  })
+}
+
+// 获取当前时间
+const currentTime = new Date().toLocaleString()
+
+// 定义一个名为 getLocationAndTime 的函数，用于获取地理位置和时间信息
+function getLocationAndTime() {
+  // 获取地理位置
+  wx.getLocation({
+    type: 'wgs84',
+    success: (res) => {
+      const latitude = res.latitude
+      const longitude = res.longitude
+      // this.location = `纬度: ${latitude}, 经度: ${longitude}`;
+      drawWatermark()
+    },
+    fail: () => {
+      wx.showToast({
+        title: '获取位置失败',
+        icon: 'none',
+      })
+    },
+  })
+}
+
+// 定义一个名为 drawWatermark 的函数，用于绘制水印
+function drawWatermark() {
+  const ctx = wx.createCanvasContext('myCanvas')
+  ctx.drawImage(imageSrc.value, 0, 0, 300, 300)
+
+  // 添加时间水印
+  ctx.setFontSize(20)
+  ctx.setFillStyle('rgba(255, 255, 255, 0.5)')
+  ctx.fillText(currentTime, 10, 280)
+
+  // 添加地点水印
+  ctx.setFontSize(20)
+  ctx.setFillStyle('rgba(255, 255, 255, 0.5)')
+  ctx.fillText(currentPosition.value.address, 10, 250)
+
+  ctx.draw(false, () => {
+    wx.canvasToTempFilePath({
+      canvasId: 'myCanvas',
+      success: (res) => {
+        const watermarkedImage = res.tempFilePath
+        uploadImage(watermarkedImage)
+      },
+    })
+  })
+}
+
+const isSigning = ref(false)
+
+const startSign = (e) => {
+  console.log('startSign')
+  if (!isSigning.value) {
+    isSigning.value = true
+    const ctx = wx.createCanvasContext('signatureCanvas')
+    ctx.moveTo(e.touches[0].x, e.touches[0].y)
+    ctx.setStrokeStyle('black') // 设置笔的颜色为黑色
   }
 }
 
-/* 点击电梯信息、跳转电梯详情页 */
-const handleClickItem = (item: ILiftListResponse) => {
-  console.log('addElevator :>> click item', item)
-  uni.navigateTo({ url: `${liftDetailPage}?elevatorId=${item.elevatorId}` })
+const moveSign = (e) => {
+  console.log('moveSign')
+
+  if (isSigning.value) {
+    const ctx = wx.createCanvasContext('signatureCanvas')
+    ctx.lineTo(e.touches[0].x, e.touches[0].y)
+    ctx.stroke()
+    ctx.draw(true)
+    ctx.draw(false) // 确保每次绘制后都会触发绘制更新
+  }
+}
+
+const endSign = () => {
+  console.log('moveSign')
+  isSigning.value = false
+}
+
+const saveSignature = () => {
+  wx.canvasToTempFilePath({
+    canvasId: 'signatureCanvas',
+    success: (res) => {
+      const signaturePath = res.tempFilePath
+      uploadImage(signaturePath)
+    },
+    fail: (err) => {
+      console.error('生成签名图片失败', err)
+    },
+  })
+}
+
+const uploadImage = (filePath) => {
+  wx.uploadFile({
+    url: 'YOUR_UPLOAD_URL', // 替换为你的上传接口地址
+    filePath,
+    name: 'file',
+    success: (res) => {
+      const data = res.data
+      // 处理上传成功后的逻辑
+    },
+    fail: (err) => {
+      console.error('上传失败', err)
+    },
+  })
 }
 </script>
 
@@ -252,32 +452,6 @@ $rpx-92: px2rpx(92);
       color: $color-white;
     }
   }
-
-  .search-bar {
-    @extend %flex-center;
-    height: $rpx-40;
-    padding: $rpx-8 $rpx-12;
-    background: $color-white;
-    border: $rpx-1 solid $color-border;
-    border-radius: $rpx-20;
-
-    .search-input {
-      @extend %font-size-xs;
-      flex-grow: 1;
-      height: $rpx-24;
-      color: $color-placeholder;
-    }
-
-    .search-btn {
-      @extend %btn-reset;
-      @extend %flex-center;
-      flex-shrink: 0;
-      width: $rpx-24;
-      height: $rpx-24;
-      background: $color-primary;
-      border-radius: $rpx-8;
-    }
-  }
 }
 
 .scroll-box {
@@ -294,63 +468,15 @@ $rpx-92: px2rpx(92);
     border-radius: $rpx-20 $rpx-20 0 0;
     @extend %padding-base;
 
-    .card-item {
-      position: relative;
-      @extend %flex-column;
-      gap: $rpx-6;
-      justify-content: flex-start;
-      padding: $rpx-12 $rpx-16 $rpx-12 $rpx-14;
-
-      background: $color-white;
-      border-color: $color-secondary;
-      border-style: solid;
-      border-width: $rpx-1 $rpx-1 $rpx-1 $rpx-3;
-      border-radius: $rpx-14 $rpx-12 $rpx-12 $rpx-14; //TODO:待优化
-      box-shadow: 0px $rpx-4 $rpx-8 0px rgba(28, 37, 44, 0.05);
-
-      .item-title {
-        height: $rpx-19;
-        font-size: 16px;
-        font-weight: 700;
-        line-height: 120%;
-        color: rgb(0, 0, 0);
-        text-align: left;
-        letter-spacing: 0px;
-      }
-      .item-status {
-        @extend %flex-between;
-        position: absolute;
-        top: $rpx-14;
-        right: $rpx-24;
-        gap: $rpx-8;
-        .item-online {
-          color: rgb(83, 157, 243);
-        }
-
-        .item-offline {
-          color: rgb(171, 171, 171);
-        }
-        .item-status-text {
-          font-family: Lato;
-          font-size: 12px;
-          font-weight: 400;
-          line-height: 140%;
-          text-align: left;
-          letter-spacing: 0px;
-        }
-      }
-
-      .item-text {
-        @extend %ellipsis;
-        height: $rpx-18;
-        font-family: Lato;
-        font-size: 12px;
-        font-weight: 400;
-        line-height: 140%;
-        color: rgb(88, 90, 102);
-        text-align: left;
-        letter-spacing: 0px;
-      }
+    .btn-sign {
+      @extend %btn-reset;
+      @extend %flex-center;
+      @extend %font-size-lg;
+      width: 50%;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto;
+      margin-bottom: $rpx-10;
+      border-radius: 50%;
     }
   }
 }

@@ -17,39 +17,12 @@
 ---------------------------- */
 body,
 html,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-ul,
-ol,
-li,
-dl,
-dt,
-dd,
-header,
-menu,
-section,
-p,
 input,
-td,
-th,
-ins,
-view {
+view,
+button {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-}
-
-img {
-  vertical-align: top;
-}
-
-ul,
-li {
-  list-style: none;
 }
 
 :root,
@@ -127,10 +100,6 @@ $color-gray-70: rgb(148, 148, 148);
 $color-bg-red: rgb(235, 77, 87);
 $color-bg-red-50: rgba(235, 77, 87, 0.5);
 
-a {
-  color: #333;
-  text-decoration: none;
-}
 /* 占位符选择器
 ----------------------------- */
 
@@ -207,9 +176,6 @@ a {
 
 /* 按钮样式重置 */
 %btn-reset {
-  padding: 0;
-  margin: 0;
-  font-size: inherit;
   border: 0;
   border-radius: 0;
   &::before,
