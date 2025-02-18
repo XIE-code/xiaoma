@@ -29,40 +29,27 @@
         <view>维保类型： {{ maintenance.maintType }}</view>
         <view>维保状态： {{ getMaintenanceType(maintenance.isMaintain) }}</view>
 
+        <!-- TODO: 区分运行环境 -->
         <view v-if="maintenance.isMaintain === 1">
-          <!-- TODO: 区分运行环境 -->
           <button hover-class="button-hover" @click="handleSignIn" class="btn-sign">
-            <!-- :disabled="signInDistance > 500" -->
             {{ `${signInDistance <= 500 ? '点击签到' : '距离过远'}` }}
           </button>
           <view>当前位置： {{ currentPosition.address }}</view>
         </view>
-        <view v-else-if="maintenance.isMaintain === 2">
-          <view>
+        <view v-else-if="maintenance.isMaintain === 3">
+          <!-- <view>
             <button @click="takePhoto">拍照上传</button>
             <view>
               <canvas canvas-id="myCanvas" style="width: 300px; height: 300px"></canvas>
             </view>
-          </view>
-          <view>
-            <view>
-              <canvas
-                canvas-id="signatureCanvas"
-                style="width: 300px; height: 200px; border: 1px solid #000"
-                @touchstart="startSign"
-                @touchmove="moveSign"
-                @touchend="endSign"
-              ></canvas>
-            </view>
+          </view> -->
+          <view style="width: 200px">
+            <signature></signature>
             <button @click="saveSignature">保存签名</button>
           </view>
           <button>确认</button>
         </view>
-        <view v-else-if="maintenance.isMaintain === 3">已完成维保</view>
-
-        <!-- #ifdef H5 -->
-        <!-- <button>请在微信小程序授权获取定位</button> -->
-        <!-- #endif -->
+        <view v-else-if="maintenance.isMaintain === 2">已完成维保</view>
       </view>
     </view>
   </wrapper>
@@ -71,6 +58,7 @@
 <script lang="ts" setup>
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
+import signature from '@/components/signature/signature.vue'
 /* API */
 import gcoord from 'gcoord'
 import QQMapWX from './qqmap-wx-jssdk'
@@ -78,8 +66,12 @@ import QQMapWX from './qqmap-wx-jssdk'
 /* store */
 import { useSystemStore } from '@/store'
 /* service */
-import { postMaintenanceDetail } from '@/service/maintenance/maintenance'
-import { IElevatorInfo, IMaintenanceBasis } from '@/service/maintenance/type'
+import { postMaintenanceDetail, postMaintenanceSignIn } from '@/service/maintenance/maintenance'
+import {
+  IElevatorInfo,
+  IMaintenanceBasis,
+  IMaintenanceSignInParams,
+} from '@/service/maintenance/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */
@@ -106,6 +98,7 @@ const liftInfo = ref<Partial<IElevatorInfo>>({
 
 const maintenance = ref<Partial<IMaintenanceBasis>>({
   maintType: '',
+  id: null,
 })
 
 const getMaintenanceType = (type: number) => {
@@ -135,16 +128,7 @@ const currentPosition = ref({
 const signInDistance = ref(0)
 
 onLoad((options) => {
-  const liftId = options.id
-  postMaintenanceDetail({ id: liftId })
-    .then((result) => {
-      liftInfo.value = result.ele
-      maintenance.value = result.basis
-      getSetting()
-    })
-    .catch((err) => {
-      console.log('postLiftGetRun err:>> ', err)
-    })
+  getMaintenanceDetail(+options.id)
 })
 
 // onPullDownRefresh() {
@@ -157,6 +141,19 @@ onLoad((options) => {
 //       uni.stopPullDownRefresh();
 //     }, 2000);
 //   }
+
+// 获取维保详情
+const getMaintenanceDetail = (id: number) => {
+  postMaintenanceDetail({ id })
+    .then((result) => {
+      liftInfo.value = result.ele
+      maintenance.value = result.basis
+      getSetting()
+    })
+    .catch((err) => {
+      console.log('postLiftGetRun err:>> ', err)
+    })
+}
 
 // 定义一个名为 getSetting 的函数，用于获取设置信息
 function getSetting() {
@@ -283,35 +280,35 @@ function getAddress() {
 function handleSignIn() {
   // 切换签到状态
 
-  maintenance.value.isMaintain = 2
+  maintenance.value.isMaintain = 3
 
-  // postSignIn({ id: liftInfo.value.id })
-  //   .then((result) => {
-  //     uni.showToast({
-  //       title: '签到成功',
-  //       icon: 'none',
-  //     })
-  //     uni.navigateBack()
-  //   })
-  //   .catch((err) => {
-  //     console.log('postSignIn err:>> ', err)
-  //   })
+  postMaintenanceSignIn({ id: maintenance.value.id, is_qan: maintenance.value.iden })
+    .then((result) => {
+      uni.showToast({
+        title: '签到成功',
+        icon: 'none',
+      })
+    })
+    .catch((err) => {
+      console.log('postSignIn err:>> ', err)
+    })
 }
 
 const imageSrc = ref('')
 
 // 定义一个名为 takePhoto 的函数，用于拍照操作
+// TODO: 压缩文件（500kb）
 function takePhoto() {
   wx.chooseMedia({
     count: 1,
     mediaType: ['image'],
     sourceType: ['camera'],
+    sizeType: ['compressed'],
     // camera: 'back',
     success: (res) => {
       const tempFiles = res.tempFiles
       imageSrc.value = tempFiles[0].tempFilePath
       drawWatermark()
-      // uploadImage(imageSrc.value)
     },
     fail: (err) => {
       console.error('拍照失败', err)
@@ -376,7 +373,7 @@ const startSign = (e) => {
     isSigning.value = true
     const ctx = wx.createCanvasContext('signatureCanvas')
     ctx.moveTo(e.touches[0].x, e.touches[0].y)
-    ctx.setStrokeStyle('black') // 设置笔的颜色为黑色
+    // ctx.setStrokeStyle('black') // 设置笔的颜色为黑色
   }
 }
 

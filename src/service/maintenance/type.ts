@@ -81,8 +81,33 @@ export interface IMaintenanceLogTime {
 }
 
 /* 维修详情返回类型 */
-export interface IMaintenanceDetail {
+export interface IMaintenanceDetailResponse {
   ele: IElevatorInfo // 电梯信息
   basis: IMaintenanceBasis // 维保基础信息
   logTime: IMaintenanceLogTime[] // 维保日志时间
+}
+
+/* 维保签到请求参数 */
+export interface IMaintenanceSignInParams {
+  id: number // 维保单ID
+  is_qan: 1 | 0 // 是否签到，1：已签到，0：未签到
+}
+
+/* 维保签到返回类型 */
+export type IMaintenanceSignInResponse = any
+
+/* 维保订单签字请求参数 */
+export interface IMaintenanceSignatureParams {
+  id: number // 维保单ID
+  type: 1 | 2 | 3 // 人员类型，1：安全员，2：维保员，3：物业
+  image: File // 签名图片
+  remark?: string // 备注，可选
+}
+
+/* 维保订单签字响应体 */
+export interface IMaintenanceSignatureResponse {
+  id: number // 维保单ID
+  title: string // 人员类型名称
+  type: 1 | 2 | 3 // 人员类型，1：安全员，2：维保员，3：物业
+  image: string // 签名URL
 }

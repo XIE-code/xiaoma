@@ -142,6 +142,7 @@ import { postMaintenanceDetail, postMaintenanceList } from '@/service/maintenanc
 import type { IMaintenanceItem, isMaintainType } from '@/service/maintenance/type'
 import {
   knowledgeCompanyPage,
+  liftMonitorPage,
   liftEnterPage,
   liftListPage,
   shopPage,
@@ -182,7 +183,7 @@ const elevatorList = reactive([
     id: 1,
     name: '电梯监控',
     url: monitorSvg,
-    path: '',
+    path: liftMonitorPage,
   },
   {
     id: 2,

@@ -17,7 +17,8 @@ interface NavigateToOptions {
        "/pages/knowledge/file/file" |
        "/pages/lift/detail/detail" |
        "/pages/lift/enter/enter" |
-       "/pages/lift/list/list";
+       "/pages/lift/list/list" |
+       "/pages/lift/monitor/monitor";
 }
 interface RedirectToOptions extends NavigateToOptions {}
 

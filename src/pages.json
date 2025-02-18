@@ -158,6 +158,10 @@
       "style": {
         "navigationBarTitleText": "电梯列表"
       }
+    },
+    {
+      "path": "pages/lift/monitor/monitor",
+      "type": "page"
     }
   ],
   "subPackages": []
