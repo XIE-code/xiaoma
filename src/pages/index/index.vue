@@ -138,8 +138,8 @@ import filesSvg from '@/static/svg/files.svg'
 import knowledgeSvg from '@/static/svg/knowledge.svg'
 import monitorSvg from '@/static/svg/monitor.svg'
 import notificationSvg from '@/static/svg/notification.svg'
-import { postMaintenanceDetail, postMaintenanceList } from '@/service/lift/lift'
-import { IMaintenanceItem, isMaintainType } from '@/service/lift/type'
+import { postMaintenanceDetail, postMaintenanceList } from '@/service/maintenance/maintenance'
+import type { IMaintenanceItem, isMaintainType } from '@/service/maintenance/type'
 import {
   knowledgeCompanyPage,
   liftEnterPage,

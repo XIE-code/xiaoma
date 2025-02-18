@@ -4,10 +4,6 @@ import {
   liftListApi,
   liftPushTroubleApi,
   liftLiftAddApi,
-  knowledgeCategoryListApi,
-  knowledgeDocumentListApi,
-  maintenanceListApi,
-  maintenanceDetailApi,
 } from '@/common/api'
 import { http } from '@/utils/http'
 import {
@@ -21,14 +17,6 @@ import {
   ILiftPushTroubleResponse,
   ILiftLiftAddParams,
   ILiftLiftAddResponse,
-  IKnowledgeCategoryListParams,
-  IKnowledgeCategoryListResponse,
-  IKnowledgeDocumentListParams,
-  IKnowledgeDocumentListResponse,
-  IMaintenanceListParams,
-  IMaintenanceListResponse,
-  IMaintenanceDetailParams,
-  IMaintenanceDetail,
 } from './type'
 
 /* 故障代码 */
@@ -54,24 +42,4 @@ export const postLiftPushTrouble = (params: ILiftPushTroubleParams) => {
 /* 新增电梯信息 */
 export const postLiftLiftAdd = (params: ILiftLiftAddParams) => {
   return http.post<ILiftLiftAddResponse>(liftLiftAddApi, params)
-}
-
-/* 知识库类目表 */
-export const postKnowledgeCategoryList = (params: IKnowledgeCategoryListParams) => {
-  return http.post<IKnowledgeCategoryListResponse[]>(knowledgeCategoryListApi, params)
-}
-
-/* 知识库文件列表 */
-export const postKnowledgeDocumentList = (params: IKnowledgeDocumentListParams) => {
-  return http.post<IKnowledgeDocumentListResponse[]>(knowledgeDocumentListApi, params)
-}
-
-/* 维修列表 */
-export const postMaintenanceList = (params: IMaintenanceListParams) => {
-  return http.post<IMaintenanceListResponse>(maintenanceListApi, params)
-}
-
-/* 维修详情 */
-export const postMaintenanceDetail = (params: IMaintenanceDetailParams) => {
-  return http.post<IMaintenanceDetail>(maintenanceDetailApi, params)
 }

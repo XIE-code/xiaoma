@@ -78,8 +78,8 @@ import QQMapWX from './qqmap-wx-jssdk'
 /* store */
 import { useSystemStore } from '@/store'
 /* service */
-import { postLiftList, postMaintenanceDetail } from '@/service/lift/lift'
-import { IElevatorInfo, ILiftListResponse, IMaintenanceBasis } from '@/service/lift/type'
+import { postMaintenanceDetail } from '@/service/maintenance/maintenance'
+import { IElevatorInfo, IMaintenanceBasis } from '@/service/maintenance/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */

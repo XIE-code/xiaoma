@@ -61,8 +61,8 @@ import addressSvg from '@/static/svg/address.svg'
 /* tools */
 import { getWeekDates } from '@/utils/tools'
 import type { IWeekDate } from '@/utils/tools'
-import { postMaintenanceList } from '@/service/lift/lift'
-import { IMaintenanceItem, isMaintainType } from '@/service/lift/type'
+import { postMaintenanceList } from '@/service/maintenance/maintenance'
+import { IMaintenanceItem, isMaintainType } from '@/service/maintenance/type'
 
 onLoad(() => {
   uni.hideTabBar()
