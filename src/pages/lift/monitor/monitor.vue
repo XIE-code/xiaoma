@@ -1,52 +1,175 @@
-<template>
-  <view>
-    <text style="display: block; margin-top: 20px; text-align: center">电梯状态实时监测</text>
-    <!-- <view v-if="status">
-      <text>
-        <strong>电梯状态：</strong>
-        {{ status.status }}
-      </text>
-      <text>
-        <strong>当前楼层：</strong>
-        {{ status.floor }}
-      </text>
-      <text>
-        <strong>运行方向：</strong>
-        {{ status.direction }}
-      </text>
-      <text>
-        <strong>速度：</strong>
-        {{ status.maxSpeed }} m/s
-      </text>
-      <text>
-        <strong>开始楼层：</strong>
-        {{ status.floorStart }}
-      </text>
-      <text>
-        <strong>结束楼层：</strong>
-        {{ status.floorEnd }}
-      </text>
-      <text>
-        <strong>已运行的楼层次数：</strong>
-        {{ status.runningDownTimes }} 次
-      </text>
-      <text>
-        <strong>最大速度：</strong>
-        {{ status.maxSpeed }} m/s
-      </text>
-      <text>
-        <strong>门操作次数：</strong>
-        {{ status.doorTimes }} 次
-      </text>
-    </view> -->
-  </view>
-</template>
-<!-- 
-<script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import mqtt from 'mqtt/dist/mqtt'
+<route lang="json5" type="page">
+{
+  layout: 'default',
+  style: {
+    navigationBarTitleview: '电梯监控',
+  },
+}
+</route>
 
-const status = ref(null)
+<template>
+  <wrapper paddingType="top" :backgroundColor="COLOR_SECONDARY">
+    <view class="navigation">
+      <wd-icon
+        name="arrow-left"
+        @click="handleClickLeft"
+        :size="px2rpx(24)"
+        color="white"
+      ></wd-icon>
+      <view class="title">电梯监控</view>
+    </view>
+
+    <view class="content">
+      <view class="scroll-box">
+        <view class="header">
+          <view class="state">在线</view>
+          <view class="img"></view>
+          <view class="info">
+            <view class="info-name">电梯名称</view>
+            <view class="info-project">项目</view>
+            <view class="info-code">编号</view>
+            <view class="info-decoration"></view>
+            <view class="run-bar">
+              <view class="run-bar-item" v-for="item in 3" :key="item">
+                <view class="run-bar-img">img</view>
+                <view class="run-bar-data">data</view>
+                <view class="run-bar-txt">txt</view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <view class="btn-list">
+          <button
+            class="btn-item"
+            v-for="item in btnList"
+            :key="item.type"
+            @click="handleClickBtn(item)"
+          >
+            {{ item.name }}
+          </button>
+        </view>
+
+        <view v-if="showBtnContent === 'info'">电梯信息</view>
+        <view v-if="showBtnContent === 'run'">
+          <view>
+            <strong>电梯状态：</strong>
+            {{ status.status }}
+          </view>
+          <view>
+            <strong>当前楼层：</strong>
+            {{ status.floor }}
+          </view>
+          <view>
+            <strong>运行方向：</strong>
+            {{ status.direction }}
+          </view>
+          <view>
+            <strong>速度：</strong>
+            {{ status.maxSpeed }} m/s
+          </view>
+          <view>
+            <strong>开始楼层：</strong>
+            {{ status.floorStart }}
+          </view>
+          <view>
+            <strong>结束楼层：</strong>
+            {{ status.floorEnd }}
+          </view>
+          <view>
+            <strong>已运行的楼层次数：</strong>
+            {{ status.runningDownTimes }} 次
+          </view>
+          <view>
+            <strong>最大速度：</strong>
+            {{ status.maxSpeed }} m/s
+          </view>
+          <view>
+            <strong>门操作次数：</strong>
+            {{ status.doorTimes }} 次
+          </view>
+        </view>
+      </view>
+    </view>
+  </wrapper>
+</template>
+
+<script lang="ts" setup>
+/* components */
+import wrapper from '@/layouts/wrapper.vue'
+/* API */
+import mqtt from 'mqtt/dist/mqtt'
+/* TODO: scrollBox */
+import scrollBox from '@/layouts/scroll-box.vue'
+/* service */
+import { postBreakdownCode, postLiftGetRun } from '@/service/lift/lift'
+/* utils */
+import { px2rpx } from '@/utils/tools'
+/* constant */
+import { COLOR_SECONDARY } from '@/common/constant'
+
+// 导航栏
+function handleClickLeft() {
+  uni.navigateBack()
+}
+
+const status = reactive({
+  tid: 'req00000000001',
+  status: 'running',
+  stage: 'start',
+  direction: 'down',
+  floor: 6,
+  floorStart: 5,
+  floorEnd: 10,
+  distance: 500,
+  maxSpeed: 2.5,
+  gmt: 1672502400000,
+  doorTimes: 15,
+  runningUpTimes: 10,
+  runningDownTimes: 10,
+})
+
+const liftInfo = ref({})
+
+onLoad((options) => {
+  const elevatorId = options.elevatorId
+  postLiftGetRun({ code: elevatorId })
+    .then((result) => {
+      console.log('result :>> ', result)
+      const resultKeys = Object.keys(result)
+    })
+    .catch((err) => {
+      console.log('postLiftGetRun err:>> ', err)
+    })
+})
+
+type contentType = 'info' | 'run' | 'maintenance' | 'breakdown'
+const showBtnContent = ref<contentType>('info')
+
+const btnList = ref({
+  info: {
+    name: '电梯信息',
+    type: 'info',
+  },
+  run: {
+    name: '运行统计',
+    type: 'run',
+  },
+  maintenance: {
+    name: '维保记录',
+    type: 'maintenance',
+  },
+  breakdown: {
+    name: '故障记录',
+    type: 'breakdown',
+  },
+})
+
+const handleClickBtn = (item: any) => {
+  showBtnContent.value = item.type
+  console.log('showBtnContent :>> ', showBtnContent.value)
+}
+
 let client: mqtt.MqttClient | null = null
 
 const connectToMQTT = () => {
@@ -104,9 +227,9 @@ const connectToMQTT = () => {
   })
 }
 
-onMounted(() => {
-  connectToMQTT()
-})
+// onMounted(() => {
+//   connectToMQTT()
+// })
 
 onBeforeUnmount(() => {
   if (client) {
@@ -115,9 +238,121 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped>
-text {
-  display: block;
-  margin-bottom: 10px;
+<style lang="scss" scoped>
+$rpx-17: px2rpx(17);
+$rpx-60: px2rpx(60);
+
+%font-size-12 {
+  @extend %font-size-xs;
+  color: $color-black;
 }
-</style> -->
+
+// 导航栏
+.navigation {
+  @extend %flex-center;
+  flex-shrink: 0;
+  gap: $rpx-16;
+  justify-content: flex-start;
+  height: $rpx-32;
+  padding: 0 $rpx-24;
+  background: $color-secondary;
+
+  .title {
+    @extend %font-size-xl;
+    @extend %flex-center;
+    line-height: $rpx-28;
+    color: $color-white;
+  }
+}
+// 内容
+.content {
+  flex-grow: 1;
+  margin-top: $rpx-10;
+  overflow: scroll;
+  background: #f8f9fa;
+  border-radius: $rpx-30;
+  .scroll-box {
+    @extend %flex-column;
+    gap: $rpx-24;
+    // padding-top: $rpx-10;
+
+    .header {
+      @extend %flex-center;
+      position: relative;
+      gap: $rpx-6;
+      justify-content: space-between;
+      height: 30vh;
+      padding: $rpx-16;
+
+      .state {
+        position: absolute;
+        top: 0;
+        right: $rpx-20;
+      }
+
+      .img {
+        flex: 1;
+        height: 100%;
+        border: $rpx-1 solid $color-primary;
+      }
+
+      .info {
+        @extend %flex-column;
+        flex: 2;
+        gap: $rpx-6;
+        height: 100%;
+        border: $rpx-1 solid $color-primary;
+
+        .info-name {
+          @extend %font-size-lg;
+        }
+
+        .info-project,
+        .info-code {
+          @extend %font-size;
+        }
+
+        .info-decoration {
+          width: 100%;
+          height: $rpx-32;
+          background: whitesmoke;
+        }
+
+        .run-bar {
+          @extend %flex-center;
+          gap: $rpx-6;
+
+          .run-bar-item {
+            @extend %flex-column;
+            gap: $rpx-6;
+            width: 100%;
+            height: 100%;
+            border: $rpx-1 solid $color-primary;
+
+            .run-bar-img {
+              @extend %font-size;
+            }
+
+            .run-bar-data {
+              @extend %font-size-lg;
+            }
+
+            .run-bar-view {
+              @extend %font-size-xl;
+            }
+          }
+        }
+      }
+    }
+
+    .btn-list {
+      @extend %flex-center;
+      gap: $rpx-12;
+
+      .btn-item {
+        padding: $rpx-3 $rpx-6;
+      }
+    }
+  }
+}
+</style>

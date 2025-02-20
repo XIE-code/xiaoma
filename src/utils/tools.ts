@@ -100,6 +100,8 @@ export function convertSnakeToCamel(obj: any): any {
 
 /* 获取服务器图片 */
 export const getServerImg = (path: string) => {
+  // TODO:
+  // const baseUrl = import.meta.env.VITE_BASE_URL
   return path ? `${SERVER_BASEURL}/${path}` : homeLogo
 }
 

@@ -152,8 +152,16 @@
       }
     },
     {
-      "path": "pages/lift/monitor/monitor",
+      "path": "pages/lift/monitor/monitor copy",
       "type": "page"
+    },
+    {
+      "path": "pages/lift/monitor/monitor",
+      "type": "page",
+      "layout": "default",
+      "style": {
+        "navigationBarTitleview": "电梯监控"
+      }
     }
   ],
   "subPackages": []

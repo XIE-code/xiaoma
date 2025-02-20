@@ -53,8 +53,6 @@
             </text>
           </view>
           <view class="item-text">电梯编号：{{ item.elevatorNumber }}</view>
-          <view class="item-text">使用单位：{{ item.companyName }}</view>
-          <view class="item-text">维保人员：{{ item.realname }}</view>
           <view class="item-text">电梯地址：{{ item.address }}</view>
         </view>
       </view>
@@ -77,7 +75,6 @@ import { COLOR_SECONDARY } from '@/common/constant'
 import { indexPage, liftDetailPage, liftMonitorPage } from '@/common/pages'
 
 const systemStore = useSystemStore()
-const { capsule } = systemStore.systemInfo
 
 const flag = ref('')
 
@@ -94,23 +91,22 @@ function handleClickLeft() {
 function handleSearch() {
   console.log('触发搜索事件 :>> ')
 }
-const staticLiftData: ILiftListResponse = {
-  elevatorId: 1584,
-  registerCode: '',
-  name: ' 测 试 电 梯 1',
-  elevatorNumber: 230000043,
-  address: '重庆市市辖区九龙坡区石油路',
-  isOnline: '0',
-  companyName: '重庆使用单位',
-  realname: '朱渝光',
-  phone: 13883587879,
-  serverIp: '::1',
-}
+// const staticLiftData: ILiftListResponse = {
+//   elevatorId: 1584,
+//   registerCode: '',
+//   name: ' 测 试 电 梯 1',
+//   elevatorNumber: 230000043,
+//   address: '重庆市市辖区九龙坡区石油路',
+//   isOnline: '0',
+//   companyName: '重庆使用单位',
+//   realname: '朱渝光',
+//   phone: 13883587879,
+//   serverIp: '::1',
+// }
 // 内容区域
 const liftList = ref<ILiftListResponse[]>([])
 
 // TODO: 下拉刷新
-
 postLiftList({
   village_id: '',
   lift_name: '',
