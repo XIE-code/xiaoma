@@ -1,7 +1,7 @@
 <template>
   <view>
     <text style="display: block; margin-top: 20px; text-align: center">电梯状态实时监测</text>
-    <view v-if="status">
+    <!-- <view v-if="status">
       <text>
         <strong>电梯状态：</strong>
         {{ status.status }}
@@ -38,13 +38,13 @@
         <strong>门操作次数：</strong>
         {{ status.doorTimes }} 次
       </text>
-    </view>
+    </view> -->
   </view>
 </template>
-
+<!-- 
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import mqtt from 'mqtt'
+import mqtt from 'mqtt/dist/mqtt'
 
 const status = ref(null)
 let client: mqtt.MqttClient | null = null
@@ -58,7 +58,14 @@ const connectToMQTT = () => {
   }
 
   // 创建MQTT客户端
+  // #ifdef H5
+
   client = mqtt.connect('wss://sharemarttech.com:8084/mqtt', options)
+  // #endififdef
+
+  // #ifdef MP-WEIXIN
+  client = mqtt.connect('wxs://sharemarttech.com:8084/mqtt', options)
+  // #endif
 
   // 连接成功时的回调
   client.on('connect', () => {
@@ -113,4 +120,4 @@ text {
   display: block;
   margin-bottom: 10px;
 }
-</style>
+</style> -->

@@ -74,10 +74,17 @@ import { ILiftListResponse } from '@/service/lift/type'
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
-import { indexPage, liftDetailPage } from '@/common/pages'
+import { indexPage, liftDetailPage, liftMonitorPage } from '@/common/pages'
 
 const systemStore = useSystemStore()
 const { capsule } = systemStore.systemInfo
+
+const flag = ref('')
+
+onLoad((options) => {
+  flag.value = options.flag
+})
+
 // 导航栏
 function handleClickLeft() {
   systemStore.resetTabBarIdx()
@@ -137,8 +144,12 @@ const getItemOnline = (item: ILiftListResponse, type: 'color' | 'text' | 'class'
 
 /* 点击电梯信息、跳转电梯详情页 */
 const handleClickItem = (item: ILiftListResponse) => {
-  console.log('addElevator :>> click item', item)
-  uni.navigateTo({ url: `${liftDetailPage}?elevatorId=${item.elevatorId}` })
+  if (flag.value === 'file') {
+    console.log('addElevator :>> click item', item)
+    uni.navigateTo({ url: `${liftDetailPage}?elevatorId=${item.elevatorId}` })
+  } else {
+    uni.navigateTo({ url: `${liftMonitorPage}?elevatorId=${item.elevatorId}` })
+  }
 }
 </script>
 

@@ -1,4 +1,9 @@
 src/uni_modules/
 
 # 引入的sdk
-src/pages/sign-in/qqmap-*
+
+src/pages/sign-in/qqmap-\*
+
+# 引入的DCloud插件
+
+src/components/jp-signature

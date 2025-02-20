@@ -10,3 +10,6 @@ src/manifest.json
 
 # 引入的sdk
 src/pages/sign-in/qqmap-*
+
+# 引入的DCloud插件
+src/components/jp-signature

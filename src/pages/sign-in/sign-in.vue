@@ -30,26 +30,60 @@
         <view>维保状态： {{ getMaintenanceType(maintenance.isMaintain) }}</view>
 
         <!-- TODO: 区分运行环境 -->
-        <view v-if="maintenance.isMaintain === 1">
+        <view v-if="maintenance.isMaintain === 1" class="sign-in">
           <button hover-class="button-hover" @click="handleSignIn" class="btn-sign">
             {{ `${signInDistance <= 500 ? '点击签到' : '距离过远'}` }}
           </button>
           <view>当前位置： {{ currentPosition.address }}</view>
         </view>
-        <view v-else-if="maintenance.isMaintain === 3">
-          <!-- <view>
-            <button @click="takePhoto">拍照上传</button>
-            <view>
-              <canvas canvas-id="myCanvas" style="width: 300px; height: 300px"></canvas>
-            </view>
-          </view> -->
-          <view style="width: 200px">
-            <signature></signature>
-            <button @click="saveSignature">保存签名</button>
+
+        <view v-else-if="maintenance.isMaintain === 3" class="clock-in">
+          <text>拍照打卡：</text>
+
+          <canvas
+            id="myCanvas"
+            type="2d"
+            :style="{
+              width: '100%',
+              height: 200 + 'px',
+              border: '1px solid #ccc',
+              position: 'fixed',
+              left: '9000px',
+            }"
+          ></canvas>
+
+          <wd-upload
+            custom-class="camera-photo"
+            ref="uploader"
+            :limit="1"
+            accept="media"
+            :auto-upload="false"
+            :source-type="['camera']"
+            :size-type="['compressed']"
+            :before-upload="beforeUpload"
+            v-if="!hasWatermark"
+          ></wd-upload>
+
+          <view v-else style="position: relative">
+            <wd-img :src="watermarkImg.path" custom-class="watermark-img"></wd-img>
+            <button @click="handleClearUploadImg" class="btn-upload">X</button>
           </view>
-          <button>确认</button>
+
+          <text>签名：</text>
+          <view class="signature-box" style="width: 100%; height: 500rpx">
+            <jp-signature ref="signatureRef"></jp-signature>
+          </view>
+          <view class="signature-btn-list">
+            <button class="btn-clear" @click="clear">清空</button>
+            <button class="btn-reset" @click="undo">撤消</button>
+            <button class="btn-save" @click="save">保存</button>
+          </view>
+
+          <text>备注：(选填)</text>
+          <textarea name="" id="" :value="remark" placeholder="请输入..." class="remark"></textarea>
+          <button class="btn-submit" @click="handleSubmit">提交</button>
         </view>
-        <view v-else-if="maintenance.isMaintain === 2">已完成维保</view>
+        <view v-else-if="maintenance.isMaintain === 2"></view>
       </view>
     </view>
   </wrapper>
@@ -58,28 +92,53 @@
 <script lang="ts" setup>
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
-import signature from '@/components/signature/signature.vue'
+import JpSignature from '@/components/jp-signature/jp-signature.vue'
 /* API */
-import gcoord from 'gcoord'
 import QQMapWX from './qqmap-wx-jssdk'
-
 /* store */
-import { useSystemStore } from '@/store'
+import { useSystemStore, useUserStore } from '@/store'
 /* service */
-import { postMaintenanceDetail, postMaintenanceSignIn } from '@/service/maintenance/maintenance'
 import {
-  IElevatorInfo,
-  IMaintenanceBasis,
-  IMaintenanceSignInParams,
-} from '@/service/maintenance/type'
+  postMaintenanceDetail,
+  postMaintenanceSignature,
+  postMaintenanceSignIn,
+} from '@/service/maintenance/maintenance'
+import { IElevatorInfo, IMaintenanceBasis } from '@/service/maintenance/type'
 /* utils */
-import { px2rpx } from '@/utils/tools'
+import { isNullOrUndefined, px2rpx, uniShowToast } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
-import { indexPage, liftDetailPage } from '@/common/pages'
+import { indexPage } from '@/common/pages'
+import { UploadBeforeUploadOption, UploadFile } from 'wot-design-uni/components/wd-upload/types'
+import dayjs from 'dayjs'
+import { maintenanceImgUploadApi } from '@/common/api'
+
+const signatureRef = ref<InstanceType<typeof JpSignature> | null>(null)
+const signatureValue = ref()
+
+const remark = ref('')
+
+const save = () => {
+  return new Promise((resolve, reject) => {
+    signatureRef.value?.canvasToTempFilePath({
+      success: (res: { isEmpty: boolean; tempFilePath: string }) => {
+        signatureValue.value = res.tempFilePath
+        resolve(res)
+        console.log('res :>> ', res)
+      },
+    })
+  })
+}
+
+const clear = () => {
+  signatureRef.value?.clear()
+}
+
+const undo = () => {
+  signatureRef.value?.undo()
+}
 
 const systemStore = useSystemStore()
-const { capsule } = systemStore.systemInfo
 
 const qqmapsdk = new QQMapWX({
   key: 'ND2BZ-7BL3U-6JKV7-GSGY3-QBI57-VHF7R',
@@ -128,19 +187,9 @@ const currentPosition = ref({
 const signInDistance = ref(0)
 
 onLoad((options) => {
+  // 获取维保电梯详情
   getMaintenanceDetail(+options.id)
 })
-
-// onPullDownRefresh() {
-//     // 执行下拉刷新操作
-//     console.log('执行下拉刷新操作');
-
-//     // 模拟数据请求
-//     setTimeout(() => {
-//       // 停止下拉刷新动画
-//       uni.stopPullDownRefresh();
-//     }, 2000);
-//   }
 
 // 获取维保详情
 const getMaintenanceDetail = (id: number) => {
@@ -148,26 +197,31 @@ const getMaintenanceDetail = (id: number) => {
     .then((result) => {
       liftInfo.value = result.ele
       maintenance.value = result.basis
+      // TODO： async/await
+      // 1. 未签到，展示签到页面，进行签到
+      // 2. 已签到
+      // 3. 已提交打卡
       getSetting()
     })
     .catch((err) => {
-      console.log('postLiftGetRun err:>> ', err)
+      console.log('postMaintenanceDetail err:>> ', err)
     })
 }
 
-// 定义一个名为 getSetting 的函数，用于获取设置信息
+// 定义一个名为 getSetting 的函数，用于获取设置信息,进而获取地址
 function getSetting() {
   wx.getSetting({
     success(res) {
+      // 1. 用户未授权，判断是否开启手机定位
       if (!res.authSetting['scope.userLocation']) {
         wx.authorize({
           scope: 'scope.userLocation',
+          // 1.1 用户同意授权
           success() {
-            // 用户已授权，判断是否开启手机定位
             getLocation()
           },
+          // 1.2 用户拒绝授权
           fail() {
-            // 用户拒绝授权
             wx.showToast({
               title: '需要开启定位权限',
               icon: 'none',
@@ -175,7 +229,7 @@ function getSetting() {
           },
         })
       } else {
-        // 用户已授权，直接调用wx.getLocation
+        // 2. 用户已授权，直接调用wx.getLocation
         getLocation()
       }
     },
@@ -187,11 +241,14 @@ function getLocation() {
   wx.getLocation({
     type: 'gcj02',
     isHighAccuracy: true, // 开启高精度定位
+    // 1. 获取定位成功
     success(res) {
       currentPosition.value.longitude = res.longitude // 经度
       currentPosition.value.latitude = res.latitude // 纬度
       console.log('维度、经度 :>> ', res.latitude, res.longitude)
+      // 1.2 计算签到距离
       calculateDistance()
+      // 1.3 获取街道地址
       getAddress()
     },
     fail(err) {
@@ -224,21 +281,12 @@ function getLocation() {
 // 起点坐标，格式：lat,lng;lat,lng…   from=39.071510,117.190091
 // 终点坐标，格式：lat,lng;lat,lng…  to=39.071510,117.190091;
 function calculateDistance() {
-  if (!currentPosition.value.latitude || !currentPosition.value.longitude) {
-    console.log('获取用户定位失败 :>> ')
-    return
-  }
   const from = `${currentPosition.value.latitude},${currentPosition.value.longitude}`
-  const to = gcoord.transform(
-    [liftInfo.value.latitude, liftInfo.value.longitude],
-    gcoord.BD09,
-    gcoord.GCJ02,
-  )
+  const to = `${liftInfo.value.latitude},${liftInfo.value.longitude}`
 
-  // // #ifdef MP-WEIXIN
   qqmapsdk.calculateDistance({
     from,
-    to: `${to[0]},${to[1]}`,
+    to,
     mode: 'straight', // 计算直线距离
     success: (res) => {
       signInDistance.value = res.result.elements[0].distance
@@ -248,10 +296,8 @@ function calculateDistance() {
       console.error('计算距离失败', err)
     },
   })
-  // #endif
 }
 
-// 定义一个名为 getAddress 的函数，用于根据经纬度获取详细地址信息
 // 调用 qqmapsdk 的 reverseGeocoder 方法进行逆地理编码
 function getAddress() {
   qqmapsdk.reverseGeocoder({
@@ -279,7 +325,6 @@ function getAddress() {
 // 点击签到
 function handleSignIn() {
   // 切换签到状态
-
   maintenance.value.isMaintain = 3
 
   postMaintenanceSignIn({ id: maintenance.value.id, is_qan: maintenance.value.iden })
@@ -294,132 +339,158 @@ function handleSignIn() {
     })
 }
 
-const imageSrc = ref('')
+const hasWatermark = ref(false)
+
+// Canvas
+// TODO:
+const canvas = reactive({
+  self: null,
+  ctx: null,
+})
+
+// 水印图宽高
+// TODO:
+const watermarkImg = reactive({
+  path: null,
+})
+
+// 上传图片
+// TODO:
+const uploadImg = reactive({
+  self: null,
+})
 
 // 定义一个名为 takePhoto 的函数，用于拍照操作
-// TODO: 压缩文件（500kb）
-function takePhoto() {
-  wx.chooseMedia({
-    count: 1,
-    mediaType: ['image'],
-    sourceType: ['camera'],
-    sizeType: ['compressed'],
-    // camera: 'back',
-    success: (res) => {
-      const tempFiles = res.tempFiles
-      imageSrc.value = tempFiles[0].tempFilePath
-      drawWatermark()
-    },
-    fail: (err) => {
-      console.error('拍照失败', err)
-    },
-  })
+function beforeUpload(event: UploadBeforeUploadOption) {
+  uploadImg.self = event.files[0]
+  console.log('event :>> ', event, uploadImg.self)
+  drawCanvas()
 }
 
-// 获取当前时间
-const currentTime = new Date().toLocaleString()
+const drawCanvas = () => {
+  // 绘制
+  const query = wx.createSelectorQuery()
+  query
+    .select('#myCanvas')
+    .fields({ node: true, size: true }, (res) => {
+      console.log('res :>> ', res)
+      const canvas = res.node
+      const ctx = canvas.getContext('2d')
 
-// 定义一个名为 getLocationAndTime 的函数，用于获取地理位置和时间信息
-function getLocationAndTime() {
-  // 获取地理位置
-  wx.getLocation({
-    type: 'wgs84',
-    success: (res) => {
-      const latitude = res.latitude
-      const longitude = res.longitude
-      // this.location = `纬度: ${latitude}, 经度: ${longitude}`;
-      drawWatermark()
-    },
-    fail: () => {
-      wx.showToast({
-        title: '获取位置失败',
-        icon: 'none',
-      })
-    },
-  })
+      const img = canvas.createImage()
+      img.onload = () => {
+        // 图像加载完成后的回调函数
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        ctx.save()
+
+        ctx.fillStyle = 'rgba(255, 255, 255, .5)' // 半透明白色
+        ctx.fillRect(0, 110, res.width, 50)
+        ctx.save()
+
+        // 绘制时间、地点
+        ctx.font = '14px Arial'
+        ctx.fillStyle = 'black'
+
+        setTimeout(() => {
+          const currentTime = dayjs().format('YYYY-MM-DD HH:mm:ss')
+          ctx.fillText(currentTime, 5, 125)
+          ctx.save()
+
+          const currentAddress = currentPosition.value.address
+          ctx.fillText(currentAddress, 5, 140)
+
+          ctx.restore()
+          ctx.restore()
+          ctx.restore()
+        }, 400)
+
+        setTimeout(() => {
+          // 在绘制完成后将 Canvas 生成图片
+          wx.canvasToTempFilePath({
+            canvas,
+            success: function (res) {
+              console.log('canvasToTempFilePath', res)
+              // 在这里你可以使用生成的图片，例如预览或上传
+              watermarkImg.path = res.tempFilePath
+            },
+          })
+          hasWatermark.value = true
+        }, 400)
+      }
+      img.src = uploadImg.self.path // 设置图像路径
+    })
+    .exec()
 }
 
-// 定义一个名为 drawWatermark 的函数，用于绘制水印
-function drawWatermark() {
-  const ctx = wx.createCanvasContext('myCanvas')
-  ctx.drawImage(imageSrc.value, 0, 0, 300, 300)
+// 删除上传图片
+const handleClearUploadImg = () => {
+  hasWatermark.value = false
+}
 
-  // 添加时间水印
-  ctx.setFontSize(20)
-  ctx.setFillStyle('rgba(255, 255, 255, 0.5)')
-  ctx.fillText(currentTime, 10, 280)
+function uploadImage(filePath: string) {
+  const userStore = useUserStore()
+  const { token } = userStore.userInfo as unknown as IUserInfo
 
-  // 添加地点水印
-  ctx.setFontSize(20)
-  ctx.setFillStyle('rgba(255, 255, 255, 0.5)')
-  ctx.fillText(currentPosition.value.address, 10, 250)
-
-  ctx.draw(false, () => {
-    wx.canvasToTempFilePath({
-      canvasId: 'myCanvas',
-      success: (res) => {
-        const watermarkedImage = res.tempFilePath
-        uploadImage(watermarkedImage)
+  return new Promise((resolve, reject) => {
+    wx.uploadFile({
+      url: import.meta.env.VITE_SERVER_BASEURL + maintenanceImgUploadApi,
+      filePath,
+      name: 'image',
+      header: {
+        token,
+      },
+      success: function (res) {
+        if (res.statusCode === 256) {
+          resolve(res.data)
+        } else {
+          reject(new Error(`上传文件失败，状态码：${res.statusCode}`))
+        }
+      },
+      fail: function (err) {
+        console.error('上传文件失败', err)
+        reject(err)
       },
     })
   })
 }
 
-const isSigning = ref(false)
+function getImgUrl(str) {
+  const regex = /"imgUrl":"(.*?)"/
+  const match = str.match(regex)
+  return match ? match[1] : null
+}
 
-const startSign = (e) => {
-  console.log('startSign')
-  if (!isSigning.value) {
-    isSigning.value = true
-    const ctx = wx.createCanvasContext('signatureCanvas')
-    ctx.moveTo(e.touches[0].x, e.touches[0].y)
-    // ctx.setStrokeStyle('black') // 设置笔的颜色为黑色
+// 上传提交信息
+const handleSubmit = async () => {
+  if (isNullOrUndefined(watermarkImg.path)) {
+    watermarkImg.path = null
+    return uniShowToast('请上传图片')
   }
-}
-
-const moveSign = (e) => {
-  console.log('moveSign')
-
-  if (isSigning.value) {
-    const ctx = wx.createCanvasContext('signatureCanvas')
-    ctx.lineTo(e.touches[0].x, e.touches[0].y)
-    ctx.stroke()
-    ctx.draw(true)
-    ctx.draw(false) // 确保每次绘制后都会触发绘制更新
+  if (isNullOrUndefined(signatureValue.value)) {
+    const saveRes = (await save()) as { isEmpty: boolean }
+    if (saveRes.isEmpty) {
+      signatureValue.value = null
+      return uniShowToast('请签名')
+    }
   }
-}
-
-const endSign = () => {
-  console.log('moveSign')
-  isSigning.value = false
-}
-
-const saveSignature = () => {
-  wx.canvasToTempFilePath({
-    canvasId: 'signatureCanvas',
-    success: (res) => {
-      const signaturePath = res.tempFilePath
-      uploadImage(signaturePath)
-    },
-    fail: (err) => {
-      console.error('生成签名图片失败', err)
-    },
+  console.log('object :>> ', watermarkImg.path, signatureValue.value)
+  const watermarkImgRes = await uploadImage(watermarkImg.path)
+  const signatureImgRes = await uploadImage(signatureValue.value)
+  postMaintenanceSignature({
+    id: maintenance.value.id,
+    type: 2,
+    image: getImgUrl(signatureImgRes),
+    clockin_img: getImgUrl(watermarkImgRes),
+    remark: remark.value,
   })
-}
+    .then((res) => {
+      console.log('postMaintenanceSignature res :>> ', res)
+    })
+    .catch((err) => {
+      console.log('postMaintenanceSignature err :>> ', err)
+    })
 
-const uploadImage = (filePath) => {
-  wx.uploadFile({
-    url: 'YOUR_UPLOAD_URL', // 替换为你的上传接口地址
-    filePath,
-    name: 'file',
-    success: (res) => {
-      const data = res.data
-      // 处理上传成功后的逻辑
-    },
-    fail: (err) => {
-      console.error('上传失败', err)
-    },
-  })
+  console.log('signatureValue :>> ', signatureValue.value)
 }
 </script>
 
@@ -465,16 +536,126 @@ $rpx-92: px2rpx(92);
     border-radius: $rpx-20 $rpx-20 0 0;
     @extend %padding-base;
 
-    .btn-sign {
-      @extend %btn-reset;
-      @extend %flex-center;
-      @extend %font-size-lg;
-      width: 50%;
-      aspect-ratio: 1 / 1;
-      margin: 0 auto;
-      margin-bottom: $rpx-10;
-      border-radius: 50%;
+    // 未签到
+    .sign-in {
+      .btn-sign {
+        @extend %btn-reset;
+        @extend %flex-center;
+        @extend %font-size-lg;
+        width: 50%;
+        aspect-ratio: 1 / 1;
+        margin: 0 auto;
+        margin-bottom: $rpx-10;
+        border-radius: 50%;
+      }
     }
+
+    // 进行中
+    .clock-in {
+      @extend %flex-column;
+      gap: $rpx-10;
+      padding-bottom: $rpx-32;
+
+      :deep(.wd-upload) {
+        --wot-upload-size: 100%;
+        width: 100%;
+        aspect-ratio: 3 / 2;
+
+        .wd-upload__mask {
+          background: transparent;
+        }
+      }
+
+      :deep(.watermark-img) {
+        width: 100%;
+        aspect-ratio: 3/2;
+      }
+
+      .btn-upload {
+        position: absolute;
+        top: -$rpx-20;
+        right: -$rpx-20;
+        width: $rpx-40;
+        height: $rpx-40;
+        color: $color-black;
+        border-radius: 50%;
+        @extend %flex-center;
+      }
+
+      .signature-box {
+        @extend %flex-center;
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 1 / 1;
+        border-radius: $rpx-10;
+      }
+
+      .signature-box {
+        @extend %flex-center;
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        background: $color-white;
+        border: $rpx-1 solid $color-primary;
+        border-radius: $rpx-10;
+
+        .signature-canvas {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .btn-camera {
+        color: $color-white;
+        background: $color-primary;
+      }
+
+      .signature-btn-list {
+        @extend %flex-center;
+        gap: $rpx-10;
+        margin-top: $rpx-10;
+
+        %signature-btn {
+          flex: 1;
+          height: $rpx-40;
+          color: $color-white;
+          border-radius: $rpx-6;
+          @extend %flex-center;
+          @extend %font-size-lg;
+          @extend %btn-reset;
+        }
+
+        .btn-clear {
+          @extend %signature-btn;
+          background: red;
+        }
+
+        .btn-reset {
+          @extend %signature-btn;
+          background: $color-secondary;
+        }
+
+        .btn-save {
+          @extend %signature-btn;
+          background: $color-primary;
+        }
+      }
+
+      .remark {
+        width: 100%;
+        padding: $rpx-10;
+        border: $rpx-1 solid $color-primary;
+        border-radius: $rpx-10;
+      }
+
+      .btn-submit {
+        color: $color-white;
+        background: $color-primary;
+      }
+    }
+
+    // 已完成
   }
 }
 </style>

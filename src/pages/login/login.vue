@@ -57,7 +57,7 @@ import loginBottom from '@/static/image/login-bottom.png'
 import { useUserStore, useSystemStore } from '@/store'
 import { postLogin } from '@/service/login/login'
 import { md5 } from '@/utils/md5'
-import { showToast } from '@/utils/tools'
+import { uniShowToast } from '@/utils/tools'
 import { indexPage } from '@/common/pages'
 // import 'weconsole/dist/npm/main/init'
 

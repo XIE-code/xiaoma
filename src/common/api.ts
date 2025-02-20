@@ -13,3 +13,4 @@ export const maintenanceListApi = '/maint/main_order' // 今日维保列表
 export const maintenanceDetailApi = '/maint/maint_one' // 获取维保计划详情
 export const maintenanceSignInApi = '/maint/sign_in' // 维保签到
 export const maintenanceSignatureApi = '/maint/signature' // 维保订单签字
+export const maintenanceImgUploadApi = '/maint/img_upload' // 图片上传接口

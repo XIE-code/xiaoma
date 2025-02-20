@@ -29,8 +29,6 @@
     <!-- 内容区域 -->
     <view class="scroll-box">
       <view class="container">
-        <view>经度：{{ longitude }}</view>
-        <view>维度：{{ latitude }}</view>
         <view
           class="card-item"
           v-for="(item, idx) in liftList"
@@ -74,35 +72,6 @@ import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
 import { liftListPage } from '@/common/pages'
-
-let longitude = 0
-let latitude = 0
-
-onShow(() => {
-  uni.authorize({
-    scope: 'scope.userLocation',
-    success() {
-      // 用户已经同意授权
-      uni.getLocation({
-        type: 'wgs84',
-        success: function (res) {
-          longitude = res.longitude
-          latitude = res.latitude
-          console.log('当前位置的经度：' + res.longitude)
-          console.log('当前位置的纬度：' + res.latitude)
-        },
-        fail: (fail) => {
-          console.log('getLocati  on-fail :>> ', fail)
-        },
-      })
-      console.log('获取授权 :>> ')
-    },
-    fail() {
-      // 用户拒绝授权
-      console.log('取消授权 :>> ')
-    },
-  })
-})
 
 const systemStore = useSystemStore()
 const { capsule } = systemStore.systemInfo

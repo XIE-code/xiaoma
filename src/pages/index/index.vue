@@ -183,13 +183,13 @@ const elevatorList = reactive([
     id: 1,
     name: '电梯监控',
     url: monitorSvg,
-    path: liftMonitorPage,
+    path: liftListPage + '?flag=monitor',
   },
   {
     id: 2,
     name: '档案资料',
     url: filesSvg,
-    path: liftListPage,
+    path: liftListPage + '?flag=file',
   },
   {
     id: 3,

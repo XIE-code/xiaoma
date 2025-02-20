@@ -6,11 +6,12 @@ import { SERVER_BASEURL } from '@/common/constant'
 import homeLogo from '@/static/image/home-logo.png'
 
 /* 提示信息 */
-export const showToast = (message: string) => {
-  const toast = useToast()
-  toast.show({
-    msg: message,
-  })
+export const uniShowToast = (message: string) => {
+  // const toast = useToast()
+  // toast.show({
+  //   msg: message,
+  // })
+  uni.showToast({ title: message, icon: 'none' })
 }
 
 /**
@@ -105,4 +106,9 @@ export const getServerImg = (path: string) => {
 /* 加载服务器图片出错 */
 export const handleLoadImgError = (event) => {
   event.target.src = homeLogo
+}
+
+// 定义一个函数 isNullOrUndefined，用于判断传入的值是否为 null 或 undefined
+export function isNullOrUndefined(value: any): boolean {
+  return value === null || value === undefined
 }

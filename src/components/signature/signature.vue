@@ -1,8 +1,28 @@
+<route lang="json5">
+{
+  layout: 'demo',
+  style: {
+    navigationBarTitleText: '签名',
+  },
+}
+</route>
+
 <template>
   <view class="canvas">
     <view class="canvas_header">手写签名</view>
     <view class="canvas_canvas">
-      <canvas canvas-id="myCanvas" style="width: 350px; height: 400px"></canvas>
+      <!-- #ifdef MP-WEIXIN -->
+      <canvas
+        type="2d"
+        :disable-scroll="true"
+        canvas-id="myCanvas"
+        :bindtouchstart="touchStart"
+        :bindtouchmove="touchMove"
+        :bindtouchend="touchEnd"
+        :binderror="handleCanvasError"
+        style="width: 350px; height: 400px"
+      ></canvas>
+      <!-- #endif -->
     </view>
     <view class="canvas_info">
       <text @click="showColorDiv">*请在输入框写入您的姓名</text>
@@ -35,20 +55,44 @@ const showColor = ref(1) // 显示颜色
 const sColor = ref(0) // 显示颜色
 
 onMounted(() => {
-  const query = uni.createSelectorQuery().in(this)
+  const query = wx.createSelectorQuery()
   query
     .select('#myCanvas')
-    .boundingClientRect((data) => {
-      canvas.value = data
-      ctx.value = uni.createCanvasContext('myCanvas', this)
-      Init()
+    .fields({ node: true, size: true })
+    .exec((res) => {
+      const canvas = res[0].node
+      const ctx = canvas.getContext('2d')
+
+      const dpr = wx.getSystemInfoSync().pixelRatio
+      canvas.width = res[0].width * dpr
+      canvas.height = res[0].height * dpr
+      ctx.scale(dpr, dpr)
+
+      ctx.fillRect(0, 0, 100, 100)
     })
-    .exec()
+  console.log('canvas.value :>> ', canvas.value)
 })
+
+const touchStart = (event) => {
+  console.log('onTouchStart :>> ')
+}
+
+const touchMove = (event) => {
+  console.log('onTouchMove :>> ')
+}
+
+const touchEnd = (event) => {
+  console.log('onTouchEnd :>> ')
+}
+
+const handleCanvasError = (e) => {
+  console.log('handleCanvasError::', e)
+}
 
 const Init = () => {
   // 移动前
   uni.onTouchStart((event) => {
+    console.log('onTouchStart :>> ')
     if (event.touches.length === 1) {
       const touch = event.touches[0]
       touchPressed.value = true
@@ -58,6 +102,7 @@ const Init = () => {
 
   // 移动中
   uni.onTouchMove((event) => {
+    console.log('onTouchMove :>> ')
     if (event.touches.length === 1) {
       const touch = event.touches[0]
       if (touchPressed.value) {
@@ -68,6 +113,8 @@ const Init = () => {
 
   // 移动结束
   uni.onTouchEnd(() => {
+    console.log('onTouchEnd :>> ')
+
     touchPressed.value = false
   })
 }
@@ -128,20 +175,6 @@ const saveImageInfo = () => {
     },
     this,
   )
-}
-
-// 弹出颜色
-const showColorDiv = () => {
-  // return
-  sColor.value += 1
-  if (sColor.value === 10) {
-    showColor.value = 2
-  }
-}
-
-// 签完名的图片旋转处理
-const rotateBase64Img = (src, edg, callback) => {
-  // ...旋转图片的逻辑保持不变
 }
 </script>
 

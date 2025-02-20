@@ -101,6 +101,7 @@ export interface IMaintenanceSignatureParams {
   id: number // 维保单ID
   type: 1 | 2 | 3 // 人员类型，1：安全员，2：维保员，3：物业
   image: File // 签名图片
+  clockin_img: File // 维保现场打卡图片
   remark?: string // 备注，可选
 }
 

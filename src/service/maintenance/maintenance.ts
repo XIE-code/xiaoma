@@ -3,6 +3,7 @@ import {
   maintenanceDetailApi,
   maintenanceSignInApi,
   maintenanceSignatureApi,
+  maintenanceImgUploadApi,
 } from '@/common/api'
 import { http } from '@/utils/http'
 import {
