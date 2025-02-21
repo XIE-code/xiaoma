@@ -71,7 +71,7 @@ export interface ILiftPushTroubleResponse {
 }
 
 /* 新增电梯信息请求参数 */
-export interface ILiftLiftAddParams {
+export interface ILiftAddParams {
   name: string // 电梯名称
   register_code?: string // 出厂编码
   devices_id?: string // 设备代码
@@ -83,4 +83,21 @@ export interface ILiftLiftAddParams {
 }
 
 /* 新增电梯信息返回类型 */
-export type ILiftLiftAddResponse = any
+export type ILiftAddResponse = any
+
+/* 单个电梯详细信息请求参数 */
+export interface ILiftOneInfoParams {
+  elevator_id: number // 电梯ID
+  is_archives: 1 | 0 // 查询类型，1：查询详细，0：查询简单信息
+}
+/* 单个电梯详细信息响应体 */
+export interface ILiftOneInfoResponse {
+  elevatorId: number // 电梯ID
+  elevatorNumber: number // 电梯编号
+  registerCode: string // 特种设备号
+  name: string // 电梯名称
+  station: string // 层站数
+  speed: string // 电梯速度
+  load: number // 载重
+  userId1: string // 维保人员名称
+}

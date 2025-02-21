@@ -13,7 +13,7 @@
       <view class="header-nav">
         <wd-icon
           name="arrow-left"
-          @click="handleClickLeft"
+          @click="handleClickBack"
           :size="px2rpx(24)"
           color="white"
         ></wd-icon>
@@ -73,7 +73,7 @@ import documentImg from '@/static/image/document.png'
 import { knowledgeFilePage } from '@/common/pages'
 
 // 导航栏
-function handleClickLeft() {
+function handleClickBack() {
   uni.navigateBack()
 }
 

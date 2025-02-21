@@ -11,16 +11,7 @@
   <wrapper paddingType="height" :paddingBottom="90">
     <!-- 导航栏 -->
     <view class="navigation">
-      <image class="logo" :src="imgHomeLogo" mode="aspectFit">
-        <template #error>
-          <view class="error-wrap">加载失败</view>
-        </template>
-        <template #loading>
-          <view class="loading-wrap">
-            <wd-loading />
-          </view>
-        </template>
-      </image>
+      <image class="logo" :src="imgHomeLogo" mode="aspectFit"></image>
       <view class="search-bar">
         <input
           confirm-type="search"
@@ -28,7 +19,6 @@
           class="search-input"
           placeholder="请输入"
         />
-
         <button class="search-btn">
           <wd-icon name="search" color="white" :size="px2rpx(12)"></wd-icon>
         </button>
@@ -67,7 +57,6 @@
           :previousMargin="px2rpx(30)"
           :nextMargin="px2rpx(60)"
         ></wd-swiper>
-        <!-- :loop="false" -->
       </view>
 
       <!-- Gird -->
@@ -125,7 +114,7 @@ import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
 import Wrapper from '@/layouts/wrapper.vue'
 import dayjs from 'dayjs'
 /* store */
-import { useSystemStore } from '@/store'
+// import { useSystemStore } from '@/store'
 /* tools */
 import { px2rpx, convertSnakeToCamel } from '@/utils/tools'
 /* image */
@@ -142,7 +131,6 @@ import { postMaintenanceDetail, postMaintenanceList } from '@/service/maintenanc
 import type { IMaintenanceItem, isMaintainType } from '@/service/maintenance/type'
 import {
   knowledgeCompanyPage,
-  liftMonitorPage,
   liftEnterPage,
   liftListPage,
   shopPage,
@@ -155,6 +143,7 @@ defineOptions({
 
 onLoad(() => {
   uni.hideTabBar()
+  getMaintenanceList()
 })
 
 function handleSearch() {
@@ -210,32 +199,23 @@ const faultCount = ref(0)
 const todoList = ref<IMaintenanceItem[]>([])
 
 /* TODO: 下拉加载 */
-// postMaintenanceList({
-//   time: dayjs().format('YYYY-MM-DD'),
-//   limit: 99,
-//   page: 1,
-// })
-//   .then((result) => {
-//     todoList.value = result.list
-//     count.value = result.count
-//   })
-//   .catch((err) => {
-//     console.log('postMaintenanceList err :>> ', err)
-//   })
-
-// FIXME：测试签到，后续自动获取每日排班
-const todo = {
-  id: 8,
-  ele_name: '广东佳登曼办公室电梯',
-  maint_time: '2025-02-14',
-  address: '广东省惠州市博罗县园洲镇',
-  elevator_number: 230100001,
-  register_code: '',
-  is_maintain: 1,
-  is_maintain_tan: 0,
-  maint_type: '国标半月保',
+// FIXME: 请求当日维保列表
+// 获取维保列表
+const getMaintenanceList = () => {
+  postMaintenanceList({
+    // time: dayjs().format('YYYY-MM-DD'),
+    time: '2025-02-20',
+    limit: 99,
+    page: 1,
+  })
+    .then((result) => {
+      todoList.value = result.list
+      count.value = result.count
+    })
+    .catch((err) => {
+      console.log('postMaintenanceList err :>> ', err)
+    })
 }
-todoList.value.push(convertSnakeToCamel(todo))
 
 /* maintenanceType */
 type itemType = 'color' | 'text'

@@ -13,7 +13,7 @@
       <view class="header-nav">
         <wd-icon
           name="arrow-left"
-          @click="handleClickLeft"
+          @click="handleClickBack"
           :size="px2rpx(24)"
           color="white"
         ></wd-icon>
@@ -88,7 +88,7 @@ import { COLOR_SECONDARY, SERVER_BASEURL } from '@/common/constant'
 // console.log('vConsole :>> ', vConsole)
 
 // 导航栏
-function handleClickLeft() {
+function handleClickBack() {
   uni.navigateBack()
 }
 

@@ -12,7 +12,7 @@
     <view class="navigation" :style="{ height: px2rpx(capsule.height || 32) }">
       <wd-icon
         name="arrow-left"
-        @click="handleClickLeft"
+        @click="handleClickBack"
         :size="px2rpx(24)"
         color="white"
       ></wd-icon>
@@ -93,7 +93,7 @@ const systemStore = useSystemStore()
 const { capsule } = systemStore.systemInfo
 
 // 导航栏
-function handleClickLeft() {
+function handleClickBack() {
   uni.navigateBack()
 }
 

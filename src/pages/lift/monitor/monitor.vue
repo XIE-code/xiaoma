@@ -12,7 +12,7 @@
     <view class="navigation">
       <wd-icon
         name="arrow-left"
-        @click="handleClickLeft"
+        @click="handleClickBack"
         :size="px2rpx(24)"
         color="white"
       ></wd-icon>
@@ -21,19 +21,21 @@
 
     <view class="content">
       <view class="scroll-box">
+        <view class="state">在线</view>
         <view class="header">
-          <view class="state">在线</view>
           <view class="img"></view>
-          <view class="info">
-            <view class="info-name">电梯名称</view>
-            <view class="info-project">项目</view>
-            <view class="info-code">编号</view>
+          <view class="head-info">
+            <view class="head-info-top">
+              <text class="info-name">{{ liftInfo.name }}</text>
+              <text class="info-project">项目:</text>
+              <text class="info-code">编号: {{ liftInfo.elevatorNumber }}</text>
+            </view>
             <view class="info-decoration"></view>
             <view class="run-bar">
               <view class="run-bar-item" v-for="item in 3" :key="item">
-                <view class="run-bar-img">img</view>
-                <view class="run-bar-data">data</view>
-                <view class="run-bar-txt">txt</view>
+                <view class="run-bar-img">图标</view>
+                <view class="run-bar-data">数字</view>
+                <view class="run-bar-txt">运行速度</view>
               </view>
             </view>
           </view>
@@ -41,7 +43,7 @@
 
         <view class="btn-list">
           <button
-            class="btn-item"
+            :class="`btn-item ${showBtnContent === item.type ? 'active' : ''}`"
             v-for="item in btnList"
             :key="item.type"
             @click="handleClickBtn(item)"
@@ -102,18 +104,19 @@ import mqtt from 'mqtt/dist/mqtt'
 /* TODO: scrollBox */
 import scrollBox from '@/layouts/scroll-box.vue'
 /* service */
-import { postBreakdownCode, postLiftGetRun } from '@/service/lift/lift'
+import { postLiftOneInfo } from '@/service/lift/lift'
+import { ILiftOneInfoResponse } from '@/service/lift/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
 
 // 导航栏
-function handleClickLeft() {
+function handleClickBack() {
   uni.navigateBack()
 }
 
-const status = reactive({
+const status = ref({
   tid: 'req00000000001',
   status: 'running',
   stage: 'start',
@@ -129,41 +132,59 @@ const status = reactive({
   runningDownTimes: 10,
 })
 
-const liftInfo = ref({})
+// TODO: 项目
+const project = ref('')
+
+// TODO:
+const liftInfo = ref<Partial<ILiftOneInfoResponse>>({
+  name: '',
+  speed: '--',
+})
 
 onLoad((options) => {
   const elevatorId = options.elevatorId
-  postLiftGetRun({ code: elevatorId })
+  postLiftOneInfo({ elevator_id: elevatorId, is_archives: 1 })
     .then((result) => {
-      console.log('result :>> ', result)
-      const resultKeys = Object.keys(result)
+      // liftInfo.value = result
+      liftInfo.value = result
     })
     .catch((err) => {
       console.log('postLiftGetRun err:>> ', err)
     })
 })
 
-type contentType = 'info' | 'run' | 'maintenance' | 'breakdown'
-const showBtnContent = ref<contentType>('info')
+type maintenanceBtnType = 'info' | 'run' | 'maintenance' | 'breakdown'
+const showBtnContent = ref<maintenanceBtnType>('info')
+type btnType = {
+  name: string
+  type: maintenanceBtnType
+}
 
-const btnList = ref({
-  info: {
+enum maintenanceBtnEnum {
+  info = 'info',
+  run = 'run',
+  maintenance = 'maintenance',
+  breakdown = 'breakdown',
+}
+
+const btnList = ref<btnType[]>([
+  {
     name: '电梯信息',
-    type: 'info',
+    type: maintenanceBtnEnum.info,
   },
-  run: {
+  {
     name: '运行统计',
-    type: 'run',
+    type: maintenanceBtnEnum.run,
   },
-  maintenance: {
+  {
     name: '维保记录',
-    type: 'maintenance',
+    type: maintenanceBtnEnum.maintenance,
   },
-  breakdown: {
+  {
     name: '故障记录',
-    type: 'breakdown',
+    type: maintenanceBtnEnum.breakdown,
   },
-})
+])
 
 const handleClickBtn = (item: any) => {
   showBtnContent.value = item.type
@@ -175,15 +196,14 @@ let client: mqtt.MqttClient | null = null
 const connectToMQTT = () => {
   // 连接配置
   const options: mqtt.IClientOptions = {
-    username: 'admin',
-    password: 'admin',
+    username: import.meta.env.VITE_MQTT_USERNAME,
+    password: import.meta.env.VITE_MQTT_PASSWORD,
     clientId: 'vue_mqtt_client_' + Math.random().toString(16).substr(2, 8),
   }
 
   // 创建MQTT客户端
   // #ifdef H5
-
-  client = mqtt.connect('wss://sharemarttech.com:8084/mqtt', options)
+  client = mqtt.connect(import.meta.env.VITE_MQTT_URL, options)
   // #endififdef
 
   // #ifdef MP-WEIXIN
@@ -273,22 +293,26 @@ $rpx-60: px2rpx(60);
   border-radius: $rpx-30;
   .scroll-box {
     @extend %flex-column;
-    gap: $rpx-24;
-    // padding-top: $rpx-10;
+    position: relative;
+    gap: $rpx-12;
+    padding: $rpx-16 $rpx-24;
+
+    .state {
+      position: absolute;
+      top: 0;
+      right: $rpx-1;
+      padding: $rpx-4 $rpx-20 $rpx-4 $rpx-20;
+      color: $color-white;
+      background: $color-primary;
+      border-radius: 0 0 0 $rpx-30;
+      @extend %font-size-sm;
+    }
 
     .header {
       @extend %flex-center;
-      position: relative;
       gap: $rpx-6;
       justify-content: space-between;
       height: 30vh;
-      padding: $rpx-16;
-
-      .state {
-        position: absolute;
-        top: 0;
-        right: $rpx-20;
-      }
 
       .img {
         flex: 1;
@@ -296,20 +320,27 @@ $rpx-60: px2rpx(60);
         border: $rpx-1 solid $color-primary;
       }
 
-      .info {
+      .head-info {
         @extend %flex-column;
         flex: 2;
         gap: $rpx-6;
+        justify-content: space-between;
         height: 100%;
         border: $rpx-1 solid $color-primary;
 
-        .info-name {
-          @extend %font-size-lg;
-        }
+        .head-info-top {
+          @extend %flex-column;
+          gap: $rpx-6;
 
-        .info-project,
-        .info-code {
-          @extend %font-size;
+          .info-name {
+            @extend %font-size-lg;
+            font: bold;
+          }
+
+          .info-project,
+          .info-code {
+            @extend %font-size;
+          }
         }
 
         .info-decoration {
@@ -351,6 +382,11 @@ $rpx-60: px2rpx(60);
 
       .btn-item {
         padding: $rpx-3 $rpx-6;
+        @extend %font-size-base;
+      }
+
+      .active {
+        border: $rpx-1 $color-primary solid;
       }
     }
   }

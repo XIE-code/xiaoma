@@ -33,3 +33,8 @@
 - revert: 撤销上一次的commit
 - build: 构建工具或构建过程等的变动，如：gulp 换成了 webpack，webpack 升级等
 - refactor: 重构代码，如：拆分大函数为多个小函数、简化复杂逻辑、引入设计模式
+
+## 注释
+
+// TODO：待优化
+// FIXME：上线时必须修复

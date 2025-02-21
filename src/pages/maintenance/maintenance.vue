@@ -29,7 +29,12 @@
 
     <view class="content">
       <view class="scroll-box">
-        <view class="card-item" v-for="(item, idx) in maintenanceList" :key="idx">
+        <view
+          class="card-item"
+          @click="handleSignIn(item)"
+          v-for="(item, idx) in maintenanceList"
+          :key="idx"
+        >
           <view class="item-title">{{ item.eleName }}</view>
           <view class="item-maintenance">保养类型：{{ item.maintType }}</view>
           <view class="item-maintenance">
@@ -57,15 +62,16 @@ import wrapper from '@/layouts/wrapper.vue'
 import dayjs from 'dayjs'
 // svg
 import addressSvg from '@/static/svg/address.svg'
-
 /* tools */
 import { getWeekDates } from '@/utils/tools'
 import type { IWeekDate } from '@/utils/tools'
 import { postMaintenanceList } from '@/service/maintenance/maintenance'
 import { IMaintenanceItem, isMaintainType } from '@/service/maintenance/type'
+import { signInPage } from '@/common/pages'
 
 onLoad(() => {
   uni.hideTabBar()
+  getMaintenanceList(dayjs().format('YYYY-MM-DD'))
 })
 
 // week calendar
@@ -104,10 +110,6 @@ const getMaintenanceList = (dateString: string) => {
     })
 }
 
-onLoad(() => {
-  getMaintenanceList(dayjs().format('YYYY-MM-DD'))
-})
-
 /* 根据item的状态返回颜色、文字 */
 type itemType = 'color' | 'text'
 const maintenanceColorArray = ['wait', 'finish', 'current', 'timeout']
@@ -121,6 +123,11 @@ const getItemInfoByMaintenanceType = (type: itemType, isMaintain: isMaintainType
   if (type === 'text') {
     return maintenanceTypeArray[isMaintain - 1]
   }
+}
+
+// TODO: 封装签到，传入
+const handleSignIn = (todo: IMaintenanceItem) => {
+  uni.navigateTo({ url: signInPage + `?id=${todo.id}` })
 }
 </script>
 

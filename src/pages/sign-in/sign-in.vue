@@ -13,7 +13,7 @@
       <view class="header-nav">
         <wd-icon
           name="arrow-left"
-          @click="handleClickLeft"
+          @click="handleClickBack"
           :size="px2rpx(24)"
           color="white"
         ></wd-icon>
@@ -145,9 +145,10 @@ const qqmapsdk = new QQMapWX({
 })
 
 // 导航栏
-function handleClickLeft() {
-  systemStore.resetTabBarIdx()
-  uni.switchTab({ url: indexPage })
+function handleClickBack() {
+  uni.navigateBack()
+  // systemStore.resetTabBarIdx()
+  // uni.switchTab({ url: indexPage })
 }
 
 const liftInfo = ref<Partial<IElevatorInfo>>({

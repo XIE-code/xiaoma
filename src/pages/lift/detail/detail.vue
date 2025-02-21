@@ -12,7 +12,7 @@
     <view class="navigation">
       <wd-icon
         name="arrow-left"
-        @click="handleClickLeft"
+        @click="handleClickBack"
         :size="px2rpx(24)"
         color="white"
       ></wd-icon>
@@ -60,7 +60,7 @@ import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
 // 导航栏
-function handleClickLeft() {
+function handleClickBack() {
   uni.navigateBack()
 }
 

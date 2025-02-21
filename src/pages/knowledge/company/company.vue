@@ -13,7 +13,7 @@
       <view class="header-nav">
         <wd-icon
           name="arrow-left"
-          @click="handleClickLeft"
+          @click="handleClickBack"
           :size="px2rpx(24)"
           color="white"
         ></wd-icon>
@@ -113,7 +113,7 @@ import { indexPage, knowledgeCategoryPage } from '@/common/pages'
 
 const systemStore = useSystemStore()
 // 导航栏
-function handleClickLeft() {
+function handleClickBack() {
   systemStore.resetTabBarIdx()
   uni.switchTab({ url: indexPage })
 }

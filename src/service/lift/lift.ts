@@ -3,7 +3,8 @@ import {
   liftGetRunApi,
   liftListApi,
   liftPushTroubleApi,
-  liftLiftAddApi,
+  liftAddApi,
+  liftOneInfoApi,
 } from '@/common/api'
 import { http } from '@/utils/http'
 import {
@@ -15,8 +16,10 @@ import {
   ILiftGetRunResponse,
   ILiftPushTroubleParams,
   ILiftPushTroubleResponse,
-  ILiftLiftAddParams,
-  ILiftLiftAddResponse,
+  ILiftAddParams,
+  ILiftAddResponse,
+  ILiftOneInfoParams,
+  ILiftOneInfoResponse,
 } from './type'
 
 /* 故障代码 */
@@ -40,6 +43,11 @@ export const postLiftPushTrouble = (params: ILiftPushTroubleParams) => {
 }
 
 /* 新增电梯信息 */
-export const postLiftLiftAdd = (params: ILiftLiftAddParams) => {
-  return http.post<ILiftLiftAddResponse>(liftLiftAddApi, params)
+export const postLiftLiftAdd = (params: ILiftAddParams) => {
+  return http.post<ILiftAddResponse>(liftAddApi, params)
+}
+
+/* 单个电梯详细信息 */
+export const postLiftOneInfo = (params: ILiftOneInfoParams) => {
+  return http.post<ILiftOneInfoResponse>(liftOneInfoApi, params)
 }
