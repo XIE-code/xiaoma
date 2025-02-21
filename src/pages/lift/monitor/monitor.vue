@@ -326,7 +326,7 @@ $rpx-60: px2rpx(60);
         gap: $rpx-6;
         justify-content: space-between;
         height: 100%;
-        border: $rpx-1 solid $color-primary;
+        // border: $rpx-1 solid $color-primary;
 
         .head-info-top {
           @extend %flex-column;
