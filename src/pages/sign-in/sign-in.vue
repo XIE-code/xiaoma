@@ -24,7 +24,7 @@
     <!-- 内容区域 -->
     <view class="scroll-box">
       <view class="container">
-        <view>地点： {{ liftInfo.address }}</view>
+        <view>电梯地址： {{ liftInfo.address }}</view>
         <view>电梯名称： {{ liftInfo.name }}</view>
         <view>维保类型： {{ maintenance.maintType }}</view>
         <view>维保状态： {{ getMaintenanceType(maintenance.isMaintain) }}</view>

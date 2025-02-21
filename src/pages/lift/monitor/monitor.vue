@@ -32,10 +32,10 @@
             </view>
             <view class="info-decoration"></view>
             <view class="run-bar">
-              <view class="run-bar-item" v-for="item in 3" :key="item">
-                <view class="run-bar-img">图标</view>
-                <view class="run-bar-data">数字</view>
-                <view class="run-bar-txt">运行速度</view>
+              <view class="run-bar-item" v-for="item in showInfo" :key="item.icon">
+                <view class="run-bar-img">{{ item.icon }}</view>
+                <view class="run-bar-data">{{ item.num }}</view>
+                <view class="run-bar-txt">{{ item.text }}</view>
               </view>
             </view>
           </view>
@@ -52,45 +52,30 @@
           </button>
         </view>
 
-        <view v-if="showBtnContent === 'info'">电梯信息</view>
-        <view v-if="showBtnContent === 'run'">
-          <view>
-            <strong>电梯状态：</strong>
-            {{ status.status }}
-          </view>
-          <view>
-            <strong>当前楼层：</strong>
-            {{ status.floor }}
-          </view>
-          <view>
-            <strong>运行方向：</strong>
-            {{ status.direction }}
-          </view>
-          <view>
-            <strong>速度：</strong>
-            {{ status.maxSpeed }} m/s
-          </view>
-          <view>
-            <strong>开始楼层：</strong>
-            {{ status.floorStart }}
-          </view>
-          <view>
-            <strong>结束楼层：</strong>
-            {{ status.floorEnd }}
-          </view>
-          <view>
-            <strong>已运行的楼层次数：</strong>
-            {{ status.runningDownTimes }} 次
-          </view>
-          <view>
-            <strong>最大速度：</strong>
-            {{ status.maxSpeed }} m/s
-          </view>
-          <view>
-            <strong>门操作次数：</strong>
-            {{ status.doorTimes }} 次
-          </view>
-        </view>
+        <wd-cell-group v-if="showBtnContent === 'info'" border>
+          <wd-cell :title="value" :value="liftInfo[key]" v-for="(value, key) in lift" :key="key" />
+        </wd-cell-group>
+
+        <wd-cell-group v-if="showBtnContent === 'run'" border>
+          <wd-cell :title="value" :value="runInfo[key]" v-for="(value, key) in run" :key="key" />
+        </wd-cell-group>
+
+        <wd-table
+          v-if="showBtnContent === 'maintenance'"
+          border
+          :data="maintenanceList"
+          height="400"
+        >
+          <wd-table-col prop="time" label="维保时间"></wd-table-col>
+          <wd-table-col prop="state" label="维保状态"></wd-table-col>
+        </wd-table>
+
+        <wd-table v-if="showBtnContent === 'breakdown'" border :data="errorList" height="400">
+          <wd-table-col prop="startTime" label="开始时间"></wd-table-col>
+          <wd-table-col prop="errorDescription" label="故障描述"></wd-table-col>
+          <wd-table-col prop="errorCode" label="故障码"></wd-table-col>
+          <wd-table-col prop="state" label="状态"></wd-table-col>
+        </wd-table>
       </view>
     </view>
   </wrapper>
@@ -116,6 +101,24 @@ function handleClickBack() {
   uni.navigateBack()
 }
 
+const showInfo = ref([
+  {
+    icon: '--',
+    num: '000',
+    text: '运行次数',
+  },
+  {
+    icon: '--',
+    num: '000',
+    text: '运行时间',
+  },
+  {
+    icon: '--',
+    num: '000',
+    text: '运行距离',
+  },
+])
+
 const status = ref({
   tid: 'req00000000001',
   status: 'running',
@@ -133,19 +136,61 @@ const status = ref({
 })
 
 // TODO: 项目
-const project = ref('')
-
-// TODO:
-const liftInfo = ref<Partial<ILiftOneInfoResponse>>({
-  name: '',
-  speed: '--',
+const lift = ref({
+  name: '电梯名称',
+  type: '电梯型号',
+  brand: '电梯品牌',
+  model: '电梯型号',
+  tid: '电梯梯钟',
+  address: '电梯地址',
+  company: '使用单位',
+  maintenanceCompany: '维保企业',
+  maintenancePerson: '维保人员',
 })
+
+const liftInfo = ref({
+  name: '',
+  elevatorNumber: '',
+})
+
+const run = {
+  status: '电梯状态',
+  floor: '当前楼层：',
+  direction: '运行方向',
+  speed: '速度',
+  floorStart: '开始楼层',
+  floorEnd: '结束楼层',
+  runningDownTimes: '已运行的楼层次数',
+  maxSpeed: '最大速度',
+  doorTimes: '门操作次数：',
+}
+const runInfo = ref({})
+
+const maintenanceList = ref([
+  // {
+  //   time: '',
+  //   state: '',
+  // },
+])
+
+const errorList = ref([
+  // {
+  //   startTime: '',
+  //   errorDescription: '',
+  //   errorCode: '',
+  //   state: '',
+  // },
+])
+
+const getLiftInfo = (key: string) => {
+  console.log('liftInfo :>> ', key, liftInfo.value)
+  return liftInfo.value[key]
+}
 
 onLoad((options) => {
   const elevatorId = options.elevatorId
   postLiftOneInfo({ elevator_id: elevatorId, is_archives: 1 })
     .then((result) => {
-      // liftInfo.value = result
       liftInfo.value = result
     })
     .catch((err) => {
