@@ -17,7 +17,6 @@ interface NavigateToOptions {
        "/pages/lift/detail/detail" |
        "/pages/lift/enter/enter" |
        "/pages/lift/list/list" |
-       "/pages/lift/monitor/monitor copy" |
        "/pages/lift/monitor/monitor";
 }
 interface RedirectToOptions extends NavigateToOptions {}

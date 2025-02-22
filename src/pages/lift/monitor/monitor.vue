@@ -21,7 +21,9 @@
 
     <view class="content">
       <view class="scroll-box">
-        <view class="state">在线</view>
+        <view :class="`state ${liftInfo.isOnline == '1' ? '' : 'offline'}`">
+          {{ liftInfo.isOnline == '1' ? '在线' : '离线' }}
+        </view>
         <view class="header">
           <view class="img"></view>
           <view class="head-info">
@@ -33,7 +35,7 @@
             <view class="info-decoration"></view>
             <view class="run-bar">
               <view class="run-bar-item" v-for="item in showInfo" :key="item.icon">
-                <view class="run-bar-img">{{ item.icon }}</view>
+                <wd-icon :name="item.icon" size="22px"></wd-icon>
                 <view class="run-bar-data">{{ item.num }}</view>
                 <view class="run-bar-txt">{{ item.text }}</view>
               </view>
@@ -53,11 +55,17 @@
         </view>
 
         <wd-cell-group v-if="showBtnContent === 'info'" border>
-          <wd-cell :title="value" :value="liftInfo[key]" v-for="(value, key) in lift" :key="key" />
+          <wd-cell
+            :title="value"
+            customClass="custom-info"
+            :value="liftInfo[key]"
+            v-for="(value, key) in lift"
+            :key="key"
+          />
         </wd-cell-group>
 
         <wd-cell-group v-if="showBtnContent === 'run'" border>
-          <wd-cell :title="value" :value="runInfo[key]" v-for="(value, key) in run" :key="key" />
+          <wd-cell :title="value" :value="getRunInfo(key)" v-for="(value, key) in run" :key="key" />
         </wd-cell-group>
 
         <wd-table
@@ -65,16 +73,24 @@
           border
           :data="maintenanceList"
           height="400"
+          customClass="custom-maintenance"
         >
-          <wd-table-col prop="time" label="维保时间"></wd-table-col>
-          <wd-table-col prop="state" label="维保状态"></wd-table-col>
+          <wd-table-col align="center" width="50%" prop="time" label="维保时间"></wd-table-col>
+
+          <wd-table-col align="center" width="50%" prop="state" label="维保状态"></wd-table-col>
         </wd-table>
 
         <wd-table v-if="showBtnContent === 'breakdown'" border :data="errorList" height="400">
-          <wd-table-col prop="startTime" label="开始时间"></wd-table-col>
-          <wd-table-col prop="errorDescription" label="故障描述"></wd-table-col>
-          <wd-table-col prop="errorCode" label="故障码"></wd-table-col>
-          <wd-table-col prop="state" label="状态"></wd-table-col>
+          <wd-table-col align="center" width="25%" prop="startTime" label="开始时间"></wd-table-col>
+
+          <wd-table-col
+            align="center"
+            width="25%"
+            prop="errorDescription"
+            label="故障描述"
+          ></wd-table-col>
+          <wd-table-col align="center" width="25%" prop="errorCode" label="故障码"></wd-table-col>
+          <wd-table-col align="center" width="25%" prop="state" label="状态"></wd-table-col>
         </wd-table>
       </view>
     </view>
@@ -89,8 +105,8 @@ import mqtt from 'mqtt/dist/mqtt'
 /* TODO: scrollBox */
 import scrollBox from '@/layouts/scroll-box.vue'
 /* service */
-import { postLiftOneInfo } from '@/service/lift/lift'
-import { ILiftOneInfoResponse } from '@/service/lift/type'
+import { postGetLiftFloor, postLiftOneInfo } from '@/service/lift/lift'
+import { IFloorInfo, ILiftOneInfoResponse } from '@/service/lift/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */
@@ -103,37 +119,21 @@ function handleClickBack() {
 
 const showInfo = ref([
   {
-    icon: '--',
-    num: '000',
-    text: '运行次数',
+    icon: 'dashboard',
+    num: '0m/s',
+    text: '运行速度',
   },
   {
-    icon: '--',
-    num: '000',
-    text: '运行时间',
-  },
-  {
-    icon: '--',
-    num: '000',
+    icon: 'swap-right',
+    num: '--m',
     text: '运行距离',
   },
+  {
+    icon: 'time',
+    num: '0',
+    text: '运行时间',
+  },
 ])
-
-const status = ref({
-  tid: 'req00000000001',
-  status: 'running',
-  stage: 'start',
-  direction: 'down',
-  floor: 6,
-  floorStart: 5,
-  floorEnd: 10,
-  distance: 500,
-  maxSpeed: 2.5,
-  gmt: 1672502400000,
-  doorTimes: 15,
-  runningUpTimes: 10,
-  runningDownTimes: 10,
-})
 
 // TODO: 项目
 const lift = ref({
@@ -145,71 +145,66 @@ const lift = ref({
   address: '电梯地址',
   company: '使用单位',
   maintenanceCompany: '维保企业',
-  maintenancePerson: '维保人员',
+  userId1: '维保人员',
 })
 
-const liftInfo = ref({
-  name: '',
-  elevatorNumber: '',
+const liftInfo = ref<Partial<ILiftOneInfoResponse>>({
+  name: null,
+  elevatorNumber: null,
 })
 
 const run = {
   status: '电梯状态',
-  floor: '当前楼层：',
+  floor: '当前楼层',
   direction: '运行方向',
   speed: '速度',
   floorStart: '开始楼层',
   floorEnd: '结束楼层',
   runningDownTimes: '已运行的楼层次数',
   maxSpeed: '最大速度',
-  doorTimes: '门操作次数：',
+  doorTimes: '门操作次数',
 }
+
 const runInfo = ref({})
 
+const getRunInfo = (key: string) => {
+  console.log('runInfo :>> ', key, runInfo.value)
+  if (key === 'floor') {
+    return floorMap.get(runInfo.value[key])
+  } else {
+    return runInfo.value[key]
+  }
+}
+
 const maintenanceList = ref([
-  // {
-  //   time: '',
-  //   state: '',
-  // },
+  {
+    time: '',
+    state: '',
+  },
 ])
 
 const errorList = ref([
-  // {
-  //   startTime: '',
-  //   errorDescription: '',
-  //   errorCode: '',
-  //   state: '',
-  // },
+  {
+    startTime: '',
+    errorDescription: '',
+    errorCode: '',
+    state: '',
+  },
 ])
 
-const getLiftInfo = (key: string) => {
-  console.log('liftInfo :>> ', key, liftInfo.value)
-  return liftInfo.value[key]
-}
-
-onLoad((options) => {
-  const elevatorId = options.elevatorId
-  postLiftOneInfo({ elevator_id: elevatorId, is_archives: 1 })
-    .then((result) => {
-      liftInfo.value = result
-    })
-    .catch((err) => {
-      console.log('postLiftGetRun err:>> ', err)
-    })
-})
-
 type maintenanceBtnType = 'info' | 'run' | 'maintenance' | 'breakdown'
-const showBtnContent = ref<maintenanceBtnType>('info')
-type btnType = {
-  name: string
-  type: maintenanceBtnType
-}
-
 enum maintenanceBtnEnum {
   info = 'info',
   run = 'run',
   maintenance = 'maintenance',
   breakdown = 'breakdown',
+}
+
+const showBtnContent = ref<maintenanceBtnType>(maintenanceBtnEnum.maintenance)
+
+type btnType = {
+  name: string
+  type: maintenanceBtnType
 }
 
 const btnList = ref<btnType[]>([
@@ -231,6 +226,29 @@ const btnList = ref<btnType[]>([
   },
 ])
 
+let elevatorId = null
+const floorMap = new Map<number, number>()
+
+onLoad((options) => {
+  elevatorId = options.elevatorId
+
+  postLiftOneInfo({ elevator_id: elevatorId, is_archives: 1 })
+    .then((result) => {
+      liftInfo.value = result
+      postGetLiftFloor({ id: elevatorId, ele_unmber: liftInfo.value.elevatorNumber }).then(
+        (result) => {
+          result.list.forEach((item: IFloorInfo) => {
+            floorMap.set(item.mqttFloor, item.actualFloor)
+          })
+          connectToMQTT()
+        },
+      )
+    })
+    .catch((err) => {
+      console.log('postLiftOneInfo err:>> ', err)
+    })
+})
+
 const handleClickBtn = (item: any) => {
   showBtnContent.value = item.type
   console.log('showBtnContent :>> ', showBtnContent.value)
@@ -249,17 +267,18 @@ const connectToMQTT = () => {
   // 创建MQTT客户端
   // #ifdef H5
   client = mqtt.connect(import.meta.env.VITE_MQTT_URL, options)
-  // #endififdef
+  // #endif
 
   // #ifdef MP-WEIXIN
   client = mqtt.connect('wxs://sharemarttech.com:8084/mqtt', options)
   // #endif
 
+  const deviceID = `status/${liftInfo.value.registerCode}`
   // 连接成功时的回调
   client.on('connect', () => {
     console.log('连接成功')
     // 主题 :status/特种设备号
-    client.subscribe('status/31104413002013120268', (err) => {
+    client.subscribe(deviceID, (err) => {
       if (err) {
         console.error('订阅失败', err)
       } else {
@@ -270,11 +289,11 @@ const connectToMQTT = () => {
 
   // 接收到消息时的回调
   client.on('message', (topic, message) => {
-    if (topic === 'status/31104413002013120268') {
+    if (topic === deviceID) {
       try {
         // 解析 JSON 数据
-        status.value = JSON.parse(message.toString())
-        console.log('接收到消息:', status.value)
+        runInfo.value = JSON.parse(message.toString())
+        console.log('接收到消息:', runInfo.value)
       } catch (error) {
         console.error('解析消息失败:', error)
       }
@@ -292,11 +311,7 @@ const connectToMQTT = () => {
   })
 }
 
-// onMounted(() => {
-//   connectToMQTT()
-// })
-
-onBeforeUnmount(() => {
+onHide(() => {
   if (client) {
     client.end()
   }
@@ -339,7 +354,7 @@ $rpx-60: px2rpx(60);
   .scroll-box {
     @extend %flex-column;
     position: relative;
-    gap: $rpx-12;
+    gap: $rpx-16;
     padding: $rpx-16 $rpx-24;
 
     .state {
@@ -351,6 +366,10 @@ $rpx-60: px2rpx(60);
       background: $color-primary;
       border-radius: 0 0 0 $rpx-30;
       @extend %font-size-sm;
+    }
+
+    .offline {
+      background-color: rgb(171, 171, 171);
     }
 
     .header {
@@ -401,9 +420,10 @@ $rpx-60: px2rpx(60);
           .run-bar-item {
             @extend %flex-column;
             gap: $rpx-6;
+            align-items: center;
             width: 100%;
             height: 100%;
-            border: $rpx-1 solid $color-primary;
+            // border: $rpx-1 solid $color-primary;
 
             .run-bar-img {
               @extend %font-size;
@@ -432,6 +452,22 @@ $rpx-60: px2rpx(60);
 
       .active {
         border: $rpx-1 $color-primary solid;
+      }
+    }
+
+    :deep(.custom-info) {
+      .wd-cell__right {
+        flex: 2;
+      }
+    }
+
+    :deep(.custom-maintenance) {
+      .wd-table__content {
+        width: 100%;
+      }
+
+      .wd-table-cell {
+        flex: 1;
       }
     }
   }

@@ -6,6 +6,7 @@ export const liftGetRunApi = '/lift/get_run' // 电梯监控-运行与统计-累
 export const liftPushTroubleApi = '/lift/pushtrouble' // 电梯预警记录
 export const liftAddApi = '/lift/lift_add' // 新增电梯
 export const liftOneInfoApi = '/lift/one_info' // 电梯详情
+export const liftGetFloorApi = '/lift/get_floor' // 获取电梯楼层
 
 export const knowledgeCategoryListApi = '/knowledge/categorylist' // 知识库类目表
 export const knowledgeDocumentListApi = '/knowledge/documentList' // 知识库文件列表

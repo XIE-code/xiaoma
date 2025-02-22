@@ -199,12 +199,10 @@ const faultCount = ref(0)
 const todoList = ref<IMaintenanceItem[]>([])
 
 /* TODO: 下拉加载 */
-// FIXME: 请求当日维保列表
-// 获取维保列表
 const getMaintenanceList = () => {
+  // 获取维保列表
   postMaintenanceList({
-    // time: dayjs().format('YYYY-MM-DD'),
-    time: '2025-02-20',
+    time: dayjs().format('YYYY-MM-DD'),
     limit: 99,
     page: 1,
   })

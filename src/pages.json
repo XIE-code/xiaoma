@@ -152,10 +152,6 @@
       }
     },
     {
-      "path": "pages/lift/monitor/monitor copy",
-      "type": "page"
-    },
-    {
       "path": "pages/lift/monitor/monitor",
       "type": "page",
       "layout": "default",

@@ -90,6 +90,7 @@ export interface ILiftOneInfoParams {
   elevator_id: number // 电梯ID
   is_archives: 1 | 0 // 查询类型，1：查询详细，0：查询简单信息
 }
+
 /* 单个电梯详细信息响应体 */
 export interface ILiftOneInfoResponse {
   elevatorId: number // 电梯ID
@@ -100,4 +101,24 @@ export interface ILiftOneInfoResponse {
   speed: string // 电梯速度
   load: number // 载重
   userId1: string // 维保人员名称
+  isOnline?: string // 是否在线
+}
+
+/* 获取楼层信息请求参数 */
+export interface ILiftGetFloorParams {
+  id: number // 电梯ID
+  ele_unmber: number // 电梯编号
+}
+
+/* 单个楼层信息 */
+export interface IFloorInfo {
+  showFloor: string // 显示楼层
+  eleUnmber: number // 电梯编码
+  mqttFloor: number // mqtt楼层
+  actualFloor: number // 实际楼层
+}
+
+/* 获取楼层信息响应体 */
+export interface ILiftGetFloorResponse {
+  list: IFloorInfo[] // 电梯楼层信息列表
 }
