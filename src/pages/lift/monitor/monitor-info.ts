@@ -1,3 +1,16 @@
+export type btnType = {
+  name: string
+  type: maintenanceBtnType
+}
+
+export type maintenanceBtnType = 'info' | 'run' | 'maintenance' | 'breakdown'
+export enum maintenanceBtnEnum {
+  info = 'info',
+  run = 'run',
+  maintenance = 'maintenance',
+  breakdown = 'breakdown',
+}
+
 export const monitorInfo = {
   name: '电梯名称',
   brand: '电梯品牌',
@@ -23,3 +36,36 @@ export const monitorRunInfo = {
   runningUpTimes: '当天累计向上运行次数',
   runningDownTimes: '当天累计向下运行次数',
 }
+
+export const runObj = {
+  tid: '', // 业务识别id
+  status: '', // 电梯运行状态 stop/running
+  direction: '', // 运行方向 up/down
+  floor: null, // 当前楼层
+  floorStart: null, // 起始楼层
+  floorEnd: null, // 结束楼层
+  distance: null, // 运行距离
+  maxSpeed: null, // 最大运行速度
+  gmt: null, // 状态时间
+  doorTimes: null, // 当天累计开关门次数
+  runningUpTimes: null, // 当天累计向上运行次数
+  runningDownTimes: null, // 当天累计向下运行次数
+}
+
+export const showInfoData = [
+  {
+    icon: 'dashboard',
+    num: '0m/s',
+    text: '运行速度',
+  },
+  {
+    icon: 'swap-right',
+    num: '--m',
+    text: '运行距离',
+  },
+  {
+    icon: 'time',
+    num: '0',
+    text: '运行时间',
+  },
+]

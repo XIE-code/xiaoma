@@ -25,7 +25,12 @@
           {{ liftInfo.isOnline == '1' ? '在线' : '离线' }}
         </view>
         <view class="header">
-          <view class="img"></view>
+          <view class="img">
+            <wd-img width="100%" height="100%" :src="liftImg" />
+            <view class="img-floor-num">
+              <text ref="imgFloor" class="img-floor-text">{{ imgFloorNum }}</text>
+            </view>
+          </view>
           <view class="head-info">
             <view class="head-info-top">
               <text class="info-name">{{ liftInfo.name }}</text>
@@ -44,14 +49,17 @@
         </view>
 
         <view class="btn-list">
-          <button
-            :class="`btn-item ${showBtnContent === item.type ? 'active' : ''}`"
+          <wd-button
+            size="small"
+            :type="`${showBtnContent === item.type ? 'default' : 'info'}`"
+            :class="`${showBtnContent === item.type ? 'active' : ''}`"
             v-for="item in btnList"
             :key="item.type"
             @click="handleClickBtn(item)"
+            plain
           >
             {{ item.name }}
-          </button>
+          </wd-button>
         </view>
 
         <wd-cell-group v-if="showBtnContent === 'info'" border>
@@ -116,30 +124,24 @@ import { IFloorInfo, ILiftOneInfoResponse } from '@/service/lift/type'
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
-import { monitorInfo, monitorRunInfo } from './monitor-info'
+import {
+  btnType,
+  maintenanceBtnEnum,
+  maintenanceBtnType,
+  monitorInfo,
+  monitorRunInfo,
+  runObj,
+  showInfoData,
+} from './monitor-info'
+// img
+import liftImg from '@/static/image/lift.jpg'
 
 // 导航栏
 function handleClickBack() {
   uni.navigateBack()
 }
 
-const showInfo = ref([
-  {
-    icon: 'dashboard',
-    num: '0m/s',
-    text: '运行速度',
-  },
-  {
-    icon: 'swap-right',
-    num: '--m',
-    text: '运行距离',
-  },
-  {
-    icon: 'time',
-    num: '0',
-    text: '运行时间',
-  },
-])
+const showInfo = ref(showInfoData)
 
 // TODO: 项目
 const lift = ref(monitorInfo)
@@ -149,29 +151,16 @@ const liftInfo = ref<Partial<ILiftOneInfoResponse>>({
   elevatorNumber: null,
 })
 
-const runObj = {
-  tid: '', // 业务识别id
-  status: '', // 电梯运行状态 stop/running
-  direction: '', // 运行方向 up/down
-  floor: null, // 当前楼层
-  floorStart: null, // 起始楼层
-  floorEnd: null, // 结束楼层
-  distance: null, // 运行距离
-  maxSpeed: null, // 最大运行速度
-  gmt: null, // 状态时间
-  doorTimes: null, // 当天累计开关门次数
-  runningUpTimes: null, // 当天累计向上运行次数
-  runningDownTimes: null, // 当天累计向下运行次数
-}
-
 const runInfo = ref(runObj)
 
+let elevatorId = null
+const floorMap = new Map<number, number>()
+
 const getRunInfo = (key: string) => {
-  console.log('runInfo :>> ', key, runInfo.value)
   const runInfoValue = runInfo.value
   const handlers = new Map<string, (value: any) => any>([
-    ['floor', (value) => floorMap.get(value)],
-    ['floorStart', (value) => floorMap.get(value)],
+    ['floor', (floor) => floorMap.get(floor)],
+    ['floorStart', (floor) => (!floorMap.has(floor) ? floor : floorMap.get(floor))],
     ['status', (value) => (value === 'running' ? '运行' : value === 'stop' ? '停止' : '')],
     [
       'direction',
@@ -186,35 +175,40 @@ const getRunInfo = (key: string) => {
 }
 
 const maintenanceList = ref([
-  {
-    time: '',
-    state: '',
-  },
+  // {
+  //   time: '',
+  //   state: '',
+  // },
 ])
 
 const errorList = ref([
-  {
-    startTime: '',
-    errorDescription: '',
-    errorCode: '',
-    state: '',
-  },
+  // {
+  //   startTime: '',
+  //   errorDescription: '',
+  //   errorCode: '',
+  //   state: '',
+  // },
 ])
-
-type maintenanceBtnType = 'info' | 'run' | 'maintenance' | 'breakdown'
-enum maintenanceBtnEnum {
-  info = 'info',
-  run = 'run',
-  maintenance = 'maintenance',
-  breakdown = 'breakdown',
-}
 
 const showBtnContent = ref<maintenanceBtnType>(maintenanceBtnEnum.info)
 
-type btnType = {
-  name: string
-  type: maintenanceBtnType
-}
+const imgFloorNum = ref(runInfo.value?.floor || 1)
+
+const imgFloorRef = ref()
+
+// onMounted(() => {
+//   const animation = uni.createAnimation({
+//     duration: 1000, // 动画持续时间，单位ms
+//     timingFunction: 'ease', // 动画的效果
+//   })
+
+//   animation.translateY(-px2rpx(100)).step() // 向下滑动自身高度
+//   // animationData.value = animation.export() // 导出动画数据
+
+//   setTimeout(() => {
+//     imgFloorNum.value = '2' // 替换成另一个值
+//   }, 1000) // 等待动画结束后替换值
+// })
 
 const btnList = ref<btnType[]>([
   {
@@ -235,9 +229,6 @@ const btnList = ref<btnType[]>([
   },
 ])
 
-let elevatorId = null
-const floorMap = new Map<number, number>()
-
 onLoad((options) => {
   elevatorId = options.elevatorId
 
@@ -248,7 +239,6 @@ onLoad((options) => {
         (result) => {
           result.list.forEach((item: IFloorInfo) => {
             floorMap.set(item.mqttFloor, item.actualFloor)
-            console.log('floorMap :>> ', floorMap)
           })
           connectToMQTT()
         },
@@ -391,9 +381,24 @@ $rpx-60: px2rpx(60);
       height: 30vh;
 
       .img {
+        position: relative;
         flex: 1;
         height: 100%;
-        border: $rpx-1 solid $color-primary;
+
+        .img-floor-num {
+          position: absolute;
+          top: $rpx-10;
+          left: 50%;
+          transform: translateX(calc(-50%));
+
+          .img-floor-text {
+            position: relative;
+            font-size: $rpx-10;
+
+            color: red;
+            transition: all 1.3s;
+          }
+        }
       }
 
       .head-info {
