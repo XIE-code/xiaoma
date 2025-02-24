@@ -64,8 +64,13 @@
           />
         </wd-cell-group>
 
-        <wd-cell-group v-if="showBtnContent === 'run'" border>
-          <wd-cell :title="value" :value="getRunInfo(key)" v-for="(value, key) in run" :key="key" />
+        <wd-cell-group customClass="custom-run" v-if="showBtnContent === 'run'" border>
+          <wd-cell
+            :title="value"
+            :value="getRunInfo(key)"
+            v-for="(value, key) in monitorRunInfo"
+            :key="key"
+          />
         </wd-cell-group>
 
         <wd-table
@@ -111,6 +116,7 @@ import { IFloorInfo, ILiftOneInfoResponse } from '@/service/lift/type'
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
+import { monitorInfo, monitorRunInfo } from './monitor-info'
 
 // 导航栏
 function handleClickBack() {
@@ -136,44 +142,47 @@ const showInfo = ref([
 ])
 
 // TODO: 项目
-const lift = ref({
-  name: '电梯名称',
-  type: '电梯型号',
-  brand: '电梯品牌',
-  model: '电梯型号',
-  tid: '电梯梯钟',
-  address: '电梯地址',
-  company: '使用单位',
-  maintenanceCompany: '维保企业',
-  userId1: '维保人员',
-})
+const lift = ref(monitorInfo)
 
 const liftInfo = ref<Partial<ILiftOneInfoResponse>>({
   name: null,
   elevatorNumber: null,
 })
 
-const run = {
-  status: '电梯状态',
-  floor: '当前楼层',
-  direction: '运行方向',
-  speed: '速度',
-  floorStart: '开始楼层',
-  floorEnd: '结束楼层',
-  runningDownTimes: '已运行的楼层次数',
-  maxSpeed: '最大速度',
-  doorTimes: '门操作次数',
+const runObj = {
+  tid: '', // 业务识别id
+  status: '', // 电梯运行状态 stop/running
+  direction: '', // 运行方向 up/down
+  floor: null, // 当前楼层
+  floorStart: null, // 起始楼层
+  floorEnd: null, // 结束楼层
+  distance: null, // 运行距离
+  maxSpeed: null, // 最大运行速度
+  gmt: null, // 状态时间
+  doorTimes: null, // 当天累计开关门次数
+  runningUpTimes: null, // 当天累计向上运行次数
+  runningDownTimes: null, // 当天累计向下运行次数
 }
 
-const runInfo = ref({})
+const runInfo = ref(runObj)
 
 const getRunInfo = (key: string) => {
   console.log('runInfo :>> ', key, runInfo.value)
-  if (key === 'floor') {
-    return floorMap.get(runInfo.value[key])
-  } else {
-    return runInfo.value[key]
-  }
+  const runInfoValue = runInfo.value
+  const handlers = new Map<string, (value: any) => any>([
+    ['floor', (value) => floorMap.get(value)],
+    ['floorStart', (value) => floorMap.get(value)],
+    ['status', (value) => (value === 'running' ? '运行' : value === 'stop' ? '停止' : '')],
+    [
+      'direction',
+      (value) =>
+        value === 'open' ? '开门' : value === 'up' ? '上行' : value === 'down' ? '下行' : '',
+    ],
+    ['gmt', (value) => new Date(value).toLocaleString()],
+  ])
+
+  const handler = handlers.get(key)
+  return handler ? handler(runInfoValue[key]) : runInfoValue[key]
 }
 
 const maintenanceList = ref([
@@ -200,7 +209,7 @@ enum maintenanceBtnEnum {
   breakdown = 'breakdown',
 }
 
-const showBtnContent = ref<maintenanceBtnType>(maintenanceBtnEnum.maintenance)
+const showBtnContent = ref<maintenanceBtnType>(maintenanceBtnEnum.info)
 
 type btnType = {
   name: string
@@ -239,6 +248,7 @@ onLoad((options) => {
         (result) => {
           result.list.forEach((item: IFloorInfo) => {
             floorMap.set(item.mqttFloor, item.actualFloor)
+            console.log('floorMap :>> ', floorMap)
           })
           connectToMQTT()
         },
@@ -251,7 +261,6 @@ onLoad((options) => {
 
 const handleClickBtn = (item: any) => {
   showBtnContent.value = item.type
-  console.log('showBtnContent :>> ', showBtnContent.value)
 }
 
 let client: mqtt.MqttClient | null = null
@@ -293,6 +302,9 @@ const connectToMQTT = () => {
       try {
         // 解析 JSON 数据
         runInfo.value = JSON.parse(message.toString())
+        const runInfoData = runInfo.value
+        showInfo.value[1].num = runInfoData.distance + ''
+        // showInfo.value[2].num = new Date(runInfoData.gmt) + ''
         console.log('接收到消息:', runInfo.value)
       } catch (error) {
         console.error('解析消息失败:', error)
@@ -457,6 +469,12 @@ $rpx-60: px2rpx(60);
 
     :deep(.custom-info) {
       .wd-cell__right {
+        flex: 2;
+      }
+    }
+
+    :deep(.custom-run) {
+      .wd-cell__left {
         flex: 2;
       }
     }
