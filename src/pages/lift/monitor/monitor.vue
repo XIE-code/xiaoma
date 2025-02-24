@@ -125,6 +125,7 @@ import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
 import {
+  btnListData,
   btnType,
   maintenanceBtnEnum,
   maintenanceBtnType,
@@ -174,21 +175,9 @@ const getRunInfo = (key: string) => {
   return handler ? handler(runInfoValue[key]) : runInfoValue[key]
 }
 
-const maintenanceList = ref([
-  // {
-  //   time: '',
-  //   state: '',
-  // },
-])
+const maintenanceList = ref([])
 
-const errorList = ref([
-  // {
-  //   startTime: '',
-  //   errorDescription: '',
-  //   errorCode: '',
-  //   state: '',
-  // },
-])
+const errorList = ref([])
 
 const showBtnContent = ref<maintenanceBtnType>(maintenanceBtnEnum.info)
 
@@ -210,24 +199,7 @@ const imgFloorRef = ref()
 //   }, 1000) // 等待动画结束后替换值
 // })
 
-const btnList = ref<btnType[]>([
-  {
-    name: '电梯信息',
-    type: maintenanceBtnEnum.info,
-  },
-  {
-    name: '运行统计',
-    type: maintenanceBtnEnum.run,
-  },
-  {
-    name: '维保记录',
-    type: maintenanceBtnEnum.maintenance,
-  },
-  {
-    name: '故障记录',
-    type: maintenanceBtnEnum.breakdown,
-  },
-])
+const btnList = ref<btnType[]>(btnListData)
 
 onLoad((options) => {
   elevatorId = options.elevatorId
@@ -387,7 +359,7 @@ $rpx-60: px2rpx(60);
 
         .img-floor-num {
           position: absolute;
-          top: $rpx-10;
+          top: $rpx-5;
           left: 50%;
           transform: translateX(calc(-50%));
 

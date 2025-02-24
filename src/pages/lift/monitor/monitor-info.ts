@@ -69,3 +69,22 @@ export const showInfoData = [
     text: '运行时间',
   },
 ]
+
+export const btnListData = [
+  {
+    name: '电梯信息',
+    type: maintenanceBtnEnum.info,
+  },
+  {
+    name: '运行统计',
+    type: maintenanceBtnEnum.run,
+  },
+  {
+    name: '维保记录',
+    type: maintenanceBtnEnum.maintenance,
+  },
+  {
+    name: '故障记录',
+    type: maintenanceBtnEnum.breakdown,
+  },
+]
