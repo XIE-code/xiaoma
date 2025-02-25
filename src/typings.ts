@@ -1,5 +1,4 @@
 // 全局要用的类型放到这里
-
 type IResData<T> = {
   code: string
   msg: string

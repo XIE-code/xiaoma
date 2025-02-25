@@ -31,7 +31,11 @@
 
         <!-- TODO: 区分运行环境 -->
         <view v-if="maintenance.isMaintain === 1" class="sign-in">
-          <button hover-class="button-hover" @click="handleSignIn" class="btn-sign">
+          <button
+            hover-class="button-hover"
+            @click="handleSignIn"
+            :class="`btn-sign ${signInDistance <= 500 ? 'online' : 'offline'}`"
+          >
             {{ `${signInDistance <= 500 ? '点击签到' : '距离过远'}` }}
           </button>
           <view>当前位置： {{ currentPosition.address }}</view>
@@ -108,8 +112,7 @@ import { IElevatorInfo, IMaintenanceBasis } from '@/service/maintenance/type'
 import { isNullOrUndefined, px2rpx, uniShowToast } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
-import { indexPage } from '@/common/pages'
-import { UploadBeforeUploadOption, UploadFile } from 'wot-design-uni/components/wd-upload/types'
+import { UploadBeforeUploadOption } from 'wot-design-uni/components/wd-upload/types'
 import dayjs from 'dayjs'
 import { maintenanceImgUploadApi } from '@/common/api'
 
@@ -147,8 +150,6 @@ const qqmapsdk = new QQMapWX({
 // 导航栏
 function handleClickBack() {
   uni.navigateBack()
-  // systemStore.resetTabBarIdx()
-  // uni.switchTab({ url: indexPage })
 }
 
 const liftInfo = ref<Partial<IElevatorInfo>>({
@@ -185,7 +186,7 @@ const currentPosition = ref({
 })
 
 // 定位距离
-const signInDistance = ref(0)
+const signInDistance = ref(999)
 
 onLoad((options) => {
   // 获取维保电梯详情
@@ -198,10 +199,6 @@ const getMaintenanceDetail = (id: number) => {
     .then((result) => {
       liftInfo.value = result.ele
       maintenance.value = result.basis
-      // TODO： async/await
-      // 1. 未签到，展示签到页面，进行签到
-      // 2. 已签到
-      // 3. 已提交打卡
       getSetting()
     })
     .catch((err) => {
@@ -326,7 +323,15 @@ function getAddress() {
 // 点击签到
 function handleSignIn() {
   // 切换签到状态
-  maintenance.value.isMaintain = 3
+
+  const distance = signInDistance.value
+  if (distance > 500) {
+    uni.showToast({
+      title: '距离签到位置太远',
+      icon: 'none',
+    })
+    return
+  }
 
   postMaintenanceSignIn({ id: maintenance.value.id, is_qan: maintenance.value.iden })
     .then((result) => {
@@ -334,6 +339,7 @@ function handleSignIn() {
         title: '签到成功',
         icon: 'none',
       })
+      maintenance.value.isMaintain = 3
     })
     .catch((err) => {
       console.log('postSignIn err:>> ', err)
@@ -548,6 +554,27 @@ $rpx-92: px2rpx(92);
         margin: 0 auto;
         margin-bottom: $rpx-10;
         border-radius: 50%;
+      }
+
+      .online {
+        // background: lightgrey;
+      }
+
+      .offline {
+        color: $color-white;
+        background: lightgray;
+      }
+    }
+
+    // 已签到
+    .clock-in {
+      @extend %flex-column;
+      gap: $rpx-10;
+      padding-bottom: $rpx-32;
+
+      :deep(.wd-upload) {
+        --wot-upload-size: 100%;
+        width: 100%;
       }
     }
 

@@ -1,12 +1,17 @@
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 
-const initState = { tabBarIdx: 0, capsule: { top: 0, height: 0 } }
+const initState: ISystemInfo = { tabBarIdx: 0, capsule: { top: 0, height: 0 } }
 
 export const useSystemStore = defineStore(
   'system',
   () => {
     const systemInfo = reactive<ISystemInfo>({ ...initState })
+
+    /* 重置systemInfo */
+    const resetSystemInfo = () => {
+      Object.assign(systemInfo, initState)
+    }
 
     /* 设置tab栏当前索引 */
     const setTabBarIdx = (idx: number) => {
@@ -23,7 +28,7 @@ export const useSystemStore = defineStore(
       systemInfo.capsule = { top, height }
     }
 
-    /* 设置 navigatorPadding */
+    /* 获取 navigatorPadding */
     const getNavigatorPadding = computed(() => {
       const { top = 0, height = 0 } = systemInfo.capsule
       return top + height
@@ -36,6 +41,7 @@ export const useSystemStore = defineStore(
 
     return {
       systemInfo,
+      resetSystemInfo,
       setTabBarIdx,
       resetTabBarIdx,
       getNavigatorPadding,

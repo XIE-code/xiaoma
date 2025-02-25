@@ -10,11 +10,6 @@ import { getNeedLoginPages, needLoginPages as _needLoginPages } from '@/utils'
 // TODO: Check
 const loginRoute = '/pages/login/index'
 
-const isLogined = () => {
-  const userStore = useUserStore()
-  return userStore.isLogined
-}
-
 const isDev = import.meta.env.DEV
 
 // 黑名单登录拦截器 - （适用于大部分页面不需要登录，少部分页面需要登录）
@@ -34,8 +29,8 @@ const navigateToInterceptor = {
     if (!isNeedLogin) {
       return true
     }
-    const hasLogin = isLogined()
-    if (hasLogin) {
+    const userStore = useUserStore()
+    if (userStore.isLogin) {
       return true
     }
     const redirectRoute = `${loginRoute}?redirect=${encodeURIComponent(url)}`

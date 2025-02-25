@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { ILoginResponse } from '@/service/login'
+import { ILoginResponse } from '@/service/login/type'
 
 const initState: ILoginResponse = {
   userId: 0, // 用户ID
@@ -29,21 +29,17 @@ export const useUserStore = defineStore(
       userInfo.value = val
     }
 
-    const clearUserInfo = () => {
-      userInfo.value = { ...initState }
+    const resetUserInfo = () => {
+      userInfo.value = initState
     }
-    // 一般没有reset需求，不需要的可以删除
-    const reset = () => {
-      userInfo.value = { ...initState }
-    }
-    const isLogined = computed(() => !!userInfo.value.token)
+
+    const isLogin = computed(() => !!userInfo.value.token)
 
     return {
       userInfo,
       setUserInfo,
-      clearUserInfo,
-      isLogined,
-      reset,
+      resetUserInfo,
+      isLogin,
     }
   },
   {

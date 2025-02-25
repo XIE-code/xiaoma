@@ -59,7 +59,6 @@ import { postLogin } from '@/service/login/login'
 import { md5 } from '@/utils/md5'
 import { uniShowToast } from '@/utils/tools'
 import { indexPage } from '@/common/pages'
-// import 'weconsole/dist/npm/main/init'
 
 // 登录框
 const loginForm = reactive({
@@ -67,7 +66,7 @@ const loginForm = reactive({
   password: '',
 })
 
-/* userStore */
+/* userStore\systemStore */
 const userStore = useUserStore()
 const systemStore = useSystemStore()
 
@@ -78,12 +77,6 @@ const handleFormSubmit = (event) => {
 }
 
 const handleLoginBtn = () => {
-  // FIXME: 测试自动进入
-  if (!loginForm.account && !loginForm.password) {
-    loginForm.account = 'test'
-    loginForm.password = '123456'
-  }
-
   if (!loginForm.account || !loginForm.password) {
     const emptyFields = []
     !loginForm.account && emptyFields.push('账号')
@@ -109,7 +102,7 @@ const handleLoginBtn = () => {
         icon: 'none',
         title: '输入的账号或密码有误',
       })
-      console.log('getLogin err :>> ', err)
+      console.log('postLogin err :>> ', err)
     })
 }
 </script>
