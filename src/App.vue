@@ -4,17 +4,15 @@ import { useSystemStore } from './store'
 const useSystem = useSystemStore()
 
 onLaunch(() => {
-  // console.log('App Launch')
   getTopBarHeight()
 })
 
 function getTopBarHeight() {
   // #ifndef H5 || APP-PLUS || MP-ALIPAY
   const menuInfo = uni.getMenuButtonBoundingClientRect()
-  console.log('menuInfo :>> ', menuInfo)
+  console.log('system--menuInfo :>> ', menuInfo)
   // 导航栏内容的高度 = (胶囊底部的高度 - 状态栏的高度) + (胶囊顶部的高度 - 状态栏的高度)
   useSystem.setNavigatorPadding(menuInfo.top, menuInfo.height)
-
   // #endif
 }
 </script>

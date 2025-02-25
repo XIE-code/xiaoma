@@ -23,20 +23,25 @@ const initState: ILoginResponse = {
 export const useUserStore = defineStore(
   'user',
   () => {
-    const userInfo = ref<ILoginResponse>({ ...initState })
+    const userInfo = reactive<ILoginResponse>({ ...initState })
 
     const setUserInfo = (val: ILoginResponse) => {
-      userInfo.value = val
+      Object.assign(userInfo, val)
     }
 
     const resetUserInfo = () => {
-      userInfo.value = initState
+      Object.assign(userInfo, initState)
     }
 
-    const isLogin = computed(() => !!userInfo.value.token)
+    const getUserInfo = () => {
+      return userInfo
+    }
+
+    const isLogin = computed(() => !!userInfo.token)
 
     return {
       userInfo,
+      getUserInfo,
       setUserInfo,
       resetUserInfo,
       isLogin,

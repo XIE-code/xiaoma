@@ -69,11 +69,6 @@ import { postMaintenanceList } from '@/service/maintenance/maintenance'
 import { IMaintenanceItem, isMaintainType } from '@/service/maintenance/type'
 import { signInPage } from '@/common/pages'
 
-onLoad(() => {
-  uni.hideTabBar()
-  getMaintenanceList(dayjs().format('YYYY-MM-DD'))
-})
-
 // week calendar
 const calendar = reactive<IWeekDate[]>(getWeekDates())
 const curDayIdx = ref<number>(new Date().getDay() - 1)
@@ -129,6 +124,14 @@ const getItemInfoByMaintenanceType = (type: itemType, isMaintain: isMaintainType
 const handleSignIn = (todo: IMaintenanceItem) => {
   uni.navigateTo({ url: signInPage + `?id=${todo.id}` })
 }
+
+onLoad(() => {
+  uni.hideTabBar()
+})
+
+onShow(() => {
+  getMaintenanceList(dayjs().format('YYYY-MM-DD'))
+})
 </script>
 
 <style lang="scss" scoped>

@@ -136,14 +136,10 @@ import {
   shopPage,
   signInPage,
 } from '@/common/pages'
+import { useSystemStore } from '@/store'
 
 defineOptions({
   name: 'Home',
-})
-
-onLoad(() => {
-  uni.hideTabBar()
-  getMaintenanceList()
 })
 
 function handleSearch() {
@@ -236,6 +232,14 @@ const getItemInfoByMaintenanceType = (type: itemType, isMaintain: isMaintainType
 const handleSignIn = (todo: IMaintenanceItem) => {
   uni.navigateTo({ url: signInPage + `?id=${todo.id}` })
 }
+
+onLoad(() => {
+  uni.hideTabBar()
+})
+
+onShow(() => {
+  getMaintenanceList()
+})
 </script>
 
 <style lang="scss" scoped>

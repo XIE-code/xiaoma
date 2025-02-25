@@ -131,6 +131,10 @@ const handleClickItem = (item: ILiftListResponse) => {
   console.log('addElevator :>> click item', item)
   uni.navigateTo({ url: `${liftListPage}?elevatorId=${item.elevatorId}` })
 }
+
+onLoad(() => {
+  uni.hideTabBar()
+})
 </script>
 
 <style lang="scss" scoped>

@@ -13,6 +13,10 @@ export const useSystemStore = defineStore(
       Object.assign(systemInfo, initState)
     }
 
+    /* 获取tab栏当前索引 */
+    const getTabBarIdx = () => {
+      return systemInfo.tabBarIdx
+    }
     /* 设置tab栏当前索引 */
     const setTabBarIdx = (idx: number) => {
       systemInfo.tabBarIdx = idx
@@ -42,6 +46,7 @@ export const useSystemStore = defineStore(
     return {
       systemInfo,
       resetSystemInfo,
+      getTabBarIdx,
       setTabBarIdx,
       resetTabBarIdx,
       getNavigatorPadding,

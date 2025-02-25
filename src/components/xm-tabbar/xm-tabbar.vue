@@ -13,7 +13,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useSystemStore } from '@/store/system'
 import homeSvg from '@/static/svg/home.svg'
 import homeSelectSvg from '@/static/svg/home-select.svg'
@@ -28,11 +27,7 @@ import { indexPage, maintenancePage, personalPage, urgentRepairPage } from '@/co
 const systemStore = useSystemStore()
 const systemInfo = systemStore.systemInfo
 
-const tabBarIdx = computed(() => systemInfo.tabBarIdx)
-// TODO: onLoad和onShow的区别
-// onShow(() => {
-//   tabBarIdx.value = systemInfo.tabBarIdx
-// })
+const tabBarIdx = ref(systemStore.getTabBarIdx())
 
 const tabBars = [
   // 示例数据
@@ -64,15 +59,9 @@ const tabBars = [
 // 定义方法
 const handleChangeItem = (item: { path: string; idx?: number }) => {
   systemStore.setTabBarIdx(item.idx)
-  if (item.idx === 3) {
-    uni.reLaunch({
-      url: personalPage,
-    })
-  } else {
-    uni.switchTab({
-      url: item.path,
-    })
-  }
+  uni.switchTab({
+    url: item.path,
+  })
 }
 </script>
 

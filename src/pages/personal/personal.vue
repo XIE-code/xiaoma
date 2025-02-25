@@ -8,10 +8,10 @@
 <template>
   <wrapper paddingType="top" :paddingBottom="90" :paddingLeft="20" :paddingRight="20" :gap="24">
     <view class="info">
-      <image class="avatar" :src="getServerImg(headImg)" mode="scaleToFill"></image>
+      <image class="avatar" :src="getServerImg(userInfo.headImg)" mode="scaleToFill"></image>
       <view class="info-data">
-        <view class="info-name">{{ realname }}</view>
-        <view class="info-other">{{ phone }}&nbsp;|&nbsp;{{ companyName }}</view>
+        <view class="info-name">{{ userInfo.realname }}</view>
+        <view class="info-other">{{ userInfo.phone }}&nbsp;|&nbsp;{{ userInfo.companyName }}</view>
       </view>
     </view>
 
@@ -75,16 +75,16 @@ defineOptions({
 })
 
 const userStore = useUserStore()
-const { realname, phone, companyName, headImg } = userStore.userInfo
+const userInfo = reactive(userStore.getUserInfo())
 
 const routerList = reactive<IRouterItem[]>(routerListInfo)
 const elevatorList = reactive([])
 
 const systemStore = useSystemStore()
-const systemInfo = systemStore.systemInfo
 
 const handleLoginOut = () => {
   systemStore.resetSystemInfo()
+  systemStore.setTabBarIdx(0)
   userStore.resetUserInfo()
   uni.navigateTo({ url: loginPage })
 }

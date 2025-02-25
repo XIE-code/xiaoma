@@ -91,10 +91,8 @@ const handleLoginBtn = () => {
     password: md5(loginForm.password),
   })
     .then((res) => {
-      systemStore.resetTabBarIdx()
-      userStore.setUserInfo({
-        ...res,
-      })
+      userStore.setUserInfo({ ...res })
+      systemStore.setTabBarIdx(0)
       uni.switchTab({ url: indexPage })
     })
     .catch((err) => {

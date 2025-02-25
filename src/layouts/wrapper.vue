@@ -50,10 +50,6 @@ const wrapperHeight = props?.paddingBottom
   : '100vh'
 
 console.log('props.paddingBottom :>> ', props?.paddingBottom, wrapperHeight)
-
-onShow(() => {
-  console.log('paddingTop : top: height: >> ', paddingTop, top, height)
-})
 </script>
 
 <style lang="scss" scoped>
