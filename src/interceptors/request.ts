@@ -3,6 +3,7 @@ import qs from 'qs'
 import { useSystemStore, useUserStore } from '@/store'
 import { platform } from '@/utils/platform'
 import { getEnvBaseUrl } from '@/utils'
+import { loginPage } from '@/common/pages'
 
 export type CustomRequestOptions = UniApp.RequestOptions & {
   query?: Record<string, any>
@@ -63,8 +64,8 @@ const httpInterceptor = {
       const data = res.data as { code: string }
       if (data.code === '0') {
         const userStore = useUserStore()
-        userStore.clearUserInfo()
-        uni.navigateTo({ url: '/pages/login/login' })
+        userStore.resetUserInfo()
+        uni.navigateTo({ url: loginPage })
         return Promise.reject(res)
       }
     }

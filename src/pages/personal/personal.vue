@@ -74,10 +74,6 @@ defineOptions({
   name: 'personal',
 })
 
-onLoad(() => {
-  uni.hideTabBar()
-})
-
 const userStore = useUserStore()
 const { realname, phone, companyName, headImg } = userStore.userInfo
 
@@ -85,11 +81,17 @@ const routerList = reactive<IRouterItem[]>(routerListInfo)
 const elevatorList = reactive([])
 
 const systemStore = useSystemStore()
+const systemInfo = systemStore.systemInfo
+
 const handleLoginOut = () => {
   systemStore.resetSystemInfo()
   userStore.resetUserInfo()
   uni.navigateTo({ url: loginPage })
 }
+
+onLoad(() => {
+  uni.hideTabBar()
+})
 </script>
 
 <style lang="scss">

@@ -64,10 +64,15 @@ const tabBars = [
 // 定义方法
 const handleChangeItem = (item: { path: string; idx?: number }) => {
   systemStore.setTabBarIdx(item.idx)
-  // tabBarIdx.value = item.idx
-  uni.switchTab({
-    url: item.path,
-  })
+  if (item.idx === 3) {
+    uni.reLaunch({
+      url: personalPage,
+    })
+  } else {
+    uni.switchTab({
+      url: item.path,
+    })
+  }
 }
 </script>
 
