@@ -22,28 +22,22 @@ export const monitorInfo = {
   userId1: '维保人员',
 }
 
-export const monitorRunInfo = {
-  tid: '业务识别id',
+export const runInfoText = {
   status: '电梯运行状态',
   direction: '运行方向',
   floor: '当前楼层',
-  floorStart: '起始楼层',
-  floorEnd: '结束楼层，运行结束时推送',
-  distance: '运行距离【限本次运行】',
-  maxSpeed: '最大运行速度【限本次运行】',
+  distance: '运行距离',
+  maxSpeed: '最大运行速度',
   gmt: '状态时间',
-  doorTimes: '当天累计开关门次数【开门+关门记数1】',
+  doorTimes: '当天累计开关门次数',
   runningUpTimes: '当天累计向上运行次数',
   runningDownTimes: '当天累计向下运行次数',
 }
 
-export const runObj = {
-  tid: '', // 业务识别id
-  status: '', // 电梯运行状态 stop/running
-  direction: '', // 运行方向 up/down
+export const runInfoData = {
+  status: null, // 电梯运行状态 stop/running
+  direction: null, // 运行方向 up/down
   floor: null, // 当前楼层
-  floorStart: null, // 起始楼层
-  floorEnd: null, // 结束楼层
   distance: null, // 运行距离
   maxSpeed: null, // 最大运行速度
   gmt: null, // 状态时间
@@ -52,20 +46,20 @@ export const runObj = {
   runningDownTimes: null, // 当天累计向下运行次数
 }
 
-export const showInfoData = [
+export const showInfo = [
   {
     icon: 'dashboard',
-    num: '0m/s',
+    type: 'maxSpeed',
     text: '运行速度',
   },
   {
     icon: 'swap-right',
-    num: '--m',
+    type: 'distance',
     text: '运行距离',
   },
   {
     icon: 'time',
-    num: '0',
+    type: 'time',
     text: '运行时间',
   },
 ]
