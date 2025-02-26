@@ -114,6 +114,7 @@ export default defineManifestConfig({
     setting: {
       urlCheck: false,
     },
+    lazyCodeLoading: 'requiredComponents', // 微信小程序延迟加载组件
     usingComponents: true,
     // __usePrivacyCheck__: true,
     permission: {

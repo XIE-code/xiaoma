@@ -59,148 +59,61 @@ import { postBreakdownCode, postLiftGetRun } from '@/service/lift/lift'
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
+import {
+  IDetailItem,
+  leaveFactoryData,
+  liftBaseInfoData,
+  maintenanceData,
+  tabsDataItemType,
+} from './detail-data'
 // 导航栏
 function handleClickBack() {
   uni.navigateBack()
 }
 
-// 内容区域
-interface IDetailItem {
-  key: string // key
-  label: string // 标题
-  value: string // 文字
-}
-
 /* 电梯基本信息 */
-const liftBaseInfo = ref<IDetailItem[]>([
-  {
-    key: 'elevatorName',
-    label: '电梯名称',
-    value: '园洲花园8栋16号(测试)',
-  },
-  {
-    key: 'elevatorNumber',
-    label: '电梯编号',
-    value: '230101114',
-  },
-  {
-    key: 'elevatorType',
-    label: '电梯类型',
-    value: '',
-  },
-  {
-    key: 'elevatorAddress',
-    label: '所在小区',
-    value: '一号楼',
-  },
-  {
-    key: 'elevatorAddressDetail',
-    label: '详细地址',
-    value: '',
-  },
-])
+const liftBaseInfo = ref<IDetailItem[]>(liftBaseInfoData)
 /* 标签页信息 */
 /* 当前选项卡索引 */
 const tabIdx = ref<number>(0)
-/* 标签页信息 */
-type tabsItemType = {
-  title: string
-  data: tabsDataItemType[] // TODO: 更换类型
-}
-/* 标签内容 */
-type tabsDataItemType = {
-  label: string
-  value: string
-}
 
-const leaveFactory = ref<tabsDataItemType[]>([
-  {
-    label: '电梯制作商',
-    value: '0',
-  },
-  {
-    label: '生产日期',
-    value: '',
-  },
-  {
-    label: '电梯品牌',
-    value: '',
-  },
-  {
-    label: '电梯品种',
-    value: '电梯类型',
-  },
-  {
-    label: '电梯型号',
-    value: '',
-  },
-  {
-    label: '改造单位',
-    value: '',
-  },
-  {
-    label: '改造型号',
-    value: '',
-  },
-])
+const leaveFactory = ref<tabsDataItemType[]>(leaveFactoryData)
 
-const maintenance = ref<tabsDataItemType[]>([
-  {
-    label: '维保单位',
-    value: '广东佳登曼电梯',
-  },
-  {
-    label: '维保人员1-电话',
-    value: '维保人员1-电话',
-  },
-  {
-    label: '维保人员2-电话',
-    value: '维保人员2-电话',
-  },
-  {
-    label: '维保状态',
-    value: '',
-  },
-  {
-    label: '登记机关',
-    value: '',
-  },
-  {
-    label: '维保开始时间',
-    value: '',
-  },
-  {
-    label: '检验机构',
-    value: '',
-  },
-  {
-    label: '本次限速器效验时间',
-    value: '',
-  },
-  {
-    label: '本次制动试验时间',
-    value: '',
-  },
-])
+const maintenance = ref<tabsDataItemType[]>(maintenanceData)
 
 const faultCode = ref<tabsDataItemType[]>([])
 
-const tabsInfo = computed(() => {
-  return [
-    {
-      title: '出厂',
-      data: leaveFactory.value,
-    },
-    {
-      title: '维保',
-      data: maintenance.value,
-    },
-    {
-      title: '故障',
-      data: faultCode.value,
-    },
-  ]
-})
+const tabsInfo = reactive([
+  {
+    title: '出厂',
+    data: leaveFactory.value,
+  },
+  {
+    title: '维保',
+    data: maintenance.value,
+  },
+  {
+    title: '故障',
+    data: faultCode.value,
+  },
+])
+
+const getBreakdownInfo = () => {
+  postBreakdownCode({ devices_id: '0' }).then((res) => {
+    faultCode.value = res.map((item: any) => {
+      return {
+        label: item.fault,
+        value: item.solve,
+      }
+    })
+  })
+}
+
+const handleTabsClick = (tab: { index: number; title: number }) => {
+  if (tab.index === 2) {
+    getBreakdownInfo()
+  }
+}
 
 onLoad((options) => {
   const elevatorId = options.elevatorId
@@ -215,26 +128,6 @@ onLoad((options) => {
       console.log('postLiftGetRun err:>> ', err)
     })
 })
-
-/* TODO: 获取故障信息 路由携带devices_id */
-const getBreakdownInfo = () => {
-  postBreakdownCode({ devices_id: '0' }).then((res) => {
-    faultCode.value = res.map((item: any) => {
-      return {
-        label: item.fault,
-        value: item.solve,
-      }
-    })
-    console.log('faultCode.value :>> ', faultCode.value)
-  })
-}
-const handleTabsClick = (tab: { index: number; title: number }) => {
-  console.log('tabIdx.value :>> ', tabIdx.value)
-  // TODO: tabIdx ===2
-  if (tab.index === 2) {
-    getBreakdownInfo()
-  }
-}
 </script>
 
 <style lang="scss" scoped>
