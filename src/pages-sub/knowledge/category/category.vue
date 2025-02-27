@@ -49,7 +49,7 @@
           v-for="(item, idx) in categoryList"
         >
           <template #icon>
-            <image :src="documentImg" class="item-icon" mode="aspectFit" />
+            <image :src="imageStatic.document" class="item-icon" mode="aspectFit" />
           </template>
         </wd-cell>
       </view>
@@ -68,8 +68,7 @@ import type { IKnowledgeCategoryListResponse } from '@/pages-sub/service/knowled
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
-/* img */
-import documentImg from '@/pages-sub/static/document.png'
+import { imageStatic } from '@/common/static'
 import { knowledgeFilePage } from '@/common/pages'
 
 // 导航栏

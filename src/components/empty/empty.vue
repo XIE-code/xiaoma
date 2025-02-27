@@ -1,12 +1,12 @@
 <template>
   <view class="empty">
-    <image class="empty-img" :src="homeLogo" mode="scaleToFill" />
+    <image class="empty-img" :src="imageStatic.homeLogo" mode="scaleToFill" />
     <view class="empty-text">暂无相关信息</view>
   </view>
 </template>
 
 <script lang="ts" setup>
-import homeLogo from '@/static/image/home-logo.png'
+import { imageStatic } from '@/common/static'
 </script>
 
 <style lang="scss" scoped>

@@ -44,7 +44,7 @@
             </text>
           </view>
           <view class="item-address">
-            <image class="item-address-svg" :src="addressSvg" mode="scaleToFill"></image>
+            <image class="item-address-svg" :src="svgStatic.address" mode="scaleToFill"></image>
             <text class="item-address-text">{{ item.address }}</text>
           </view>
         </view>
@@ -61,7 +61,7 @@ import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
 import wrapper from '@/layouts/wrapper.vue'
 import dayjs from 'dayjs'
 // svg
-import addressSvg from '@/static/svg/address.svg'
+import { svgStatic } from '@/common/static'
 /* tools */
 import { getWeekDates } from '@/utils/tools'
 import type { IWeekDate } from '@/utils/tools'

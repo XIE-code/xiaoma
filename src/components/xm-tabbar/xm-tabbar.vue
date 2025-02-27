@@ -13,44 +13,44 @@
 </template>
 
 <script setup lang="ts">
+/* store */
 import { useSystemStore } from '@/store/system'
-import homeSvg from '@/static/svg/home.svg'
-import homeSelectSvg from '@/static/svg/home-select.svg'
-import maintenanceSvg from '@/static/svg/maintenance.svg'
-import maintenanceSelectSvg from '@/static/svg/maintenance-select.svg'
-import urgentRepairSvg from '@/static/svg/forewarning.svg'
-import urgentRepairSelectSvg from '@/static/svg/forewarning-select.svg'
-import personSvg from '@/static/svg/person.svg'
-import personSelectSvg from '@/static/svg/person-select.svg'
+/* svg */
+import { tabbarStatic } from '@/common/static'
 import { indexPage, maintenancePage, personalPage, forewarningPage } from '@/common/pages'
 
 const systemStore = useSystemStore()
-const systemInfo = systemStore.systemInfo
 
 const tabBarIdx = ref(systemStore.getTabBarIdx())
 
 const tabBars = [
   // 示例数据
-  { idx: 0, svg: homeSvg, selectSvg: homeSelectSvg, path: indexPage, text: '首页' },
+  {
+    idx: 0,
+    svg: tabbarStatic.home,
+    selectSvg: tabbarStatic.homeSelect,
+    path: indexPage,
+    text: '首页',
+  },
   {
     idx: 1,
-    svg: maintenanceSvg,
-    selectSvg: maintenanceSelectSvg,
+    svg: tabbarStatic.maintenance,
+    selectSvg: tabbarStatic.maintenanceSelect,
     path: maintenancePage,
     text: '保养',
   },
   {
     idx: 2,
-    svg: urgentRepairSvg,
-    selectSvg: urgentRepairSelectSvg,
+    svg: tabbarStatic.urgentRepair,
+    selectSvg: tabbarStatic.urgentRepairSelect,
     path: forewarningPage,
     text: '急修',
   },
 
   {
     idx: 3,
-    svg: personSvg,
-    selectSvg: personSelectSvg,
+    svg: tabbarStatic.personal,
+    selectSvg: tabbarStatic.personalSelect,
     path: personalPage,
     text: '个人',
   },

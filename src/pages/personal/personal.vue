@@ -24,9 +24,9 @@
     </view> -->
 
     <view class="certificate">
-      <image class="certificate-star" src="@/static/svg/star.svg" mode="scaleToFill" />
+      <image class="certificate-star" :src="svgStatic.star" mode="scaleToFill" />
       <view class="certificate-left">
-        <image class="certificate-icon" src="@/static/svg/certificate.svg" mode="scaleToFill" />
+        <image class="certificate-icon" :src="svgStatic.certificate" mode="scaleToFill" />
         <text class="certificate-text">个人操作证管理</text>
       </view>
       <button class="certificate-btn">查看</button>
@@ -67,7 +67,8 @@ import wrapper from '@/layouts/wrapper.vue'
 import { useSystemStore, useUserStore } from '@/store/index'
 /* utils */
 import { getServerImg } from '@/utils/tools'
-/* info */
+/* static */
+import { svgStatic } from '@/common/static'
 import { IRouterItem, routerListInfo } from './personal-info'
 import { loginPage } from '@/common/pages'
 defineOptions({

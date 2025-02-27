@@ -1,9 +1,7 @@
-/* 第三方库 */
-import { useToast } from 'wot-design-uni'
 /* constant */
 import { SERVER_BASEURL } from '@/common/constant'
 /* img */
-import homeLogo from '@/static/image/home-logo.png'
+import { imageStatic } from '@/common/static'
 
 /* 提示信息 */
 export const uniShowToast = (message: string) => {
@@ -102,12 +100,12 @@ export function convertSnakeToCamel(obj: any): any {
 export const getServerImg = (path: string) => {
   // TODO:
   // const baseUrl = import.meta.env.VITE_BASE_URL
-  return path ? `${SERVER_BASEURL}/${path}` : homeLogo
+  return path ? `${SERVER_BASEURL}/${path}` : imageStatic.homeLogo
 }
 
 /* 加载服务器图片出错 */
 export const handleLoadImgError = (event) => {
-  event.target.src = homeLogo
+  event.target.src = imageStatic.homeLogo
 }
 
 // 定义一个函数 isNullOrUndefined，用于判断传入的值是否为 null 或 undefined

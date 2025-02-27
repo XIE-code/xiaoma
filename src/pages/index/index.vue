@@ -11,7 +11,7 @@
   <wrapper paddingType="height" :paddingBottom="90">
     <!-- 导航栏 -->
     <view class="navigation">
-      <image class="logo" :src="imgHomeLogo" mode="aspectFit"></image>
+      <image class="logo" :src="imageStatic.homeLogo" mode="aspectFit"></image>
       <view class="search-bar">
         <input
           confirm-type="search"
@@ -23,7 +23,7 @@
           <wd-icon name="search" color="white" :size="px2rpx(12)"></wd-icon>
         </button>
       </view>
-      <image :src="notificationSvg" mode="aspectFit" class="notification-icon" />
+      <image :src="svgStatic.notification" mode="aspectFit" class="notification-icon" />
     </view>
     <!-- 滚动效果 -->
     <view class="scroll-box">
@@ -114,17 +114,9 @@ import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
 import Wrapper from '@/layouts/wrapper.vue'
 import dayjs from 'dayjs'
 /* tools */
-import { px2rpx, convertSnakeToCamel } from '@/utils/tools'
-/* image */
-import imgHomeLogo from '@img/home-logo.png'
-import lifeCycleSwiper from '../../static/image/life-cycle-swiper.png'
-import liftSwiper from '../../static/image/lift-swiper.png'
-/* svg */
-import addElevatorSvg from '@/static/svg/add-elevator.svg'
-import filesSvg from '@/static/svg/files.svg'
-import knowledgeSvg from '@/static/svg/knowledge.svg'
-import monitorSvg from '@/static/svg/monitor.svg'
-import notificationSvg from '@/static/svg/notification.svg'
+import { px2rpx } from '@/utils/tools'
+/* svg,image */
+import { svgStatic, imageStatic } from '@/common/static'
 /* api */
 import { postMaintenanceList } from '@/service/maintenance/maintenance'
 import type { IMaintenanceItem, isMaintainType } from '@/service/maintenance/type'
@@ -135,7 +127,6 @@ import {
   shopPage,
   signInPage,
 } from '@/common/pages'
-import { useSystemStore } from '@/store'
 
 defineOptions({
   name: 'Home',
@@ -147,13 +138,18 @@ function handleSearch() {
 
 //  轮播图
 const current = ref(0)
-const swiperList = reactive([lifeCycleSwiper, liftSwiper, lifeCycleSwiper, liftSwiper])
+const swiperList = reactive([
+  imageStatic.lifeCycleSwiper,
+  imageStatic.liftSwiper,
+  imageStatic.lifeCycleSwiper,
+  imageStatic.liftSwiper,
+])
 
 const handleSwiperItemClick = (params) => {
   let urlParams = ''
-  if (params.item === lifeCycleSwiper) {
+  if (params.item === imageStatic.lifeCycleSwiper) {
     urlParams = '/index/index'
-  } else if (params.item === liftSwiper) {
+  } else if (params.item === imageStatic.liftSwiper) {
     urlParams = '/columnGoods/goods_list/index?id=39&title=整梯销售'
   }
 
@@ -166,25 +162,25 @@ const elevatorList = reactive([
   {
     id: 1,
     name: '电梯监控',
-    url: monitorSvg,
+    url: svgStatic.monitor,
     path: liftListPage + '?flag=monitor',
   },
   {
     id: 2,
     name: '档案资料',
-    url: filesSvg,
+    url: svgStatic.files,
     path: liftListPage + '?flag=file',
   },
   {
     id: 3,
     name: '电梯知识库',
-    url: knowledgeSvg,
+    url: svgStatic.knowledge,
     path: knowledgeCompanyPage,
   },
   {
     id: 4,
     name: '添加电梯',
-    url: addElevatorSvg,
+    url: svgStatic.addElevator,
     path: liftEnterPage,
   },
 ])

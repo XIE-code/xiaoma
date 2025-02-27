@@ -9,11 +9,11 @@
 
 <template>
   <view class="wrapper">
-    <image :src="loginTop" class="login-bg-top" mode="scaleToFill" />
-    <image :src="loginMedium" class="login-bg-medium" mode="scaleToFill" />
-    <image :src="loginBottom" class="login-bg-bottom" mode="scaleToFill" />
+    <image :src="imageStatic.loginTop" class="login-bg-top" mode="scaleToFill" />
+    <image :src="imageStatic.loginMedium" class="login-bg-medium" mode="scaleToFill" />
+    <image :src="imageStatic.loginBottom" class="login-bg-bottom" mode="scaleToFill" />
 
-    <image class="login-logo" src="@/static/image/login-logo.png" mode="scaleToFill" />
+    <image class="login-logo" :src="imageStatic.loginLogo" mode="scaleToFill" />
     <form @submit="handleFormSubmit">
       <view class="container">
         <view class="login-input-group">
@@ -50,15 +50,12 @@
 </template>
 
 <script lang="ts" setup>
-// svg
-import loginTop from '@/static/image/login-top.png'
-import loginMedium from '@/static/image/login-medium.png'
-import loginBottom from '@/static/image/login-bottom.png'
 import { useUserStore, useSystemStore } from '@/store'
 import { postLogin } from '@/service/login/login'
 import { md5 } from '@/utils/md5'
-import { uniShowToast } from '@/utils/tools'
 import { indexPage } from '@/common/pages'
+/* static */
+import { imageStatic } from '@/common/static'
 
 // 登录框
 const loginForm = reactive({

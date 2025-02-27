@@ -65,7 +65,6 @@ import wrapper from '@/layouts/wrapper.vue'
 /* store */
 import { useSystemStore } from '@/store'
 /* service */
-import { postLiftList } from '@/pages-sub/service/lift/lift'
 import { ILiftListResponse } from '@/pages-sub/service/lift/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'

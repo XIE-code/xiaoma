@@ -1,8 +1,6 @@
 /* svg */
-import myNewsSVG from '@/static/svg/my-news.svg'
-import aboutUsSvg from '@/static/svg/about-us.svg'
-import archiveSVG from '@/static/svg/archive.svg'
-import changePwdSVG from '@/static/svg/change-password.svg'
+import { svgStatic } from '@/common/static'
+
 /* page */
 import { liftListPage } from '@/common/pages'
 
@@ -16,25 +14,25 @@ export interface IRouterItem {
 /* 路由跳转信息 */
 export const routerListInfo = [
   {
-    icon: myNewsSVG,
+    icon: svgStatic.myNews,
     label: '我的消息',
     value: '园洲花园8栋16号',
     path: '',
   },
   {
-    icon: aboutUsSvg,
+    icon: svgStatic.aboutUs,
     label: '关于我们',
     value: '230101114',
     path: '',
   },
   {
-    icon: archiveSVG,
+    icon: svgStatic.archive,
     label: '档案资料',
     value: '',
     path: liftListPage,
   },
   {
-    icon: changePwdSVG,
+    icon: svgStatic.changePassword,
     label: '修改密码',
     value: '一号楼',
     path: '',

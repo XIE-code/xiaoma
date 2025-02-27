@@ -26,7 +26,7 @@
         </view>
         <view class="header">
           <view class="img">
-            <wd-img width="100%" height="100%" :src="liftJpg" />
+            <wd-img width="100%" height="100%" :src="imageStatic.lift" />
             <view class="img-floor-num">
               <text ref="imgFloor" class="img-floor-text">{{ getRealFloor(runInfo.floor) }}</text>
             </view>
@@ -134,8 +134,8 @@ import {
   runInfoData,
   showInfo,
 } from './monitor-info'
-// img
-import liftJpg from '@/pages-sub/static/lift.jpg'
+/* static */
+import { imageStatic } from '@/common/static'
 
 // 导航栏
 function handleClickBack() {
