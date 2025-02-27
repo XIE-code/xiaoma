@@ -228,8 +228,8 @@ $rpx-92: px2rpx(92);
       border-color: $color-secondary;
       border-style: solid;
       border-width: $rpx-1 $rpx-1 $rpx-1 $rpx-3;
-      border-radius: $rpx-14 $rpx-12 $rpx-12 $rpx-14; //TODO:待优化
-      box-shadow: 0px $rpx-4 $rpx-8 0px rgba(28, 37, 44, 0.05);
+      border-radius: $rpx-14 $rpx-12 $rpx-12 $rpx-14;
+      box-shadow: 0px $rpx-4 $rpx-8 0px $color-card-item-box-shadow;
 
       .item-title {
         height: $rpx-19;

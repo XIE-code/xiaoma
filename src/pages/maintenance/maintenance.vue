@@ -120,7 +120,6 @@ const getItemInfoByMaintenanceType = (type: itemType, isMaintain: isMaintainType
   }
 }
 
-// TODO: 封装签到，传入
 const handleSignIn = (todo: IMaintenanceItem) => {
   uni.navigateTo({ url: signInPage + `?id=${todo.id}` })
 }
@@ -155,7 +154,6 @@ $color-date-num: rgb(121, 121, 121);
 $color-date-select-bg: rgb(121, 121, 121);
 $color-date-select-border: rgb(169, 139, 152);
 $color-card-item-border: rgb(137, 175, 255);
-$color-card-item-box-shadow: rgba(28, 37, 44, 0.05);
 $color-card-item-maintenance: rgb(88, 90, 102);
 $color-address: rgb(20, 21, 17);
 .time-header {
@@ -262,11 +260,8 @@ $color-address: rgb(20, 21, 17);
       background: $color-white;
       border-color: $color-card-item-border;
       border-style: solid;
-      // border: $rpx-1 solid rgb(211, 47, 47);
       border-width: $rpx-1 $rpx-1 $rpx-1 $rpx-3;
-      // border-radius: $rpx-12;
-      border-radius: $rpx-14 $rpx-12 $rpx-12 $rpx-14; //TODO:待优化
-      /* Small Drop */
+      border-radius: $rpx-14 $rpx-12 $rpx-12 $rpx-14;
       box-shadow: 0px $rpx-4 $rpx-8 0px $color-card-item-box-shadow;
 
       .item-title {

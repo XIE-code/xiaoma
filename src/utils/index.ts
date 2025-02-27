@@ -135,13 +135,13 @@ export const getEnvBaseUrl = () => {
 
     switch (envVersion) {
       case 'develop':
-        baseUrl = import.meta.env.VITE_SERVER_BASEURL // TODO: 开发环境
+        baseUrl = import.meta.env.VITE_SERVER_BASEURL
         break
       case 'trial':
-        baseUrl = import.meta.env.VITE_SERVER_BASEURL // TODO: 体验版
+        baseUrl = import.meta.env.VITE_SERVER_BASEURL
         break
       case 'release':
-        baseUrl = 'https://ukw0y1.laf.run' + 'release' // TODO: 正式版
+        baseUrl = 'https://ukw0y1.laf.run' + 'release'
         break
     }
   }

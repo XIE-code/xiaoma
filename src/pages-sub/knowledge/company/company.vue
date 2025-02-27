@@ -122,7 +122,6 @@ function handleSearch() {
   console.log('触发搜索事件 :>> ')
 }
 
-/* TODO: 提取公共模块 */
 const navigatorToSecondaryCategory = (company: IKnowledgeCategoryListResponse) => {
   return `${knowledgeCategoryPage}?id=${company.id}&name=${company.name}`
 }
@@ -188,7 +187,7 @@ postKnowledgeCategoryList({
     companyList.value = indexBarList
   })
   .catch((err) => {
-    console.log('err :>> ', err)
+    console.log('postKnowledgeCategoryList :>> ', err)
   })
 
 const recommendCompanyList = computed(() => {

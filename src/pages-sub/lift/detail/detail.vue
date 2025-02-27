@@ -65,6 +65,7 @@ import {
   liftBaseInfoData,
   maintenanceData,
   tabsDataItemType,
+  tabsItemType,
 } from './detail-data'
 // 导航栏
 function handleClickBack() {
@@ -83,7 +84,7 @@ const maintenance = ref<tabsDataItemType[]>(maintenanceData)
 
 const faultCode = ref<tabsDataItemType[]>([])
 
-const tabsInfo = reactive([
+const tabsInfo = reactive<tabsItemType[]>([
   {
     title: '出厂',
     data: leaveFactory.value,

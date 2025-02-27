@@ -33,15 +33,16 @@ export const liftBaseInfoData = [
   },
 ]
 
-/* 标签页信息 */
-export type tabsItemType = {
-  title: string
-  data: tabsDataItemType[] // TODO: 更换类型
-}
 /* 标签内容 */
 export type tabsDataItemType = {
   label: string
   value: string
+}
+
+/* 标签页信息 */
+export type tabsItemType = {
+  title: string
+  data: tabsDataItemType[]
 }
 
 export const leaveFactoryData = [
