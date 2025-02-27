@@ -74,11 +74,11 @@
 import wrapper from '@/layouts/wrapper.vue'
 import empty from '@/components/empty/empty.vue'
 /* service */
-import { postKnowledgeDocumentList } from '@/service/knowledge/knowledge'
+import { postKnowledgeDocumentList } from '@/pages-sub/service/knowledge/knowledge'
 import type {
   IKnowledgeDocumentListParams,
   IKnowledgeDocumentListResponse,
-} from '@/service/knowledge/type'
+} from '@/pages-sub/service/knowledge/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */

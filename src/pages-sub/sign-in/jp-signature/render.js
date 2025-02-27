@@ -5,7 +5,7 @@ import {
 } from './signature.js'
 import {
 	isTransparent
-} from './utils'
+} from './utils.js'
 export default {
 	data() {
 		return {

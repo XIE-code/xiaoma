@@ -103,8 +103,8 @@ import wrapper from '@/layouts/wrapper.vue'
 /* store */
 import { useSystemStore } from '@/store'
 /* service */
-import { postKnowledgeCategoryList } from '@/service/knowledge/knowledge'
-import type { IKnowledgeCategoryListResponse } from '@/service/knowledge/type'
+import { postKnowledgeCategoryList } from '@/pages-sub/service/knowledge/knowledge'
+import type { IKnowledgeCategoryListResponse } from '@/pages-sub/service/knowledge/type'
 /* utils */
 import { getServerImg, px2rpx, handleLoadImgError } from '@/utils/tools'
 /* constant */

@@ -18,11 +18,11 @@ import homeSvg from '@/static/svg/home.svg'
 import homeSelectSvg from '@/static/svg/home-select.svg'
 import maintenanceSvg from '@/static/svg/maintenance.svg'
 import maintenanceSelectSvg from '@/static/svg/maintenance-select.svg'
-import urgentRepairSvg from '@/static/svg/urgent-repair.svg'
-import urgentRepairSelectSvg from '@/static/svg/urgent-repair-select.svg'
+import urgentRepairSvg from '@/static/svg/forewarning.svg'
+import urgentRepairSelectSvg from '@/static/svg/forewarning-select.svg'
 import personSvg from '@/static/svg/person.svg'
 import personSelectSvg from '@/static/svg/person-select.svg'
-import { indexPage, maintenancePage, personalPage, urgentRepairPage } from '@/common/pages'
+import { indexPage, maintenancePage, personalPage, forewarningPage } from '@/common/pages'
 
 const systemStore = useSystemStore()
 const systemInfo = systemStore.systemInfo
@@ -43,7 +43,7 @@ const tabBars = [
     idx: 2,
     svg: urgentRepairSvg,
     selectSvg: urgentRepairSelectSvg,
-    path: urgentRepairPage,
+    path: forewarningPage,
     text: '急修',
   },
 

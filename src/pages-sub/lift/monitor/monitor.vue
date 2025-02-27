@@ -26,7 +26,7 @@
         </view>
         <view class="header">
           <view class="img">
-            <wd-img width="100%" height="100%" :src="liftImg" />
+            <wd-img width="100%" height="100%" :src="liftJpg" />
             <view class="img-floor-num">
               <text ref="imgFloor" class="img-floor-text">{{ getRealFloor(runInfo.floor) }}</text>
             </view>
@@ -117,11 +117,9 @@
 import wrapper from '@/layouts/wrapper.vue'
 /* API */
 import mqtt from 'mqtt/dist/mqtt'
-/* TODO: scrollBox */
-import scrollBox from '@/layouts/scroll-box.vue'
 /* service */
-import { postGetLiftFloor, postLiftOneInfo } from '@/service/lift/lift'
-import { IFloorInfo, ILiftOneInfoResponse } from '@/service/lift/type'
+import { postGetLiftFloor, postLiftOneInfo } from '@/pages-sub/service/lift/lift'
+import { ILiftOneInfoResponse } from '@/pages-sub/service/lift/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */
@@ -137,7 +135,7 @@ import {
   showInfo,
 } from './monitor-info'
 // img
-import liftImg from '@/static/image/lift.jpg'
+import liftJpg from '@/pages-sub/static/lift.jpg'
 
 // 导航栏
 function handleClickBack() {

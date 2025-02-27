@@ -2,7 +2,7 @@
 {
   layout: 'default',
   style: {
-    navigationBarTitleText: '电梯列表',
+    navigationBarTitleText: '急修列表',
   },
 }
 </route>
@@ -11,13 +11,7 @@
   <wrapper paddingType="top" :backgroundColor="COLOR_SECONDARY">
     <view class="header">
       <view class="header-nav">
-        <wd-icon
-          name="arrow-left"
-          @click="handleClickBack"
-          :size="px2rpx(24)"
-          color="white"
-        ></wd-icon>
-        <view class="title">电梯列表</view>
+        <view class="title">急修列表</view>
       </view>
       <view class="search-bar">
         <input
@@ -53,73 +47,67 @@
             </text>
           </view>
           <view class="item-text">电梯编号：{{ item.elevatorNumber }}</view>
+          <view class="item-text">使用单位：{{ item.companyName }}</view>
+          <view class="item-text">维保人员：{{ item.realname }}</view>
           <view class="item-text">电梯地址：{{ item.address }}</view>
         </view>
       </view>
     </view>
   </wrapper>
+  <xm-tabbar></xm-tabbar>
 </template>
 
 <script lang="ts" setup>
 /* components */
+import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
+
 import wrapper from '@/layouts/wrapper.vue'
 /* store */
 import { useSystemStore } from '@/store'
 /* service */
-import { postLiftList } from '@/service/lift/lift'
-import { ILiftListResponse } from '@/service/lift/type'
+import { postLiftList } from '@/pages-sub/service/lift/lift'
+import { ILiftListResponse } from '@/pages-sub/service/lift/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
-import { indexPage, liftDetailPage, liftMonitorPage } from '@/common/pages'
+import { liftListPage } from '@/common/pages'
 
 const systemStore = useSystemStore()
-
-const flag = ref('')
-
-onLoad((options) => {
-  flag.value = options.flag
-})
-
-// 导航栏
-function handleClickBack() {
-  systemStore.resetTabBarIdx()
-  uni.switchTab({ url: indexPage })
-}
+const { capsule } = systemStore.systemInfo
 
 function handleSearch() {
   console.log('触发搜索事件 :>> ')
 }
-// const staticLiftData: ILiftListResponse = {
-//   elevatorId: 1584,
-//   registerCode: '',
-//   name: ' 测 试 电 梯 1',
-//   elevatorNumber: 230000043,
-//   address: '重庆市市辖区九龙坡区石油路',
-//   isOnline: '0',
-//   companyName: '重庆使用单位',
-//   realname: '朱渝光',
-//   phone: 13883587879,
-//   serverIp: '::1',
-// }
+const staticLiftData: ILiftListResponse = {
+  elevatorId: 1584,
+  registerCode: '',
+  name: ' 测 试 电 梯 1',
+  elevatorNumber: 230000043,
+  address: '重庆市市辖区九龙坡区石油路',
+  isOnline: '0',
+  companyName: '重庆使用单位',
+  realname: '朱渝光',
+  phone: 13883587879,
+  serverIp: '::1',
+}
 // 内容区域
 const liftList = ref<ILiftListResponse[]>([])
 
 // TODO: 下拉刷新
-postLiftList({
-  village_id: '',
-  lift_name: '',
-  limit: '999',
-  page: '1',
-  // state: '0',
-})
-  .then((result) => {
-    liftList.value = result
-  })
-  .catch((err) => {
-    console.log('postLiftList err :>> ', err)
-  })
+// postLiftList({
+//   village_id: '',
+//   lift_name: '',
+//   limit: '999',
+//   page: '1',
+//   // state: '0',
+// })
+//   .then((result) => {
+//     liftList.value = result
+//   })
+//   .catch((err) => {
+//     console.log('postLiftList err :>> ', err)
+//   })
 
 /* 根据 is_online 获取颜色、文字 */
 const getItemOnline = (item: ILiftListResponse, type: 'color' | 'text' | 'class' | 'icon') => {
@@ -140,13 +128,13 @@ const getItemOnline = (item: ILiftListResponse, type: 'color' | 'text' | 'class'
 
 /* 点击电梯信息、跳转电梯详情页 */
 const handleClickItem = (item: ILiftListResponse) => {
-  if (flag.value === 'file') {
-    console.log('addElevator :>> click item', item)
-    uni.navigateTo({ url: `${liftDetailPage}?elevatorId=${item.elevatorId}` })
-  } else {
-    uni.navigateTo({ url: `${liftMonitorPage}?elevatorId=${item.elevatorId}` })
-  }
+  console.log('addElevator :>> click item', item)
+  uni.navigateTo({ url: `${liftListPage}?elevatorId=${item.elevatorId}` })
 }
+
+onLoad(() => {
+  uni.hideTabBar()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -233,6 +221,7 @@ $rpx-92: px2rpx(92);
 
       .item-title {
         height: $rpx-19;
+        font-family: Almarai;
         font-size: 16px;
         font-weight: 700;
         line-height: 120%;

@@ -54,7 +54,7 @@ import wrapper from '@/layouts/wrapper.vue'
 /* TODO: scrollBox */
 import scrollBox from '@/layouts/scroll-box.vue'
 /* service */
-import { postBreakdownCode, postLiftGetRun } from '@/service/lift/lift'
+import { postBreakdownCode, postLiftGetRun } from '@/pages-sub/service/lift/lift'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */

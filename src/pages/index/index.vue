@@ -113,8 +113,6 @@
 import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
 import Wrapper from '@/layouts/wrapper.vue'
 import dayjs from 'dayjs'
-/* store */
-// import { useSystemStore } from '@/store'
 /* tools */
 import { px2rpx, convertSnakeToCamel } from '@/utils/tools'
 /* image */
@@ -127,7 +125,8 @@ import filesSvg from '@/static/svg/files.svg'
 import knowledgeSvg from '@/static/svg/knowledge.svg'
 import monitorSvg from '@/static/svg/monitor.svg'
 import notificationSvg from '@/static/svg/notification.svg'
-import { postMaintenanceDetail, postMaintenanceList } from '@/service/maintenance/maintenance'
+/* api */
+import { postMaintenanceList } from '@/service/maintenance/maintenance'
 import type { IMaintenanceItem, isMaintainType } from '@/service/maintenance/type'
 import {
   knowledgeCompanyPage,

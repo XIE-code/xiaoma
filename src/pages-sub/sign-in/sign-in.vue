@@ -96,7 +96,7 @@
 <script lang="ts" setup>
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
-import JpSignature from '@/components/jp-signature/jp-signature.vue'
+import JpSignature from './jp-signature/jp-signature.vue'
 /* API */
 import QQMapWX from './qqmap-wx-jssdk'
 /* store */

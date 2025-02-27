@@ -6,23 +6,24 @@
 interface NavigateToOptions {
   url: "/pages/login/login" |
        "/pages/index/index" |
+       "/pages/forewarning/forewarning" |
        "/pages/maintenance/maintenance" |
        "/pages/personal/personal" |
-       "/pages/shop/shop" |
-       "/pages/sign-in/sign-in" |
-       "/pages/urgent-repair/urgent-repair" |
-       "/pages/knowledge/category/category" |
-       "/pages/knowledge/company/company" |
-       "/pages/knowledge/file/file" |
-       "/pages/lift/detail/detail" |
-       "/pages/lift/enter/enter" |
-       "/pages/lift/list/list" |
-       "/pages/lift/monitor/monitor";
+       "/pages-sub/shop/shop" |
+       "/pages-sub/sign-in/sign-in" |
+       "/pages-sub/knowledge/category/category" |
+       "/pages-sub/knowledge/company/company" |
+       "/pages-sub/knowledge/file/file" |
+       "/pages-sub/lift/detail/detail" |
+       "/pages-sub/lift/enter/enter" |
+       "/pages-sub/lift/list/list" |
+       "/pages-sub/lift/monitor/monitor" |
+       "/pages-sub/sign-in/jp-signature/jp-signature";
 }
 interface RedirectToOptions extends NavigateToOptions {}
 
 interface SwitchTabOptions {
-  url: "/pages/index/index" | "/pages/maintenance/maintenance" | "/pages/urgent-repair/urgent-repair" | "/pages/personal/personal"
+  url: "/pages/index/index" | "/pages/maintenance/maintenance" | "/pages/forewarning/forewarning" | "/pages/personal/personal"
 }
 
 type ReLaunchOptions = NavigateToOptions | SwitchTabOptions;

@@ -44,9 +44,9 @@ export default defineUniPages({
         text: '保养',
       },
       {
-        iconPath: 'static/tabbar/urgent-repair.png',
-        selectedIconPath: 'static/tabbar/urgent-repair-select.png',
-        pagePath: 'pages/urgent-repair/urgent-repair',
+        iconPath: 'static/tabbar/forewarning.png',
+        selectedIconPath: 'static/tabbar/forewarning-select.png',
+        pagePath: 'pages/forewarning/forewarning',
         text: '急修',
       },
       {

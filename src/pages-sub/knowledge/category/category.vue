@@ -62,14 +62,14 @@
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
 /* service */
-import { postKnowledgeCategoryList } from '@/service/knowledge/knowledge'
-import type { IKnowledgeCategoryListResponse } from '@/service/knowledge/type'
+import { postKnowledgeCategoryList } from '@/pages-sub/service/knowledge/knowledge'
+import type { IKnowledgeCategoryListResponse } from '@/pages-sub/service/knowledge/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
 /* img */
-import documentImg from '@/static/image/document.png'
+import documentImg from '@/pages-sub/static/document.png'
 import { knowledgeFilePage } from '@/common/pages'
 
 // 导航栏

@@ -9,7 +9,7 @@ src/pages.json
 src/manifest.json
 
 # 引入的sdk
-src/pages/sign-in/qqmap-*
+src/pages-sub/sign-in/qqmap-*
 
 # 引入的DCloud插件
-src/components/jp-signature
+src/pages-sub/sign-in/jp-signature
