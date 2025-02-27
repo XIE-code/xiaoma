@@ -153,7 +153,6 @@ const handleSwiperItemClick = (params) => {
     urlParams = '/columnGoods/goods_list/index?id=39&title=整梯销售'
   }
 
-  // TODO: 封装navigateTo请求方式，query传参还是params传参
   uni.navigateTo({ url: `${shopPage}?urlParams=${urlParams}` })
 }
 
@@ -223,7 +222,6 @@ const getItemInfoByMaintenanceType = (type: itemType, isMaintain: isMaintainType
   }
 }
 
-// TODO: 封装签到，传入
 const handleSignIn = (todo: IMaintenanceItem) => {
   uni.navigateTo({ url: signInPage + `?id=${todo.id}` })
 }

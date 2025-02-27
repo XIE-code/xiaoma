@@ -72,6 +72,7 @@ export const getUrlObj = (url: string) => {
   })
   return { path, query }
 }
+
 /**
  * 得到所有的需要登录的pages，包括主包和分包的
  * 这里设计得通用一点，可以传递key作为判断依据，默认是 needLogin, 与 route-block 配对使用

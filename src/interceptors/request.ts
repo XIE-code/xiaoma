@@ -30,12 +30,7 @@ const httpInterceptor = {
     // 非 http 开头需拼接地址
     if (!options.url.startsWith('http')) {
       // #ifdef H5
-      // console.log(__VITE_APP_PROXY__)
-      // if (JSON.parse(__VITE_APP_PROXY__)) {
-      // 啥都不需要做
-      // } else {
       options.url = import.meta.env.VITE_APP_PROXY_PREFIX + options.url
-      // }
       // #endif
       // 非H5正常拼接
       // #ifndef H5

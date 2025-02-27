@@ -5,10 +5,6 @@ import { imageStatic } from '@/common/static'
 
 /* 提示信息 */
 export const uniShowToast = (message: string) => {
-  // const toast = useToast()
-  // toast.show({
-  //   msg: message,
-  // })
   uni.showToast({ title: message, icon: 'none' })
 }
 
@@ -98,8 +94,6 @@ export function convertSnakeToCamel(obj: any): any {
 
 /* 获取服务器图片 */
 export const getServerImg = (path: string) => {
-  // TODO:
-  // const baseUrl = import.meta.env.VITE_BASE_URL
   return path ? `${SERVER_BASEURL}/${path}` : imageStatic.homeLogo
 }
 

@@ -29,7 +29,6 @@
         <view>维保类型： {{ maintenance.maintType }}</view>
         <view>维保状态： {{ getMaintenanceType(maintenance.isMaintain) }}</view>
 
-        <!-- TODO: 区分运行环境 -->
         <view v-if="maintenance.isMaintain === 1" class="sign-in">
           <button
             hover-class="button-hover"

@@ -20,11 +20,6 @@ export const http = <T>(options: CustomRequestOptions) => {
         if (successResult.code !== '1') {
           // 登录接口返回的错误格式不是{msg,code,data}，暂不处理
           reject(successResult)
-          // !options.hideErrorToast &&
-          //   uni.showToast({
-          //     icon: 'none',
-          //     title: successResult.msg || '请求错误',
-          //   })
         } else {
           /* 格式化data的Key命名 */
           resolve(convertSnakeToCamel(successResult.data))

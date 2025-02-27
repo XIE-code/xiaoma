@@ -142,7 +142,6 @@ function handleClickBack() {
   uni.navigateBack()
 }
 
-// TODO: 项目
 const lift = ref(monitorInfo)
 
 const liftInfo = ref<Partial<ILiftOneInfoResponse>>({

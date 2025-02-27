@@ -37,14 +37,16 @@ export const useUserStore = defineStore(
       return userInfo
     }
 
-    const isLogin = computed(() => !!userInfo.token)
+    const getToken = () => {
+      return userInfo.token
+    }
 
     return {
       userInfo,
       getUserInfo,
       setUserInfo,
       resetUserInfo,
-      isLogin,
+      getToken,
     }
   },
   {
