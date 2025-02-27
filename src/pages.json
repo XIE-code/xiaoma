@@ -164,10 +164,6 @@
           "style": {
             "navigationBarTitleview": "电梯监控"
           }
-        },
-        {
-          "path": "sign-in/jp-signature/jp-signature",
-          "type": "page"
         }
       ]
     }

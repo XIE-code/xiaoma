@@ -17,8 +17,7 @@ interface NavigateToOptions {
        "/pages-sub/lift/detail/detail" |
        "/pages-sub/lift/enter/enter" |
        "/pages-sub/lift/list/list" |
-       "/pages-sub/lift/monitor/monitor" |
-       "/pages-sub/sign-in/jp-signature/jp-signature";
+       "/pages-sub/lift/monitor/monitor";
 }
 interface RedirectToOptions extends NavigateToOptions {}
 

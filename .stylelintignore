@@ -6,4 +6,4 @@ src/pages-sub/sign-in/qqmap-\*
 
 # 引入的DCloud插件
 
-src/pages-sub/sign-in/jp-signature
+src/pages-sub/sign-in/components

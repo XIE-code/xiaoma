@@ -9,7 +9,6 @@ export default defineUniPages({
     backgroundColor: '#FFFFFF',
   },
   easycom: {
-    // todo  自定义组件-自动导入
     autoscan: true,
     custom: {
       '^wd-(.*)': 'wot-design-uni/components/wd-$1/wd-$1.vue',
