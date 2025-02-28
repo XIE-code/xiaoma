@@ -141,7 +141,7 @@ export const getEnvBaseUrl = () => {
         baseUrl = import.meta.env.VITE_SERVER_BASEURL
         break
       case 'release':
-        baseUrl = 'https://ukw0y1.laf.run' + 'release'
+        baseUrl = import.meta.env.VITE_SERVER_BASEURL
         break
     }
   }
