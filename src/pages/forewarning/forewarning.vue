@@ -29,28 +29,23 @@
     <!-- 内容区域 -->
     <view class="scroll-box">
       <view class="container">
-        <view
-          class="card-item"
-          v-for="(item, idx) in liftList"
-          :key="idx"
-          @click="handleClickItem(item)"
-        >
-          <view class="item-title">{{ item.name }}</view>
-          <view class="item-status">
-            <wd-icon
-              :name="getItemOnline(item, 'icon')"
-              :size="px2rpx(16)"
-              :color="getItemOnline(item, 'color')"
-            ></wd-icon>
-            <text :class="['item-status-text', getItemOnline(item, 'class')]">
-              {{ getItemOnline(item, 'text') }}
-            </text>
-          </view>
-          <view class="item-text">电梯编号：{{ item.elevatorNumber }}</view>
-          <view class="item-text">使用单位：{{ item.companyName }}</view>
-          <view class="item-text">维保人员：{{ item.realname }}</view>
-          <view class="item-text">电梯地址：{{ item.address }}</view>
-        </view>
+        <wd-table border :data="forewarningList" height="100%" customClass="custom-maintenance">
+          <wd-table-col align="center" width="20%" prop="faultSyn" label="故障描述"></wd-table-col>
+          <wd-table-col align="center" width="20%" prop="faultCode" label="故障代码"></wd-table-col>
+          <wd-table-col align="center" width="20%" prop="eleName" label="所属电梯"></wd-table-col>
+          <wd-table-col
+            align="center"
+            width="20%"
+            prop="faultStartTime"
+            label="故障时间"
+          ></wd-table-col>
+          <wd-table-col
+            align="center"
+            width="20%"
+            prop="repairType"
+            label="工单状态"
+          ></wd-table-col>
+        </wd-table>
       </view>
     </view>
   </wrapper>
@@ -60,7 +55,7 @@
 <script lang="ts" setup>
 /* components */
 import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
-
+import { http } from '@/utils/http'
 import wrapper from '@/layouts/wrapper.vue'
 /* store */
 import { useSystemStore } from '@/store'
@@ -91,39 +86,7 @@ const staticLiftData: ILiftListResponse = {
   serverIp: '::1',
 }
 // 内容区域
-const liftList = ref<ILiftListResponse[]>([])
-
-// TODO: 下拉刷新
-// postLiftList({
-//   village_id: '',
-//   lift_name: '',
-//   limit: '999',
-//   page: '1',
-//   // state: '0',
-// })
-//   .then((result) => {
-//     liftList.value = result
-//   })
-//   .catch((err) => {
-//     console.log('postLiftList err :>> ', err)
-//   })
-
-/* 根据 is_online 获取颜色、文字 */
-const getItemOnline = (item: ILiftListResponse, type: 'color' | 'text' | 'class' | 'icon') => {
-  const isOnline = item.isOnline === '1'
-  switch (type) {
-    case 'color':
-      return isOnline ? 'rgb(83, 157, 243)' : 'rgb(171, 171, 171)'
-    case 'class':
-      return isOnline ? 'item-online' : 'item-offline'
-    case 'icon':
-      return isOnline ? 'check-circle-filled' : 'close-circle-filled'
-    case 'text':
-      return isOnline ? '在线' : '离线'
-    default:
-      return '' // 防止未知类型的意外情况
-  }
-}
+const forewarningList = ref<ILiftListResponse[]>([])
 
 /* 点击电梯信息、跳转电梯详情页 */
 const handleClickItem = (item: ILiftListResponse) => {
@@ -133,6 +96,25 @@ const handleClickItem = (item: ILiftListResponse) => {
 
 onLoad(() => {
   uni.hideTabBar()
+})
+
+onShow(() => {
+  http.post('/maint/fault_order', { page: 1, limit: 999 }).then((res) => {
+    console.log('fault_order res :>> ', res)
+    res.list.forEach((element) => {
+      const stateList = [
+        '待审核',
+        '待接警',
+        '待处理',
+        '到达现场处理中',
+        '维修完成',
+        '误报确认',
+        '自动修复',
+      ]
+      element.repairType = stateList[element.repairType]
+    })
+    forewarningList.value = res.list
+  })
 })
 </script>
 
@@ -202,67 +184,7 @@ $rpx-92: px2rpx(92);
     overflow: scroll;
     background: $color-white;
     border-radius: $rpx-20 $rpx-20 0 0;
-    @extend %padding-base;
-
-    .card-item {
-      position: relative;
-      @extend %flex-column;
-      gap: $rpx-6;
-      justify-content: flex-start;
-      padding: $rpx-12 $rpx-16 $rpx-12 $rpx-14;
-
-      background: $color-white;
-      border-color: $color-secondary;
-      border-style: solid;
-      border-width: $rpx-1 $rpx-1 $rpx-1 $rpx-3;
-      border-radius: $rpx-14 $rpx-12 $rpx-12 $rpx-14;
-      box-shadow: 0 $rpx-4 $rpx-8 0 $color-card-item-box-shadow;
-
-      .item-title {
-        height: $rpx-19;
-        font-family: Almarai;
-        font-size: 16px;
-        font-weight: 700;
-        line-height: 120%;
-        color: rgb(0, 0, 0);
-        text-align: left;
-        letter-spacing: 0px;
-      }
-      .item-status {
-        @extend %flex-between;
-        position: absolute;
-        top: $rpx-14;
-        right: $rpx-24;
-        gap: $rpx-8;
-        .item-online {
-          color: rgb(83, 157, 243);
-        }
-
-        .item-offline {
-          color: rgb(171, 171, 171);
-        }
-        .item-status-text {
-          font-family: Lato;
-          font-size: 12px;
-          font-weight: 400;
-          line-height: 140%;
-          text-align: left;
-          letter-spacing: 0px;
-        }
-      }
-
-      .item-text {
-        @extend %ellipsis;
-        height: $rpx-18;
-        font-family: Lato;
-        font-size: 12px;
-        font-weight: 400;
-        line-height: 140%;
-        color: rgb(88, 90, 102);
-        text-align: left;
-        letter-spacing: 0px;
-      }
-    }
+    // @extend %padding-base;
   }
 }
 </style>

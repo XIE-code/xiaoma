@@ -90,22 +90,27 @@
           height="400"
           customClass="custom-maintenance"
         >
-          <wd-table-col align="center" width="50%" prop="time" label="维保时间"></wd-table-col>
-
-          <wd-table-col align="center" width="50%" prop="state" label="维保状态"></wd-table-col>
-        </wd-table>
-
-        <wd-table v-if="showBtnContent === 'breakdown'" border :data="errorList" height="400">
-          <wd-table-col align="center" width="25%" prop="startTime" label="开始时间"></wd-table-col>
+          <wd-table-col align="center" width="50%" prop="maintTime" label="维保时间"></wd-table-col>
 
           <wd-table-col
             align="center"
-            width="25%"
-            prop="errorDescription"
-            label="故障描述"
+            width="50%"
+            prop="isMaintain"
+            label="维保状态"
           ></wd-table-col>
-          <wd-table-col align="center" width="25%" prop="errorCode" label="故障码"></wd-table-col>
-          <wd-table-col align="center" width="25%" prop="state" label="状态"></wd-table-col>
+        </wd-table>
+
+        <wd-table v-if="showBtnContent === 'breakdown'" border :data="errorList" height="400">
+          <wd-table-col
+            align="center"
+            width="25%"
+            prop="faultStartTime"
+            label="开始时间"
+          ></wd-table-col>
+
+          <wd-table-col align="center" width="25%" prop="faultSyn" label="故障描述"></wd-table-col>
+          <wd-table-col align="center" width="25%" prop="faultCode" label="故障码"></wd-table-col>
+          <wd-table-col align="center" width="25%" prop="repairType" label="状态"></wd-table-col>
         </wd-table>
       </view>
     </view>
@@ -117,6 +122,7 @@
 import wrapper from '@/layouts/wrapper.vue'
 /* API */
 import mqtt from 'mqtt/dist/mqtt'
+import { http } from '@/utils/http'
 /* service */
 import { postGetLiftFloor, postLiftOneInfo } from '@/pages-sub/service/lift/lift'
 import { ILiftOneInfoResponse } from '@/pages-sub/service/lift/type'
@@ -193,6 +199,41 @@ const btnList = ref<btnType[]>(btnListData)
 
 const handleClickBtn = (item: any) => {
   showBtnContent.value = item.type
+  if (item.type === 'maintenance') {
+    http
+      .post('/maint/maint_info', { elevator_id: liftInfo.value.elevatorId, limit: 10 })
+      .then((res) => {
+        console.log('maint_info res :>> ', res)
+        res.list.forEach((element) => {
+          // 维保状态 1：待维保， 2：已维保 ：3：进行中：4：逾期签到
+          const stateList = ['待维保', '已维保', '进行中', '逾期签到']
+
+          element.repairType = stateList[element.is_maintain - 1]
+        })
+        maintenanceList.value = res.list
+      })
+  }
+
+  if (item.type === 'breakdown') {
+    http
+      .post('/maint/fault_info', { elevator_id: liftInfo.value.elevatorId, limit: 10 })
+      .then((res) => {
+        console.log('fault_info res :>> ', res)
+        res.list.forEach((element) => {
+          const stateList = [
+            '待审核',
+            '待接警',
+            '待处理',
+            '到达现场处理中',
+            '维修完成',
+            '误报确认',
+            '自动修复',
+          ]
+          element.repairType = stateList[element.repairType]
+        })
+        errorList.value = res.list
+      })
+  }
 }
 
 let client: mqtt.MqttClient | null = null
