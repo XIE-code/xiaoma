@@ -7,6 +7,8 @@ export const personalPage = '/pages/personal/personal' // 我的
 
 export const shopPage = '/pages-sub/shop/shop' // 小马商城
 
+export const changePasswordPage = '/pages-sub/change-password/change-password' // 修改密码
+
 export const knowledgeCategoryPage = '/pages-sub/knowledge/category/category' // 知识分类
 export const knowledgeCompanyPage = '/pages-sub/knowledge/company/company' // 知识公司
 export const knowledgeFilePage = '/pages-sub/knowledge/file/file' // 知识文件

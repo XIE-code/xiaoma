@@ -9,6 +9,7 @@ interface NavigateToOptions {
        "/pages/forewarning/forewarning" |
        "/pages/maintenance/maintenance" |
        "/pages/personal/personal" |
+       "/pages-sub/change-password/change-password" |
        "/pages-sub/shop/shop" |
        "/pages-sub/sign-in/sign-in" |
        "/pages-sub/knowledge/category/category" |

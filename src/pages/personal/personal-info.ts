@@ -2,7 +2,7 @@
 import { svgStatic } from '@/common/static'
 
 /* page */
-import { liftListPage } from '@/common/pages'
+import { liftListPage, changePasswordPage } from '@/common/pages'
 
 export interface IRouterItem {
   icon: string // 图标
@@ -34,8 +34,8 @@ export const routerListInfo = [
   {
     icon: svgStatic.changePassword,
     label: '修改密码',
-    value: '一号楼',
-    path: '',
+    value: '',
+    path: changePasswordPage,
   },
 ]
 

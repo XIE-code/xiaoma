@@ -94,6 +94,14 @@
       "root": "pages-sub",
       "pages": [
         {
+          "path": "change-password/change-password",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": "修改密码"
+          }
+        },
+        {
           "path": "shop/shop",
           "type": "page",
           "layout": "default",
