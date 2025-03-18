@@ -29,7 +29,13 @@
     <!-- 内容区域 -->
     <view class="scroll-box">
       <view class="container">
-        <wd-table border :data="forewarningList" height="100%" customClass="custom-maintenance">
+        <wd-table
+          border
+          :data="forewarningList"
+          height="100%"
+          @row-click="handleClickTableItem"
+          customClass="custom-maintenance"
+        >
           <wd-table-col align="center" width="20%" prop="faultSyn" label="故障描述"></wd-table-col>
           <wd-table-col align="center" width="20%" prop="faultCode" label="故障代码"></wd-table-col>
           <wd-table-col align="center" width="20%" prop="eleName" label="所属电梯"></wd-table-col>
@@ -46,6 +52,12 @@
             label="工单状态"
           ></wd-table-col>
         </wd-table>
+        <wd-pagination
+          show-icon
+          v-model="page"
+          :total="total"
+          @change="getFaultList"
+        ></wd-pagination>
       </view>
     </view>
   </wrapper>
@@ -57,50 +69,35 @@
 import xmTabbar from '@/components/xm-tabbar/xm-tabbar.vue'
 import { http } from '@/utils/http'
 import wrapper from '@/layouts/wrapper.vue'
-/* store */
-import { useSystemStore } from '@/store'
 /* service */
 import { ILiftListResponse } from '@/pages-sub/service/lift/type'
 /* utils */
 import { px2rpx } from '@/utils/tools'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
-import { liftListPage } from '@/common/pages'
-
-const systemStore = useSystemStore()
-const { capsule } = systemStore.systemInfo
+import { liftListPage, signInPage } from '@/common/pages'
 
 function handleSearch() {
   console.log('触发搜索事件 :>> ')
 }
-const staticLiftData: ILiftListResponse = {
-  elevatorId: 1584,
-  registerCode: '',
-  name: ' 测 试 电 梯 1',
-  elevatorNumber: 230000043,
-  address: '重庆市市辖区九龙坡区石油路',
-  isOnline: '0',
-  companyName: '重庆使用单位',
-  realname: '朱渝光',
-  phone: 13883587879,
-  serverIp: '::1',
-}
+
 // 内容区域
 const forewarningList = ref<ILiftListResponse[]>([])
 
+const page = ref(1)
+const limit = ref(10)
+const total = ref(0)
+
 /* 点击电梯信息、跳转电梯详情页 */
-const handleClickItem = (item: ILiftListResponse) => {
-  console.log('addElevator :>> click item', item)
-  uni.navigateTo({ url: `${liftListPage}?elevatorId=${item.elevatorId}` })
+const handleClickTableItem = ({ rowIndex }: { rowIndex: number }) => {
+  const tmpList = toRaw(forewarningList.value)
+
+  const item = tmpList[rowIndex]
+  uni.navigateTo({ url: `${signInPage}?id=${item.id}&type=forewarning` })
 }
 
-onLoad(() => {
-  uni.hideTabBar()
-})
-
-onShow(() => {
-  http.post('/maint/fault_order', { page: 1, limit: 999 }).then((res) => {
-    console.log('fault_order res :>> ', res)
+const getFaultList = (event) => {
+  http.post('/maint/fault_order', { page: event.value, limit: limit.value }).then((res) => {
     res.list.forEach((element) => {
       const stateList = [
         '待审核',
@@ -114,7 +111,16 @@ onShow(() => {
       element.repairType = stateList[element.repairType]
     })
     forewarningList.value = res.list
+    total.value = res.count
   })
+}
+
+onLoad(() => {
+  uni.hideTabBar()
+})
+
+onShow(() => {
+  getFaultList({ value: 1 })
 })
 </script>
 
@@ -185,6 +191,10 @@ $rpx-92: px2rpx(92);
     background: $color-white;
     border-radius: $rpx-20 $rpx-20 0 0;
     // @extend %padding-base;
+
+    :deep(.wd-pager__current) {
+      color: $color-primary;
+    }
   }
 }
 </style>

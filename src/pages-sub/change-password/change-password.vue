@@ -147,7 +147,6 @@ function updatePassword() {
     })
 }
 
-/* 添加电梯 */
 const handleClickSubmit = () => {
   form.value
     .validate()

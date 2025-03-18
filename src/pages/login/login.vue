@@ -14,7 +14,7 @@
     <image :src="imageStatic.loginBottom" class="login-bg-bottom" mode="scaleToFill" />
 
     <image class="login-logo" :src="imageStatic.loginLogo" mode="scaleToFill" />
-    <form @submit="handleFormSubmit">
+    <form>
       <view class="container">
         <view class="login-input-group">
           <view class="login-input-label">账号</view>
@@ -34,6 +34,7 @@
             name="password"
             class="login-input-value"
             type="text"
+            @keydown.enter="handleLoginBtn"
             password
             placeholder-style="color: rgba(255, 176, 23, 0.69)"
             placeholder="请输入密码"
@@ -44,8 +45,6 @@
       </view>
       <button form-type="submit" class="login-btn" @click="handleLoginBtn">登录</button>
     </form>
-
-    <!-- <weconsole></weconsole> -->
   </view>
 </template>
 
@@ -66,12 +65,6 @@ const loginForm = reactive({
 /* userStore\systemStore */
 const userStore = useUserStore()
 const systemStore = useSystemStore()
-
-const handleFormSubmit = (event) => {
-  // 阻止表单的默认提交行为
-  // event.preventDefault()
-  // handleLoginBtn()
-}
 
 const handleLoginBtn = () => {
   if (!loginForm.account || !loginForm.password) {
