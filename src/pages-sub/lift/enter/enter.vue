@@ -105,7 +105,6 @@ interface IInputItem {
   value: string
 }
 
-/* TODO: 使用Form重构界面 */
 const initTopListData: IInputItem[] = [
   {
     name: 'name',

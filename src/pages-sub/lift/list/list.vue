@@ -106,7 +106,6 @@ function handleSearch() {
 // 内容区域
 const liftList = ref<ILiftListResponse[]>([])
 
-// TODO: 下拉刷新
 postLiftList({
   village_id: '',
   lift_name: '',

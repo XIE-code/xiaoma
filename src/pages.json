@@ -118,6 +118,14 @@
           }
         },
         {
+          "path": "sign-in-forewarning/sign-in-forewarning",
+          "type": "page",
+          "layout": "default",
+          "style": {
+            "navigationBarTitleText": "急修打卡"
+          }
+        },
+        {
           "path": "knowledge/category/category",
           "type": "page",
           "layout": "default",

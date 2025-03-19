@@ -12,6 +12,7 @@ interface NavigateToOptions {
        "/pages-sub/change-password/change-password" |
        "/pages-sub/shop/shop" |
        "/pages-sub/sign-in/sign-in" |
+       "/pages-sub/sign-in-forewarning/sign-in-forewarning" |
        "/pages-sub/knowledge/category/category" |
        "/pages-sub/knowledge/company/company" |
        "/pages-sub/knowledge/file/file" |

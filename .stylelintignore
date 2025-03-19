@@ -2,8 +2,9 @@ src/uni_modules/
 
 # 引入的sdk
 
-src/pages-sub/sign-in/qqmap-\*
+\*\*/qqmap-\*
 
 # 引入的DCloud插件
 
 src/pages-sub/sign-in/components
+src/pages-sub/sign-in-forewarning/components

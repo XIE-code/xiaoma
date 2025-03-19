@@ -21,24 +21,32 @@ import { useSystemStore } from '@/store'
 import { px2rpx } from '@/utils/tools'
 
 /* 根据prop判断间距是Top,还是top+height */
-const props = withDefaults(
-  defineProps<{
-    paddingType: 'top' | 'height'
-    backgroundColor?: string
-    paddingBottom?: number
-    paddingLeft?: number
-    paddingRight?: number
-    gap?: number
-  }>(),
-  {
-    paddingType: 'top',
-    backgroundColor: 'white',
-    paddingBottom: 0,
-    paddingLeft: 0,
-    paddingRight: 0,
-    gap: 0,
+const props = defineProps({
+  paddingType: {
+    type: String as PropType<'top' | 'height'>,
+    default: 'top',
   },
-)
+  backgroundColor: {
+    type: String,
+    default: 'white',
+  },
+  paddingBottom: {
+    type: Number,
+    default: 0,
+  },
+  paddingLeft: {
+    type: Number,
+    default: 0,
+  },
+  paddingRight: {
+    type: Number,
+    default: 0,
+  },
+  gap: {
+    type: Number,
+    default: 0,
+  },
+})
 
 // 获取屏幕边界到安全区域距离
 const useSystem = useSystemStore()
@@ -48,8 +56,6 @@ const paddingTop = props.paddingType === 'top' ? top : top + height
 const wrapperHeight = props?.paddingBottom
   ? `calc(100vh - ${px2rpx(props?.paddingBottom)})`
   : '100vh'
-
-console.log('props.paddingBottom :>> ', props?.paddingBottom, wrapperHeight)
 </script>
 
 <style lang="scss" scoped>

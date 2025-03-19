@@ -188,7 +188,6 @@ const count = ref(0)
 const faultCount = ref(0)
 const todoList = ref<IMaintenanceItem[]>([])
 
-/* TODO: 下拉加载 */
 const getMaintenanceList = () => {
   // 获取维保列表
   postMaintenanceList({

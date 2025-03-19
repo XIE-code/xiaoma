@@ -51,8 +51,6 @@
 <script lang="ts" setup>
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
-/* TODO: scrollBox */
-import scrollBox from '@/layouts/scroll-box.vue'
 /* service */
 import { postBreakdownCode, postLiftGetRun } from '@/pages-sub/service/lift/lift'
 /* utils */

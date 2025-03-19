@@ -91,7 +91,6 @@ const getCardHeadTime = () => {
 const maintenanceList = ref<IMaintenanceItem[]>([])
 
 const getMaintenanceList = (dateString: string) => {
-  // TODO: 下拉刷新
   postMaintenanceList({
     time: dateString,
     limit: 99,

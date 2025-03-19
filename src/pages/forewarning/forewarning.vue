@@ -93,7 +93,8 @@ const handleClickTableItem = ({ rowIndex }: { rowIndex: number }) => {
   const tmpList = toRaw(forewarningList.value)
 
   const item = tmpList[rowIndex]
-  uni.navigateTo({ url: `${signInPage}?id=${item.id}&type=forewarning` })
+  const signInForewarningPage = '/pages-sub/sign-in-forewarning/sign-in-forewarning'
+  uni.navigateTo({ url: `${signInForewarningPage}?id=${item.id}` })
 }
 
 const getFaultList = (event) => {
