@@ -29,7 +29,9 @@
         <view>维保类型： {{ maintenance.maintType }}</view>
         <view>维保状态： {{ getMaintenanceType(maintenance.isMaintain) }}</view>
 
-        <view v-if="maintenance.isMaintain === 1" class="sign-in">
+        <!-- 	维保状态,1：待维保， 2：已维保 ：3：进行中：4：逾期签到   -->
+        <view v-if="maintenance.isMaintain === 3" class="sign-in">
+          <!-- <view v-if="maintenance.isMaintain === 1" class="sign-in"> -->
           <button
             hover-class="button-hover"
             @click="handleSignIn"
@@ -39,53 +41,71 @@
           </button>
           <view>当前位置： {{ currentPosition.address }}</view>
         </view>
+        <!-- 	维保状态,1：待维保， 2：已维保 ：3：进行中：4：逾期签到   -->
+        <view v-else-if="maintenance.isMaintain === 1" class="clock-in">
+          <!-- <view v-else-if="maintenance.isMaintain === 3" class="clock-in"> -->
+          <template v-if="isMaintainingTableState === true">
+            <maintenance-table
+              @changeState="
+                () => {
+                  isMaintainingTableState = false
+                }
+              "
+            ></maintenance-table>
+          </template>
+          <template v-else>
+            <text>拍照打卡：</text>
+            <canvas
+              id="myCanvas"
+              type="2d"
+              :style="{
+                width: '100%',
+                height: 200 + 'px',
+                border: '1px solid #ccc',
+                position: 'fixed',
+                left: '9000px',
+              }"
+            ></canvas>
 
-        <view v-else-if="maintenance.isMaintain === 3" class="clock-in">
-          <text>拍照打卡：</text>
+            <wd-upload
+              custom-class="camera-photo"
+              ref="uploader"
+              :limit="1"
+              accept="media"
+              :auto-upload="false"
+              :source-type="['camera']"
+              :size-type="['compressed']"
+              :before-upload="beforeUpload"
+              v-if="!hasWatermark"
+            ></wd-upload>
 
-          <canvas
-            id="myCanvas"
-            type="2d"
-            :style="{
-              width: '100%',
-              height: 200 + 'px',
-              border: '1px solid #ccc',
-              position: 'fixed',
-              left: '9000px',
-            }"
-          ></canvas>
+            <view v-else style="position: relative">
+              <wd-img :src="watermarkImg.path" custom-class="watermark-img"></wd-img>
+              <button @click="handleClearUploadImg" class="btn-upload">X</button>
+            </view>
 
-          <wd-upload
-            custom-class="camera-photo"
-            ref="uploader"
-            :limit="1"
-            accept="media"
-            :auto-upload="false"
-            :source-type="['camera']"
-            :size-type="['compressed']"
-            :before-upload="beforeUpload"
-            v-if="!hasWatermark"
-          ></wd-upload>
+            <text>签名：</text>
+            <view class="signature-box" style="width: 100%; height: 500rpx">
+              <jp-signature ref="signatureRef"></jp-signature>
+            </view>
+            <view class="signature-btn-list">
+              <button class="btn-clear" @click="clear">清空</button>
+              <button class="btn-reset" @click="undo">撤消</button>
+              <button class="btn-save" @click="save">保存</button>
+            </view>
 
-          <view v-else style="position: relative">
-            <wd-img :src="watermarkImg.path" custom-class="watermark-img"></wd-img>
-            <button @click="handleClearUploadImg" class="btn-upload">X</button>
-          </view>
-
-          <text>签名：</text>
-          <view class="signature-box" style="width: 100%; height: 500rpx">
-            <jp-signature ref="signatureRef"></jp-signature>
-          </view>
-          <view class="signature-btn-list">
-            <button class="btn-clear" @click="clear">清空</button>
-            <button class="btn-reset" @click="undo">撤消</button>
-            <button class="btn-save" @click="save">保存</button>
-          </view>
-
-          <text>备注：(选填)</text>
-          <textarea name="" id="" :value="remark" placeholder="请输入..." class="remark"></textarea>
-          <button class="btn-submit" @click="handleSubmit">提交</button>
+            <text>备注：(选填)</text>
+            <textarea
+              name=""
+              id=""
+              :value="remark"
+              placeholder="请输入..."
+              class="remark"
+            ></textarea>
+            <button class="btn-submit" @click="handleSubmit">提交</button>
+          </template>
         </view>
+        <!-- 	维保状态,1：待维保， 2：已维保 ：3：进行中：4：逾期签到   -->
         <view v-else-if="maintenance.isMaintain === 2"></view>
       </view>
     </view>
@@ -96,10 +116,12 @@
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
 import JpSignature from '@/pages-sub/sign-in/components/jp-signature/jp-signature.vue'
+import maintenanceTable from '@/pages-sub/sign-in/components/maintenance-table/maintenance-table.vue'
+
 /* API */
 import QQMapWX from './qqmap-wx-jssdk'
 /* store */
-import { useSystemStore, useUserStore } from '@/store'
+import { useUserStore } from '@/store'
 /* service */
 import {
   postMaintenanceDetail,
@@ -114,37 +136,6 @@ import { COLOR_SECONDARY } from '@/common/constant'
 import { UploadBeforeUploadOption } from 'wot-design-uni/components/wd-upload/types'
 import dayjs from 'dayjs'
 import { maintenanceImgUploadApi } from '@/common/api'
-
-const signatureRef = ref<InstanceType<typeof JpSignature> | null>(null)
-const signatureValue = ref()
-
-const remark = ref('')
-
-const save = () => {
-  return new Promise((resolve, reject) => {
-    signatureRef.value?.canvasToTempFilePath({
-      success: (res: { isEmpty: boolean; tempFilePath: string }) => {
-        signatureValue.value = res.tempFilePath
-        resolve(res)
-        console.log('res :>> ', res)
-      },
-    })
-  })
-}
-
-const clear = () => {
-  signatureRef.value?.clear()
-}
-
-const undo = () => {
-  signatureRef.value?.undo()
-}
-
-const systemStore = useSystemStore()
-
-const qqmapsdk = new QQMapWX({
-  key: 'ND2BZ-7BL3U-6JKV7-GSGY3-QBI57-VHF7R',
-})
 
 // 导航栏
 function handleClickBack() {
@@ -176,6 +167,40 @@ const getMaintenanceType = (type: number) => {
       return ''
   }
 }
+
+const type = ref('table')
+
+// 正在维保-表格状态
+const isMaintainingTableState = ref(true)
+
+const signatureRef = ref<InstanceType<typeof JpSignature> | null>(null)
+const signatureValue = ref()
+
+const remark = ref('')
+
+const save = () => {
+  return new Promise((resolve, reject) => {
+    signatureRef.value?.canvasToTempFilePath({
+      success: (res: { isEmpty: boolean; tempFilePath: string }) => {
+        signatureValue.value = res.tempFilePath
+        resolve(res)
+        console.log('res :>> ', res)
+      },
+    })
+  })
+}
+
+const clear = () => {
+  signatureRef.value?.clear()
+}
+
+const undo = () => {
+  signatureRef.value?.undo()
+}
+
+const qqmapsdk = new QQMapWX({
+  key: 'ND2BZ-7BL3U-6JKV7-GSGY3-QBI57-VHF7R',
+})
 
 /* 地理位置 */
 const currentPosition = ref({
@@ -322,7 +347,6 @@ function getAddress() {
 // 点击签到
 function handleSignIn() {
   // 切换签到状态
-
   const distance = signInDistance.value
   if (distance > 500) {
     uni.showToast({
