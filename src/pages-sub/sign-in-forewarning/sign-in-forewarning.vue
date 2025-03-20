@@ -522,10 +522,9 @@ const handleSubmit = async () => {
     }
   }
 
-  console.log('object :>> ', watermarkImg.path, signatureValue.value)
   const watermarkImgRes = await uploadImage(watermarkImg.path)
   const signatureImgRes = await uploadImage(signatureValue.value)
-  // TODO: 验证急修上传
+
   http
     .post('/maint/fault_submit', {
       id,

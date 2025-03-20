@@ -96,9 +96,6 @@
 </template>
 
 <script lang="ts" setup>
-/* 第三方库 */
-import { pinyin } from 'pinyin-pro'
-
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
 /* store */
