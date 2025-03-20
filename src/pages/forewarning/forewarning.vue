@@ -121,7 +121,7 @@ onShow(() => {
 })
 
 onShow(() => {
-  getFaultList({ value: 1 })
+  getFaultList({ value: page.value })
 })
 </script>
 
