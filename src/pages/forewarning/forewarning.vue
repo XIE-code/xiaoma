@@ -98,6 +98,7 @@ const handleClickTableItem = ({ rowIndex }: { rowIndex: number }) => {
 }
 
 const getFaultList = (event) => {
+  console.log('event :>> ', event)
   http.post('/maint/fault_order', { page: event.value, limit: limit.value }).then((res) => {
     res.list.forEach((element) => {
       const stateList = [
@@ -179,8 +180,11 @@ $rpx-92: px2rpx(92);
   }
 }
 
+$rpx-88: px2rpx(88);
+
 .scroll-box {
   flex-grow: 1;
+  margin-bottom: $rpx-88;
   overflow: hidden;
   /* 内容区域 */
   .container {
