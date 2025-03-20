@@ -8,3 +8,7 @@ src/uni_modules/
 
 src/pages-sub/sign-in/components
 src/pages-sub/sign-in-forewarning/components
+
+# 拼音插件
+
+\*_/pinyin._

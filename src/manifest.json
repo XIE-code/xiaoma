@@ -88,6 +88,9 @@
       "urlCheck": false
     },
     "usingComponents": true,
+    "optimization": {
+      "subpackages": true
+    },
     "lazyCodeLoading": "requiredComponents",
     "permission": {
       "scope.userLocation": {

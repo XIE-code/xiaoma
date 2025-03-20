@@ -5,3 +5,6 @@ src/uni_modules/
 
 # 引入的DCloud插件
 **/jp-signature/*.*
+
+# 拼音插件
+**/pinyin.*

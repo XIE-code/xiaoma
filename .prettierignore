@@ -13,3 +13,6 @@ src/manifest.json
 
 # 引入的DCloud插件
 **/jp-signature/*.*
+
+# 拼音插件
+**/pinyin.*

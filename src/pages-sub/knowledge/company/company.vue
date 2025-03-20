@@ -98,6 +98,7 @@
 <script lang="ts" setup>
 /* 第三方库 */
 import { pinyin } from 'pinyin-pro'
+
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
 /* store */
@@ -107,6 +108,7 @@ import { postKnowledgeCategoryList } from '@/pages-sub/service/knowledge/knowled
 import type { IKnowledgeCategoryListResponse } from '@/pages-sub/service/knowledge/type'
 /* utils */
 import { getServerImg, px2rpx, handleLoadImgError } from '@/utils/tools'
+import { makePy } from '@/utils/pinyin'
 /* constant */
 import { COLOR_SECONDARY } from '@/common/constant'
 import { indexPage, knowledgeCategoryPage } from '@/common/pages'
@@ -134,7 +136,7 @@ interface IIndexList {
 
 /* 根据中文获取拼音首字母 */
 const getUpperCaseByName = (name: string) => {
-  return pinyin(name, { toneType: 'none' })[0].toUpperCase()
+  return makePy(name[0]).toString().slice(0, 1)
 }
 
 /* 根据首个拼音第一个英文顺序排序 */
@@ -147,8 +149,8 @@ const sortByPinYin = (
   first: IKnowledgeCategoryListResponse,
   second: IKnowledgeCategoryListResponse,
 ) => {
-  const firstName = pinyin(first.name, { toneType: 'none' })
-  const secondName = pinyin(second.name, { toneType: 'none' })
+  const firstName = makePy(first.name).toString()
+  const secondName = makePy(second.name).toString()
   return firstName.localeCompare(secondName)
 }
 
