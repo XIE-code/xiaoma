@@ -222,7 +222,8 @@ const getItemInfoByMaintenanceType = (type: itemType, isMaintain: isMaintainType
 }
 
 const handleSignIn = (todo: IMaintenanceItem) => {
-  uni.navigateTo({ url: signInPage + `?id=${todo.id}` })
+  const url = `${signInPage}?id=${todo.id}`
+  uni.navigateTo({ url })
 }
 
 onLoad(() => {

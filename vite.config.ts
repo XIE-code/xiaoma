@@ -94,12 +94,12 @@ export default ({ command, mode }) => {
           return html.replace('%BUILD_TIME%', dayjs().format('YYYY-MM-DD HH:mm:ss'))
         },
       },
-      visualizer({
-        filename: './node_modules/.cache/visualizer/stats.html',
-        open: true,
-        gzipSize: true,
-        brotliSize: true,
-      }),
+      // visualizer({
+      //   filename: './node_modules/.cache/visualizer/stats.html',
+      //   open: true,
+      //   gzipSize: true,
+      //   brotliSize: true,
+      // }),
       // 打包分析插件，h5 + 生产环境才弹出
       // UNI_PLATFORM === 'h5' &&
       //   mode === 'production' &&

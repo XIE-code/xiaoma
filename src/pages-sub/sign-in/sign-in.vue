@@ -215,7 +215,7 @@ const currentPosition = ref({
 })
 
 const getFaultList = async () => {
-  const res = await http.post('/maint/get_main_project', { maint_id: id })
+  const res = await http.post('/maint/get_main_project', { maint_id: id.value })
   const some = res.list.some((item) => item.pillType === 0)
   if (some) {
     isMaintainingTableState.value = true
@@ -519,6 +519,7 @@ const handleSubmit = async () => {
   })
     .then((res) => {
       console.log('postMaintenanceSignature res :>> ', res)
+      maintenance.value.isMaintain = 2
     })
     .catch((err) => {
       console.log('postMaintenanceSignature err :>> ', err)
@@ -529,9 +530,14 @@ const handleSubmit = async () => {
 
 onLoad((options) => {
   id.value = +options.id
+})
+
+onShow(() => {
+  console.log('sign-in onShow :>> ')
+
   // 获取维保电梯详情
   getFaultList()
-  getMaintenanceDetail(+options.id)
+  getMaintenanceDetail(+id.value)
 })
 </script>
 

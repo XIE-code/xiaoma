@@ -57,9 +57,10 @@ import { indexPage } from '@/common/pages'
 import { imageStatic } from '@/common/static'
 
 // 登录框
+// FIXME
 const loginForm = reactive({
-  account: '',
-  password: '',
+  account: 'test',
+  password: '123456',
 })
 
 /* userStore\systemStore */

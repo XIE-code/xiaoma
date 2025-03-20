@@ -123,11 +123,8 @@ const handleSignIn = (todo: IMaintenanceItem) => {
   uni.navigateTo({ url: signInPage + `?id=${todo.id}` })
 }
 
-onLoad(() => {
-  uni.hideTabBar()
-})
-
 onShow(() => {
+  uni.hideTabBar()
   getMaintenanceList(dayjs().format('YYYY-MM-DD'))
 })
 </script>

@@ -27,6 +27,9 @@
         <view>电梯地址： {{ liftInfo.address }}</view>
         <view>电梯名称： {{ liftInfo.name }}</view>
         <view>故障描述： {{ repairInfo.faultSyn }}</view>
+        <view v-if="[4, 5, 7].includes(repairInfo.repairType)">
+          急修状态： {{ state === 4 ? '维修完成' : state === 5 ? '确定误报' : '未完成' }}
+        </view>
         <template v-if="repairInfo.repairType === 3">
           <view class="flex-row">
             <view class="repair-state">急修状态：</view>
@@ -128,7 +131,6 @@
 
           <button class="btn-submit" @click="handleSubmit">提交</button>
         </view>
-        <view v-else-if="repairInfo.repairType === 2"></view>
       </view>
     </view>
   </wrapper>
@@ -158,7 +160,7 @@ function handleClickBack() {
   uni.navigateBack()
 }
 
-const id = ref('')
+const id = ref(null)
 
 const state = ref(4)
 const suggestion = ref(2)
@@ -367,18 +369,14 @@ function handleSignIn() {
 
 const setPostMaintenanceSignIn = () => {
   http
-    .post('/maint/fault_submit', { id, type: '', content: '' })
+    .post('/maint/fault_submit', { id: id.value, type: 3, content: '' })
     .then((res) => {
       uni.showToast({
         title: '签到成功',
         icon: 'none',
       })
-      maintenance.value.repairType = 3
-      http.post('/maint/fault_one', { id }).then((res) => {
-        repairInfo.value = res.repair
-        liftInfo.value = res.ele
-        getSetting()
-      })
+      repairInfo.value.repairType = 3
+      getSetting()
     })
     .catch((err) => {
       console.log('postSignIn err:>> ', err)
@@ -524,19 +522,20 @@ const handleSubmit = async () => {
 
   const watermarkImgRes = await uploadImage(watermarkImg.path)
   const signatureImgRes = await uploadImage(signatureValue.value)
-
   http
     .post('/maint/fault_submit', {
-      id,
-      type: repairInfo.value.repairType,
+      id: id.value,
+      type: state.value,
       image: getImgUrl(signatureImgRes),
       clockin_img: getImgUrl(watermarkImgRes),
       suggestion: suggestion.value,
       is_replace: isReplace.value,
       remark: remark.value,
+      content: remark.value,
     })
     .then((res) => {
       console.log('fault_submit res :>> ', res)
+      repairInfo.value.repairType = state.value
     })
     .catch((err) => {
       console.log('fault_submit err :>> ', err)
@@ -544,8 +543,11 @@ const handleSubmit = async () => {
 }
 
 onLoad((options) => {
-  id.value = options.id
-  getForeWarningDetail(+options.id)
+  id.value = +options.id
+})
+
+onShow(() => {
+  getForeWarningDetail(+id.value)
 })
 </script>
 
