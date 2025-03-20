@@ -10,9 +10,10 @@
 <template>
   <view class="table-container">
     <wd-table border :data="maintenanceList" height="100%" fixed customClass="custom-maintenance">
-      <wd-table-col fixed align="center" width="15%" prop="check" label="选择">
+      <wd-table-col fixed align="center" width="15%" prop="pillType" label="选择">
         <template #value="{ row }">
           <wd-checkbox
+            :disabled="[1, 4].includes(row.pillType)"
             checked-color="rgb(83, 157, 243)"
             :modelValue="row.check"
             shape="square"
@@ -20,24 +21,31 @@
           ></wd-checkbox>
         </template>
       </wd-table-col>
-      <wd-table-col fixed align="center" width="15%" prop="id" label="序号">
-        <template #value="{ row }">{{ row.id }}</template>
-      </wd-table-col>
+      <wd-table-col fixed align="center" width="15%" prop="pillId" label="序号"></wd-table-col>
       <wd-table-col
         align="center"
         width="22%"
         fixed
-        prop="name"
-        label="维护保养项目"
+        prop="projectContent"
+        label="维保项目名称"
       ></wd-table-col>
-      <wd-table-col align="center" width="20%" prop="value" label="维护保养基本要求"></wd-table-col>
-      <wd-table-col align="center" width="28%" prop="value" label="操作">
+      <wd-table-col
+        align="center"
+        width="20%"
+        prop="projectSyn"
+        label="维保备注信息"
+      ></wd-table-col>
+      <wd-table-col align="center" width="28%" prop="pillRemark" label="维保项目信息">
         <template #value="{ row }">
-          <view class="table-operation">
-            <wd-button type="text" @click="handleClickPrompt(row)" style="color: blue">
+          <view v-if="row.pillType === 0" class="table-operation">
+            <wd-button type="text" @click="handleComplete(row)" style="color: blue">
               已完成
             </wd-button>
             <wd-button type="text" @click="handleClickPrompt(row)">未完成</wd-button>
+          </view>
+          <view v-else-if="row.pillType === 1">已完成</view>
+          <view v-else-if="row.pillType === 4">
+            {{ row.pillRemark }}
           </view>
         </template>
       </wd-table-col>
@@ -53,7 +61,12 @@
           全选
         </wd-checkbox>
       </view>
-      <wd-pagination show-icon v-model="page" :total="total" @change="getFaultList"></wd-pagination>
+      <!-- <wd-pagination
+        show-icon
+        v-model="page"
+        :total="total"
+        @change="showDateByPage"
+      ></wd-pagination> -->
     </view>
     <wd-button
       custom-style="background:rgb(83, 157, 243);color:white;"
@@ -62,7 +75,7 @@
     >
       确认
     </wd-button>
-    <wd-message-box />
+    <wd-message-box custom-class="msg-box" />
   </view>
 </template>
 
@@ -71,45 +84,68 @@
 import { useMessage } from 'wot-design-uni'
 import { http } from '@/utils/http'
 /* service */
-import { ILiftListResponse } from '@/pages-sub/service/lift/type'
 import { maintenanceInfo } from './info'
+import { uniShowToast } from '@/utils/tools'
 
 // 内容区域
-const maintenanceList = ref<ILiftListResponse[]>(maintenanceInfo)
+// const maintenanceList = ref(maintenanceInfo)
+const maintenanceList = ref([])
 
+// 分页
+const showData = ref([])
 const page = ref(1)
 const limit = ref(10)
 const total = ref(maintenanceList.value.length)
 
-const getFaultList = (event) => {
-  http.post('/maint/fault_order', { page: event.value, limit: limit.value }).then((res) => {
-    res.list.forEach((element) => {
-      const stateList = [
-        '待审核',
-        '待接警',
-        '待处理',
-        '到达现场处理中',
-        '维修完成',
-        '误报确认',
-        '自动修复',
-      ]
-      element.repairType = stateList[element.repairType]
-    })
-    maintenanceList.value = res.list
-    total.value = res.count
+const props = defineProps({
+  id: {
+    type: Number,
+    default: null,
+  },
+})
+
+const getFaultList = async () => {
+  const res = (await http.post('/maint/get_main_project', { maint_id: props.id })) || []
+  if (res.list.length === 0) return
+
+  res.list.forEach((element) => {
+    if (!element.pillType) element.check = false
   })
+  maintenanceList.value = res.list
+  total.value = res.list.length
+  // showDataByPage()
 }
 
+// const showDataByPage = ({ index: number }) => {
+//   page.value = index || page.value
+//   showData.value = maintenanceList.value.slice(
+//     (page.value - 1) * limit.value,
+//     page.value * limit.value,
+//   )
+// }
+
 const handleCheckboxChange = (row) => {
-  const index = row.id
-  maintenanceList.value[index].check = !maintenanceList.value[index].check
-  console.log(row)
+  maintenanceList.value.forEach((item) => {
+    if (item.pillId === row.pillId) {
+      item.check = !item.check
+    }
+  })
+  const filterList = maintenanceList.value.filter((item) => item.pillType === 0)
+  const falseFlat = filterList.every((item) => item.check === false)
+  const trueFlat = filterList.every((item) => item.check === true)
+  if (falseFlat) selectAll.value = false
+  if (trueFlat) selectAll.value = true
+
+  if (selectAll.value && !trueFlat) {
+    selectAll.value = false
+  }
 }
 
 const handleCheckboxAllChange = () => {
-  maintenanceList.value = maintenanceList.value.map((item) => {
-    item.check = !selectAll.value
-    return item
+  maintenanceList.value.forEach((item) => {
+    if (item.pillType === 0) {
+      item.check = !selectAll.value
+    }
   })
   selectAll.value = !selectAll.value
 }
@@ -119,6 +155,15 @@ const msgBoxValue = ref('')
 const selectAll = ref(false)
 const message = useMessage()
 
+function handleComplete(row) {
+  maintenanceList.value.forEach((item) => {
+    if (item.pillId === row.pillId) {
+      item.pillType = 1
+    }
+  })
+  // sendMaintBatchPresent('single', row)
+}
+
 function handleClickPrompt(row) {
   message
     .prompt({
@@ -126,16 +171,52 @@ function handleClickPrompt(row) {
       inputValue: msgBoxValue.value,
     })
     .then((resp) => {
-      maintenanceList.value[row.id].suggestion = resp.value
-      console.log(maintenanceList.value[row.id].suggestion)
+      maintenanceList.value.forEach((item) => {
+        if (item.pillId === row.pillId) {
+          item.pillRemark = resp.value
+          item.pillType = 4
+        }
+      })
+      // sendMaintBatchPresent('single', row)
     })
     .catch((error) => {
       console.log(error)
     })
 }
 
+const sendMaintBatchPresent = async (type: string, row: any = {}) => {
+  const info = []
+  if (type === 'single') {
+    info.push({
+      pill_id: row.pillId,
+      pill_type: row.pillType,
+      pill_remark: row.pillRemark === '已完成' ? '' : row.pillRemark,
+    })
+    http.post('/maint/batch_present', { info }).then((res) => {
+      console.log('batch_present :>> ', res)
+    })
+  } else if (type === 'all') {
+    await getFaultList()
+    const list = maintenanceList.value.filter((item) => [0].includes(item.pillType))
+    list.forEach((item) => {
+      info.push({
+        pill_id: item.pillId,
+        pill_type: 1,
+        pill_remark: item.pillRemark,
+      })
+    })
+
+    info.length &&
+      http.post('/maint/batch_present', { info }).then((res) => {
+        emit('changeState')
+      })
+  }
+}
+
 const handleClickSubmit = () => {
-  console.log('btn-submit :>> ')
+  // getFaultList()
+  const hasNoDeal = maintenanceList.value.some((item) => [0].includes(item.pillType))
+
   if (selectAll.value) {
     message
       .confirm({
@@ -143,15 +224,21 @@ const handleClickSubmit = () => {
         title: '提示',
       })
       .then((resp) => {
-        emit('changeState')
+        if (selectAll.value !== true) {
+          handleCheckboxAllChange()
+        }
+        sendMaintBatchPresent('all')
+        // emit('changeState')
       })
+  } else if (hasNoDeal) {
+    return uniShowToast('请完成所有选项')
   } else {
     emit('changeState')
   }
 }
 
 onShow(() => {
-  // getFaultList({ value: 1 })
+  getFaultList()
 })
 
 const emit = defineEmits(['changeState'])
@@ -190,9 +277,19 @@ $rpx-92: px2rpx(92);
     }
   }
 
-  :deep(.wd-message-bo) {
-    .wd-button .is-primary {
-      background: $color-primary;
+  :deep(.wd-message-box) {
+    .msg-box {
+      .is-primary {
+        &::after {
+          background-color: $color-primary;
+          // border-color: $color-primary;
+        }
+
+        .wd-button__text {
+          color: $color-white;
+          z-index: 10;
+        }
+      }
     }
   }
 }

@@ -30,8 +30,8 @@
         <view>维保状态： {{ getMaintenanceType(maintenance.isMaintain) }}</view>
 
         <!-- 	维保状态,1：待维保， 2：已维保 ：3：进行中：4：逾期签到   -->
-        <view v-if="maintenance.isMaintain === 3" class="sign-in">
-          <!-- <view v-if="maintenance.isMaintain === 1" class="sign-in"> -->
+        <!-- <view v-if="maintenance.isMaintain === 3" class="sign-in"> -->
+        <view v-if="maintenance.isMaintain === 1" class="sign-in">
           <button
             hover-class="button-hover"
             @click="handleSignIn"
@@ -42,10 +42,11 @@
           <view>当前位置： {{ currentPosition.address }}</view>
         </view>
         <!-- 	维保状态,1：待维保， 2：已维保 ：3：进行中：4：逾期签到   -->
-        <view v-else-if="maintenance.isMaintain === 1" class="clock-in">
-          <!-- <view v-else-if="maintenance.isMaintain === 3" class="clock-in"> -->
+        <!-- <view v-else-if="maintenance.isMaintain === 1" class="clock-in"> -->
+        <view v-else-if="maintenance.isMaintain === 3" class="clock-in">
           <template v-if="isMaintainingTableState === true">
             <maintenance-table
+              :id="id"
               @changeState="
                 () => {
                   isMaintainingTableState = false
@@ -136,11 +137,17 @@ import { COLOR_SECONDARY } from '@/common/constant'
 import { UploadBeforeUploadOption } from 'wot-design-uni/components/wd-upload/types'
 import dayjs from 'dayjs'
 import { maintenanceImgUploadApi } from '@/common/api'
+import { http } from '@/utils/http'
+
+const id = ref(null)
 
 // 导航栏
 function handleClickBack() {
   uni.navigateBack()
 }
+
+// 定位距离
+const signInDistance = ref(999)
 
 const liftInfo = ref<Partial<IElevatorInfo>>({
   longitude: 0,
@@ -167,8 +174,6 @@ const getMaintenanceType = (type: number) => {
       return ''
   }
 }
-
-const type = ref('table')
 
 // 正在维保-表格状态
 const isMaintainingTableState = ref(true)
@@ -209,13 +214,15 @@ const currentPosition = ref({
   address: '',
 })
 
-// 定位距离
-const signInDistance = ref(999)
-
-onLoad((options) => {
-  // 获取维保电梯详情
-  getMaintenanceDetail(+options.id)
-})
+const getFaultList = async () => {
+  const res = await http.post('/maint/get_main_project', { maint_id: id })
+  const some = res.list.some((item) => item.pillType === 0)
+  if (some) {
+    isMaintainingTableState.value = true
+  } else {
+    isMaintainingTableState.value = false
+  }
+}
 
 // 获取维保详情
 const getMaintenanceDetail = (id: number) => {
@@ -519,6 +526,13 @@ const handleSubmit = async () => {
 
   console.log('signatureValue :>> ', signatureValue.value)
 }
+
+onLoad((options) => {
+  id.value = +options.id
+  // 获取维保电梯详情
+  getFaultList()
+  getMaintenanceDetail(+options.id)
+})
 </script>
 
 <style lang="scss" scoped>
