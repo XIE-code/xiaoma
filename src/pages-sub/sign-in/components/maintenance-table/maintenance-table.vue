@@ -161,7 +161,7 @@ function handleComplete(row) {
       item.pillType = 1
     }
   })
-  // sendMaintBatchPresent('single', row)
+  sendMaintBatchPresent('single', row)
 }
 
 function handleClickPrompt(row) {
@@ -177,7 +177,7 @@ function handleClickPrompt(row) {
           item.pillType = 4
         }
       })
-      // sendMaintBatchPresent('single', row)
+      sendMaintBatchPresent('single', row)
     })
     .catch((error) => {
       console.log(error)
@@ -228,7 +228,7 @@ const handleClickSubmit = () => {
           handleCheckboxAllChange()
         }
         sendMaintBatchPresent('all')
-        // emit('changeState')
+        emit('changeState')
       })
   } else if (hasNoDeal) {
     return uniShowToast('请完成所有选项')

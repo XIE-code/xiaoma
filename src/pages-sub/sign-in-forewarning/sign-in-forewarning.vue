@@ -26,7 +26,6 @@
       <view class="container">
         <view>电梯地址： {{ liftInfo.address }}</view>
         <view>电梯名称： {{ liftInfo.name }}</view>
-        <!-- <view>急修状态： {{ getMaintenanceType(repairInfo.repairType) }}</view> -->
         <view>故障描述： {{ repairInfo.faultSyn }}</view>
         <template v-if="repairInfo.repairType === 3">
           <view class="flex-row">
