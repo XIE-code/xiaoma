@@ -139,7 +139,7 @@
 import wrapper from '@/layouts/wrapper.vue'
 import JpSignature from '@/pages-sub/sign-in/components/jp-signature/jp-signature.vue'
 /* API */
-import QQMapWX from './qqmap-wx-jssdk'
+import QQMapWX from '../sign-in/qqmap-wx-jssdk'
 /* store */
 import { useUserStore } from '@/store'
 /* service */
