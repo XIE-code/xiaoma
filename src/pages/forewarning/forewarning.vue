@@ -98,7 +98,6 @@ const handleClickTableItem = ({ rowIndex }: { rowIndex: number }) => {
 }
 
 const getFaultList = (event) => {
-  console.log('event :>> ', event)
   http.post('/maint/fault_order', { page: event.value, limit: limit.value }).then((res) => {
     res.list.forEach((element) => {
       const stateList = [
