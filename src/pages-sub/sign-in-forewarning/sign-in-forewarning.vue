@@ -131,14 +131,19 @@
           <view
             class="signature-box"
             @click.stop="focusSignature"
-            style="width: 100%; height: 500rpx"
+            :style="{
+              width: '100%',
+              height: '500rpx',
+              border: isSignatureFocused ? '2px solid #4a90e2' : '2px solid #cccccc',
+              borderRadius: '10rpx',
+              backgroundColor: '#f5f5f5',
+            }"
           >
             <jp-signature
               ref="signatureRef"
               :style="{
                 width: '100%',
-                height: '450rpx',
-                border: `2px solid ${isSignatureFocused ? '#4a90e2' : '#cccccc'}`,
+                height: '90%',
                 borderRadius: '10rpx',
                 backgroundColor: '#f5f5f5',
               }"
@@ -176,6 +181,7 @@ import { UploadBeforeUploadOption } from 'wot-design-uni/components/wd-upload/ty
 import dayjs from 'dayjs'
 import { maintenanceImgUploadApi } from '@/common/api'
 import { http } from '@/utils/http'
+import { IRepairInfo } from '@/pages-sub/sign-in-forewarning/sign-in-forewarning'
 
 // 导航栏返回按钮点击事件
 function handleClickBack() {
@@ -195,7 +201,10 @@ const qqmapsdk = new QQMapWX({
 })
 
 // 电梯信息和维修信息
-const repairInfo = ref({})
+const repairInfo = ref<IRepairInfo>({
+  repairType: 0,
+  faultSyn: '',
+})
 const liftInfo = ref<Partial<IElevatorInfo>>({
   longitude: 0,
   latitude: 0,
@@ -206,6 +215,8 @@ const isSignatureFocused = ref(false)
 // 点击签名区域触发状态
 const focusSignature = () => {
   isSignatureFocused.value = true
+  // 阻止页面滚动
+  document.body.style.overflow = 'hidden'
 }
 // 点击页面其他区域时会失去焦点
 const blurSignature = () => {
@@ -742,14 +753,14 @@ $rpx-92: px2rpx(92);
 
       .signature-box {
         @extend %flex-center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 100%;
         height: 100%;
         aspect-ratio: 1 / 1;
-        border-radius: $rpx-10;
-        display: flex;
-        justify-content: center;
-        align-items: center;
         cursor: pointer;
+        border-radius: $rpx-10;
         transition: all 0.3s ease;
       }
 

@@ -100,6 +100,7 @@ const checkLoginStatus = () => {
   const token = userStore.getToken()
   if (token) {
     uni.switchTab({ url: indexPage })
+    systemStore.setTabBarIdx(0)
   } else {
     uni.switchTab({ url: loginPage })
   }

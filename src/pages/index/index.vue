@@ -46,7 +46,7 @@
       <!-- :indicator="{ type: 'dots-bar' } as Partial<SwiperNavProps>" -->
       <view class="card-swiper">
         <wd-swiper
-          :autoplay="false"
+          :autoplay="true"
           v-model:current="current"
           :height="px2rpx(90)"
           custom-item-class="custom-item-class"
@@ -55,7 +55,7 @@
           :list="swiperList"
           @click="handleSwiperItemClick"
           :previousMargin="px2rpx(30)"
-          :nextMargin="px2rpx(60)"
+          :nextMargin="px2rpx(30)"
         ></wd-swiper>
       </view>
 

@@ -235,7 +235,7 @@ const handleClickBtn = (item: any) => {
       })
   }
 }
-
+// 定义 MQTT 客户端变量
 let client: mqtt.MqttClient | null = null
 
 const connectToMQTT = () => {

@@ -73,6 +73,7 @@ import type { IWeekDate } from '@/utils/tools'
 import { postMaintenanceList } from '@/service/maintenance/maintenance'
 import { IMaintenanceItem, isMaintainType } from '@/service/maintenance/type'
 import { signInPage } from '@/common/pages'
+import { ref, onMounted, watch } from 'vue'
 
 // week calendar
 const calendar = reactive<IWeekDate[]>(getWeekDates())
@@ -82,9 +83,8 @@ const currentDay = computed(() => calendar[curDayIdx.value])
 /* 更换当前日期 */
 const handleClickDate = (index: number) => {
   curDayIdx.value = index
-  getMaintenanceList(
-    currentDay.value.year + '-' + currentDay.value.month + '-' + currentDay.value.day,
-  )
+  const dateString = `${currentDay.value.year}-${currentDay.value.month}-${currentDay.value.day}`
+  getMaintenanceList(dateString)
 }
 
 /* 获取card头部时间 */
@@ -93,9 +93,11 @@ const getCardHeadTime = () => {
   return `${year}/${month}/${day} ${week}`
 }
 
+// 保养任务列表
 const maintenanceList = ref<IMaintenanceItem[]>([])
-
+// 获取保养任务列表
 const getMaintenanceList = (dateString: string) => {
+  console.log('Fetching maintenance list for date:', dateString)
   postMaintenanceList({
     time: dateString,
     limit: 99,
@@ -103,11 +105,46 @@ const getMaintenanceList = (dateString: string) => {
   })
     .then((result) => {
       maintenanceList.value = result.list
+      saveDataToStorage(result.list) // 保存到 localStorage
     })
     .catch((err) => {
       console.log('postMaintenanceList err :>> ', err)
+      loadDataFromStorage() // 从 localStorage 加载数据
     })
 }
+// 存储数据到 localStorage
+const saveDataToStorage = (data) => {
+  uni.setStorageSync('maintenanceList', JSON.stringify(data))
+}
+
+// 从 localStorage 加载数据
+const loadDataFromStorage = () => {
+  const storedData = uni.getStorageSync('maintenanceList')
+  if (storedData) {
+    maintenanceList.value = JSON.parse(storedData)
+  }
+}
+
+// 页面初始化时立即加载当前日期的保养任务
+onMounted(() => {
+  const today = dayjs().format('YYYY-MM-DD')
+  getMaintenanceList(today)
+})
+// 小程序启动，或从后台进入前台显示的时候触发，页面显示时重新加载数据
+onShow(() => {
+  // 隐藏底部标签栏
+  uni.hideTabBar()
+  // 获取当前选中的日期
+  const dateString = `${currentDay.value.year}-${currentDay.value.month}-${currentDay.value.day}`
+  // 加载对应日期的数据
+  getMaintenanceList(dateString)
+  console.log('显示数据')
+})
+// 监听当前选中日期变化
+watch(currentDay, (newDate) => {
+  const dateString = `${newDate.year}-${newDate.month}-${newDate.day}`
+  getMaintenanceList(dateString)
+})
 
 /* 根据item的状态返回颜色、文字 */
 type itemType = 'color' | 'text'
@@ -127,11 +164,6 @@ const getItemInfoByMaintenanceType = (type: itemType, isMaintain: isMaintainType
 const handleSignIn = (todo: IMaintenanceItem) => {
   uni.navigateTo({ url: signInPage + `?id=${todo.id}` })
 }
-
-onShow(() => {
-  uni.hideTabBar()
-  getMaintenanceList(dayjs().format('YYYY-MM-DD'))
-})
 </script>
 
 <style lang="scss" scoped>

@@ -2,12 +2,13 @@
 {
   layout: 'default',
   style: {
-    navigationBarTitleText: '签到打卡',
+    navigationBarTitleText: '急修打卡',
   },
 }
 </route>
 
 <template>
+  <!-- 急修打卡区域 -->
   <wrapper paddingType="top" :backgroundColor="COLOR_SECONDARY" @click="blurSignature">
     <view class="header">
       <view class="header-nav">
@@ -17,7 +18,7 @@
           :size="px2rpx(24)"
           color="white"
         ></wd-icon>
-        <view class="title">签到打卡</view>
+        <view class="title">急修打卡</view>
       </view>
     </view>
 
@@ -26,91 +27,46 @@
       <view class="container">
         <view>电梯地址： {{ liftInfo.address }}</view>
         <view>电梯名称： {{ liftInfo.name }}</view>
-        <view>维保类型： {{ maintenance.maintType }}</view>
-        <view>维保状态： {{ getMaintenanceType(maintenance.isMaintain) }}</view>
-
-        <!-- 	维保状态,1：待维保， 2：已维保 ：3：进行中：4：逾期签到   -->
-        <!-- <view v-if="maintenance.isMaintain === 3" class="sign-in"> -->
-        <view v-if="maintenance.isMaintain === 1" class="sign-in">
-          <button
-            hover-class="button-hover"
-            @click="handleSignIn"
-            class="btn-sign"
-            :style="
-              signInDistance <= 500
-                ? 'background-color: #87cefa; color: white'
-                : 'background-color: lightgray; color: white'
-            "
-          >
-            {{ `${signInDistance <= 500 ? '点击签到' : '距离过远'}` }}
-          </button>
-          <view>当前位置： {{ currentPosition.address }}</view>
+        <view>故障描述： {{ repairInfo.faultSyn }}</view>
+        <view v-if="[4, 5, 7].includes(repairInfo.repairType)">
+          急修状态： {{ state === 4 ? '维修完成' : state === 5 ? '确定误报' : '未完成' }}
         </view>
-        <!-- 	维保状态,1：待维保， 2：已维保 ：3：进行中：4：逾期签到   -->
-        <!-- <view v-else-if="maintenance.isMaintain === 1" class="clock-in"> -->
-        <view v-else-if="maintenance.isMaintain === 3" class="clock-in">
-          <template v-if="isMaintainingTableState === true">
-            <maintenance-table
-              :id="id"
-              @changeState="
-                () => {
-                  isMaintainingTableState = false
-                }
-              "
-            ></maintenance-table>
-          </template>
-          <template v-else>
-            <text>拍照打卡：</text>
-            <canvas
-              id="myCanvas"
-              type="2d"
-              :style="{
-                width: '100%',
-                height: 200 + 'px',
-                border: '1px solid #ccc',
-                position: 'fixed',
-                left: '9000px',
-              }"
-            ></canvas>
-
-            <wd-upload
-              custom-class="camera-photo"
-              ref="uploader"
-              :limit="1"
-              accept="media"
-              :auto-upload="false"
-              :source-type="['camera']"
-              :size-type="['compressed']"
-              :before-upload="beforeUpload"
-              v-if="!hasWatermark"
-            ></wd-upload>
-
-            <view v-else style="position: relative">
-              <wd-img :src="watermarkImg.path" custom-class="watermark-img"></wd-img>
-              <button @click="handleClearUploadImg" class="btn-upload">X</button>
-            </view>
-
-            <text>签名：</text>
-            <view
-              class="signature-box"
-              @click.stop="focusSignature"
-              :style="{
-                width: '100%',
-                height: '500rpx',
-                border: isSignatureFocused ? '2px solid #4a90e2' : '2px solid #cccccc',
-                borderRadius: '10rpx',
-                backgroundColor: '#f5f5f5',
-              }"
+        <!-- 急修状态展示 -->
+        <template v-if="repairInfo.repairType === 3">
+          <view class="flex-row">
+            <view class="repair-state">急修状态：</view>
+            <wd-radio-group checked-color="rgb(83, 157, 243)" shape="dot" v-model="state" inline>
+              <wd-radio :value="4">维修完成</wd-radio>
+              <wd-radio :value="5">确定误报</wd-radio>
+              <wd-radio :value="7">未完成</wd-radio>
+            </wd-radio-group>
+          </view>
+          <view class="flex-row">
+            <view class="width-100">急修建议：</view>
+            <wd-radio-group
+              checked-color="rgb(83, 157, 243)"
+              shape="dot"
+              v-model="suggestion"
+              inline
             >
-              <jp-signature ref="signatureRef"></jp-signature>
-            </view>
-            <view class="signature-btn-list">
-              <button class="btn-clear" @click="clear">清空</button>
-              <button class="btn-reset" @click="undo">撤消</button>
-              <button class="btn-save" @click="save">保存</button>
-            </view>
-
-            <text>备注：(选填)</text>
+              <wd-radio :value="1">停梯</wd-radio>
+              <wd-radio :value="2">运行</wd-radio>
+            </wd-radio-group>
+          </view>
+          <view class="flex-row">
+            <view class="width-100">更换零件：</view>
+            <wd-radio-group
+              checked-color="rgb(83, 157, 243)"
+              shape="dot"
+              v-model="isReplace"
+              inline
+            >
+              <wd-radio :value="0">未更换</wd-radio>
+              <wd-radio :value="1">更换</wd-radio>
+            </wd-radio-group>
+          </view>
+          <view>
+            <text>备注：</text>
             <textarea
               name=""
               id=""
@@ -118,33 +74,100 @@
               placeholder="请输入..."
               class="remark"
             ></textarea>
-            <button class="btn-submit" @click="handleSubmit">提交</button>
-          </template>
+          </view>
+        </template>
+        <!-- 签到区域 -->
+        <!-- <view v-if="repairInfo.repairType === 3" class="sign-in"> -->
+        <view v-if="repairInfo.repairType === 1" class="sign-in">
+          <button
+            hover-class="button-hover"
+            :style="
+              signInDistance <= 500
+                ? 'background-color: #87cefa; color: white'
+                : 'background-color: lightgray; color: white'
+            "
+            @click="handleSignIn"
+            :class="`btn-sign ${signInDistance <= 500 ? 'online' : 'offline'}`"
+          >
+            {{ `${signInDistance <= 500 ? '点击签到' : '距离过远'}` }}
+          </button>
+          <view>当前位置： {{ currentPosition.address }}</view>
         </view>
-        <!-- 	维保状态,1：待维保， 2：已维保 ：3：进行中：4：逾期签到   -->
-        <view v-else-if="maintenance.isMaintain === 2"></view>
+        <!-- 打卡区域 -->
+        <!-- <view v-else-if="repairInfo.repairType === 1" class="clock-in"> -->
+        <view v-else-if="repairInfo.repairType === 3" class="clock-in">
+          <text>拍照打卡：</text>
+
+          <canvas
+            id="myCanvas"
+            type="2d"
+            :style="{
+              width: '100%',
+              height: 200 + 'px',
+              border: '1px solid #ccc',
+              position: 'fixed',
+              left: '9000px',
+            }"
+          ></canvas>
+
+          <wd-upload
+            custom-class="camera-photo"
+            ref="uploader"
+            :limit="1"
+            accept="media"
+            :auto-upload="false"
+            :source-type="['camera']"
+            :size-type="['compressed']"
+            :before-upload="beforeUpload"
+            v-if="!hasWatermark"
+          ></wd-upload>
+          <view v-else style="position: relative">
+            <wd-img :src="watermarkImg.path" custom-class="watermark-img"></wd-img>
+            <button @click="handleClearUploadImg" class="btn-upload">X</button>
+          </view>
+
+          <!-- 签名区域 -->
+          <text>签名：</text>
+          <view
+            class="signature-box"
+            @click.stop="focusSignature"
+            style="width: 100%; height: 500rpx; border: 2px solid #4a90e2"
+          >
+            <jp-signature
+              ref="signatureRef"
+              :style="{
+                width: '100%',
+                height: '450rpx',
+                border: `2px solid ${isSignatureFocused ? '#4a90e2' : '#cccccc'}`,
+                borderRadius: '10rpx',
+                backgroundColor: '#f5f5f5',
+              }"
+            ></jp-signature>
+          </view>
+          <view class="signature-btn-list">
+            <button class="btn-clear" @click="clear">清空</button>
+            <button class="btn-reset" @click="undo">撤消</button>
+            <button class="btn-save" @click="save">保存</button>
+          </view>
+
+          <button class="btn-submit" @click="handleSubmit">提交</button>
+        </view>
       </view>
     </view>
   </wrapper>
 </template>
 
 <script lang="ts" setup>
+/* 组件、API、存储、服务、工具、常量等的导入 */
 /* components */
 import wrapper from '@/layouts/wrapper.vue'
 import JpSignature from '@/pages-sub/sign-in/components/jp-signature/jp-signature.vue'
-import maintenanceTable from '@/pages-sub/sign-in/components/maintenance-table/maintenance-table.vue'
-
 /* API */
-import QQMapWX from './qqmap-wx-jssdk'
+import QQMapWX from '../sign-in/qqmap-wx-jssdk'
 /* store */
 import { useUserStore } from '@/store'
 /* service */
-import {
-  postMaintenanceDetail,
-  postMaintenanceSignature,
-  postMaintenanceSignIn,
-} from '@/service/maintenance/maintenance'
-import { IElevatorInfo, IMaintenanceBasis } from '@/service/maintenance/type'
+import { IElevatorInfo } from '@/service/maintenance/type'
 /* utils */
 import { isNullOrUndefined, px2rpx, uniShowToast } from '@/utils/tools'
 /* constant */
@@ -154,41 +177,29 @@ import dayjs from 'dayjs'
 import { maintenanceImgUploadApi } from '@/common/api'
 import { http } from '@/utils/http'
 
-const id = ref(null)
-
-// 导航栏
+// 导航栏返回按钮点击事件
 function handleClickBack() {
   uni.navigateBack()
 }
 
-// 定位距离
-const signInDistance = ref(999)
+// 急修信息相关数据
+const id = ref(null)
+const state = ref(4)
+const suggestion = ref(2)
+const isReplace = ref(1)
+const remark = ref('')
 
+// 地图服务初始化
+const qqmapsdk = new QQMapWX({
+  key: 'ND2BZ-7BL3U-6JKV7-GSGY3-QBI57-VHF7R',
+})
+
+// 电梯信息和维修信息
+const repairInfo = ref({})
 const liftInfo = ref<Partial<IElevatorInfo>>({
   longitude: 0,
   latitude: 0,
 })
-
-const maintenance = ref<Partial<IMaintenanceBasis>>({
-  maintType: '',
-  id: null,
-})
-
-const getMaintenanceType = (type: number) => {
-  // 1：待维保， 2：已维保 ：3：进行中：4：逾期签到
-  switch (type) {
-    case 1:
-      return '待维保'
-    case 2:
-      return '已维保'
-    case 3:
-      return '进行中'
-    case 4:
-      return '逾期签到'
-    default:
-      return ''
-  }
-}
 
 // 签名区域聚焦状态
 const isSignatureFocused = ref(false)
@@ -201,14 +212,15 @@ const blurSignature = () => {
   isSignatureFocused.value = false
 }
 
-// 正在维保-表格状态
-const isMaintainingTableState = ref(true)
+// 保存签名
+const maintenance = ref({
+  maintType: '',
+  id: null,
+})
 
+// 签名相关
 const signatureRef = ref<InstanceType<typeof JpSignature> | null>(null)
 const signatureValue = ref()
-
-const remark = ref('')
-
 // 保存签名
 const save = () => {
   return new Promise((resolve, reject) => {
@@ -246,9 +258,19 @@ const undo = () => {
   }
 }
 
-const qqmapsdk = new QQMapWX({
-  key: 'ND2BZ-7BL3U-6JKV7-GSGY3-QBI57-VHF7R',
-})
+// 获取电梯维修状态,0:待审核;1待接警;2:待处理;3:到达现场处理中;4:维修完成;5误报确认;6自动修复
+const getMaintenanceType = (type: number) => {
+  const stateList = [
+    '待审核',
+    '待接警',
+    '待处理',
+    '到达现场处理中',
+    '维修完成',
+    '误报确认',
+    '自动修复',
+  ]
+  return stateList[type]
+}
 
 /* 地理位置 */
 const currentPosition = ref({
@@ -257,27 +279,16 @@ const currentPosition = ref({
   address: '',
 })
 
-const getFaultList = async () => {
-  const res = await http.post('/maint/get_main_project', { maint_id: id.value })
-  const some = res.list.some((item) => item.pillType === 0)
-  if (some) {
-    isMaintainingTableState.value = true
-  } else {
-    isMaintainingTableState.value = false
-  }
-}
+// 定位距离
+const signInDistance = ref(999)
 
-// 获取维保详情
-const getMaintenanceDetail = (id: number) => {
-  postMaintenanceDetail({ id })
-    .then((result) => {
-      liftInfo.value = result.ele
-      maintenance.value = result.basis
-      getSetting()
-    })
-    .catch((err) => {
-      console.log('postMaintenanceDetail err:>> ', err)
-    })
+// 获取急修详情
+const getForeWarningDetail = (id: number) => {
+  http.post('/maint/fault_one', { id }).then((res) => {
+    repairInfo.value = res.repair
+    liftInfo.value = res.ele
+    getSetting()
+  })
 }
 
 // 定义一个名为 getSetting 的函数，用于获取设置信息,进而获取地址
@@ -308,7 +319,7 @@ function getSetting() {
   })
 }
 
-// 获取定位
+// 获取用户定位当前位置
 function getLocation() {
   wx.getLocation({
     type: 'gcj02',
@@ -394,9 +405,8 @@ function getAddress() {
   })
 }
 
-// 点击签到
+// 点击签到按钮
 function handleSignIn() {
-  // 切换签到状态
   const distance = signInDistance.value
   if (distance > 500) {
     uni.showToast({
@@ -406,21 +416,28 @@ function handleSignIn() {
     return
   }
 
-  postMaintenanceSignIn({ id: maintenance.value.id, is_qan: maintenance.value.iden })
-    .then((result) => {
+  setPostMaintenanceSignIn()
+}
+
+// 提交签到信息
+const setPostMaintenanceSignIn = () => {
+  http
+    .post('/maint/fault_submit', { id: id.value, type: 3, content: '' })
+    .then((res) => {
       uni.showToast({
         title: '签到成功',
         icon: 'none',
       })
-      maintenance.value.isMaintain = 3
+      repairInfo.value.repairType = 3
+      getSetting()
     })
     .catch((err) => {
       console.log('postSignIn err:>> ', err)
     })
 }
 
+// 拍照相关
 const hasWatermark = ref(false)
-
 // Canvas
 const canvas = reactive({
   self: null,
@@ -437,15 +454,15 @@ const uploadImg = reactive({
   self: null,
 })
 
-// 定义一个名为 takePhoto 的函数，用于拍照操作
+// 定义一个名为 takePhoto 的函数，用于拍照操作，拍照前处理
 function beforeUpload(event: UploadBeforeUploadOption) {
   uploadImg.self = event.files[0]
   console.log('event :>> ', event, uploadImg.self)
   drawCanvas()
 }
 
+// 绘制水印
 const drawCanvas = () => {
-  // 绘制
   const query = wx.createSelectorQuery()
   query
     .select('#myCanvas')
@@ -530,7 +547,7 @@ function uploadImage(filePath: string) {
     })
   })
 }
-
+// 提取图片URL
 function getImgUrl(str) {
   const regex = /"imgUrl":"(.*?)"/
   const match = str.match(regex)
@@ -539,10 +556,15 @@ function getImgUrl(str) {
 
 // 上传提交信息
 const handleSubmit = async () => {
+  if (state.value === 7 && remark.value === '') {
+    return uniShowToast('急修未完成，请填写备注')
+  }
+
   if (isNullOrUndefined(watermarkImg.path)) {
     watermarkImg.path = null
     return uniShowToast('请上传图片')
   }
+
   if (isNullOrUndefined(signatureValue.value)) {
     const saveRes = (await save()) as { isEmpty: boolean }
     if (saveRes.isEmpty) {
@@ -550,25 +572,27 @@ const handleSubmit = async () => {
       return uniShowToast('请签名')
     }
   }
-  console.log('object :>> ', watermarkImg.path, signatureValue.value)
+
   const watermarkImgRes = await uploadImage(watermarkImg.path)
   const signatureImgRes = await uploadImage(signatureValue.value)
-  postMaintenanceSignature({
-    id: maintenance.value.id,
-    type: 2,
-    image: getImgUrl(signatureImgRes),
-    clockin_img: getImgUrl(watermarkImgRes),
-    remark: remark.value,
-  })
+  http
+    .post('/maint/fault_submit', {
+      id: id.value,
+      type: state.value,
+      image: getImgUrl(signatureImgRes),
+      clockin_img: getImgUrl(watermarkImgRes),
+      suggestion: suggestion.value,
+      is_replace: isReplace.value,
+      remark: remark.value,
+      content: remark.value,
+    })
     .then((res) => {
-      console.log('postMaintenanceSignature res :>> ', res)
-      maintenance.value.isMaintain = 2
+      console.log('fault_submit res :>> ', res)
+      repairInfo.value.repairType = state.value
     })
     .catch((err) => {
-      console.log('postMaintenanceSignature err :>> ', err)
+      console.log('fault_submit err :>> ', err)
     })
-
-  console.log('signatureValue :>> ', signatureValue.value)
 }
 
 onLoad((options) => {
@@ -576,18 +600,16 @@ onLoad((options) => {
 })
 
 onShow(() => {
-  console.log('sign-in onShow :>> ')
-
-  // 获取维保电梯详情
-  getFaultList()
-  getMaintenanceDetail(+id.value)
+  getForeWarningDetail(+id.value)
 })
 </script>
 
 <style lang="scss" scoped>
 $rpx-11: px2rpx(11);
 $rpx-17: px2rpx(17);
-$rpx-19: px2rpx(19);
+$rpx-120: px2rpx(120);
+$rpx-100: px2rpx(100);
+$rpx-45: px2rpx(45);
 
 $rpx-92: px2rpx(92);
 
@@ -625,6 +647,31 @@ $rpx-92: px2rpx(92);
     background: $color-white;
     border-radius: $rpx-20 $rpx-20 0 0;
     @extend %padding-base;
+
+    :deep(.wd-radio) {
+      .check-radio {
+        background-color: $color-primary;
+        border-color: $color-primary;
+      }
+    }
+    .flex-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      .repair-state {
+        @extend %flex-center;
+        flex-shrink: 0;
+        justify-content: flex-start;
+        width: $rpx-100;
+      }
+      .state-group {
+        flex-grow: 1;
+      }
+    }
+
+    .width-100 {
+      width: $rpx-100;
+    }
 
     // 未签到
     .sign-in {
@@ -695,10 +742,15 @@ $rpx-92: px2rpx(92);
 
       .signature-box {
         @extend %flex-center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 100%;
         height: 100%;
         aspect-ratio: 1 / 1;
+        cursor: pointer;
         border-radius: $rpx-10;
+        transition: all 0.3s ease;
       }
 
       .signature-box {
@@ -753,20 +805,19 @@ $rpx-92: px2rpx(92);
         }
       }
 
-      .remark {
-        width: 100%;
-        padding: $rpx-10;
-        border: $rpx-1 solid $color-primary;
-        border-radius: $rpx-10;
-      }
-
       .btn-submit {
         color: $color-white;
         background: $color-primary;
       }
     }
 
-    // 已完成
+    .remark {
+      width: 100%;
+      padding: $rpx-10;
+      margin-top: $rpx-10;
+      border: $rpx-1 solid $color-primary;
+      border-radius: $rpx-10;
+    }
   }
 }
 </style>

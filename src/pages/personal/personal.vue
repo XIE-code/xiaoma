@@ -84,10 +84,24 @@ const elevatorList = reactive([])
 const systemStore = useSystemStore()
 
 const handleLoginOut = () => {
-  systemStore.resetSystemInfo()
-  systemStore.setTabBarIdx(0)
-  userStore.resetUserInfo()
-  uni.navigateTo({ url: loginPage })
+  // 显示提示消息
+  uni.showModal({
+    title: '是否退出登录',
+    icon: 'loading', // 显示加载图标
+    duration: 1000, // 提示框显示时长（毫秒）
+    mask: true, // 是否显示透明蒙层
+    success: (res) => {
+      if (res.confirm) {
+        // 用户点击“确认“按钮
+        systemStore.resetSystemInfo()
+        systemStore.setTabBarIdx(0)
+        userStore.resetUserInfo()
+        uni.navigateTo({ url: loginPage })
+      } else if (res.cancel) {
+        console.log('用户取消退出登录')
+      }
+    },
+  })
 }
 
 onLoad(() => {
