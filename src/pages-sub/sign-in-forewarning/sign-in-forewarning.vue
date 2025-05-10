@@ -416,6 +416,9 @@ function getAddress() {
   })
 }
 
+// 新增响应式变量，用于记录签到后的时间
+const signInTime = ref<number | null>(null)
+
 // 点击签到按钮
 function handleSignIn() {
   const distance = signInDistance.value
@@ -426,7 +429,7 @@ function handleSignIn() {
     })
     return
   }
-
+  signInTime.value = Date.now() // 记录签到时间
   setPostMaintenanceSignIn()
 }
 
@@ -574,6 +577,19 @@ const handleSubmit = async () => {
   if (isNullOrUndefined(watermarkImg.path)) {
     watermarkImg.path = null
     return uniShowToast('请上传图片')
+  }
+
+  // 检查距离是否 在500米范围内
+  if (signInDistance.value > 500) {
+    return uniShowToast('距离签到位置太远')
+  }
+  // 计算从签到到现在经过的时间（分钟）
+  const elapsedMinutes = (Date.now() - signInTime.value) / (1000 * 60)
+
+  // 检查是否已经过了 20 分钟
+  if (elapsedMinutes < 20) {
+    const remainingTime = Math.ceil(20 - elapsedMinutes)
+    return uniShowToast(`签到后未满 20 分钟，还需 ${remainingTime} 分钟才能提交`)
   }
 
   if (isNullOrUndefined(signatureValue.value)) {

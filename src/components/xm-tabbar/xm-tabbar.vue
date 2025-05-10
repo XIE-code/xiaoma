@@ -1,3 +1,5 @@
+<!-- 自定义组件 -->
+
 <template>
   <view class="tab-bar">
     <view

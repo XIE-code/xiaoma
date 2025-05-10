@@ -178,7 +178,7 @@
           "type": "page",
           "layout": "default",
           "style": {
-            "navigationBarTitleview": "电梯监控"
+            "navigationBarTitleText": "电梯监控"
           }
         }
       ]

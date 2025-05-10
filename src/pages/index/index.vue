@@ -239,6 +239,7 @@ onShow(() => {
 $rpx-45: px2rpx(45);
 $rpx-55: px2rpx(55);
 $rpx-72: px2rpx(72);
+$rpx-16: px2rpx(16);
 
 $color-svg-timeout: rgb(238, 61, 96);
 $color-svg-wait: rgb(30, 32, 34);

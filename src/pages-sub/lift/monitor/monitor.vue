@@ -2,13 +2,14 @@
 {
   layout: 'default',
   style: {
-    navigationBarTitleview: '电梯监控',
+    navigationBarTitleText: '电梯监控',
   },
 }
 </route>
 
 <template>
   <wrapper paddingType="top" :backgroundColor="COLOR_SECONDARY">
+    <!-- 导航栏区域 -->
     <view class="navigation">
       <wd-icon
         name="arrow-left"
@@ -18,7 +19,7 @@
       ></wd-icon>
       <view class="title">电梯监控</view>
     </view>
-
+    <!-- 页面内容区域 -->
     <view class="content">
       <view class="scroll-box">
         <view :class="`state ${liftInfo.isOnline == '1' ? '' : 'offline'}`">
@@ -50,6 +51,7 @@
           </view>
         </view>
 
+        <!-- 按钮列表区域 -->
         <view class="btn-list">
           <wd-button
             size="small"
@@ -64,6 +66,7 @@
           </wd-button>
         </view>
 
+        <!-- 当showBtnContent为其他显示不同的按钮 -->
         <wd-cell-group v-if="showBtnContent === 'info'" border>
           <wd-cell
             :title="value"
@@ -92,6 +95,7 @@
         >
           <wd-table-col align="center" width="50%" prop="maintTime" label="维保时间"></wd-table-col>
 
+          <!-- 维保状态列 -->
           <wd-table-col
             align="center"
             width="50%"
@@ -143,20 +147,21 @@ import {
 /* static */
 import { imageStatic } from '@/common/static'
 
-// 导航栏
+// 返回上一页
 function handleClickBack() {
   uni.navigateBack()
 }
 
+// 定义电梯信息配置数据响应式变量
 const lift = ref(monitorInfo)
-
 const liftInfo = ref<Partial<ILiftOneInfoResponse>>({
   name: null,
   elevatorNumber: null,
 })
 
+// 定义电梯运行信息响应式变量
 const runInfo = ref(runInfoData)
-
+// 定义楼层列表响应式变量
 const floorList = ref([])
 
 const getRealFloor = (floor: number) => {
@@ -167,6 +172,10 @@ const getRealFloor = (floor: number) => {
 const getRunInfo = (key: string) => {
   const runInfoValue = runInfo.value
 
+  /**
+   * 处理按钮点击事件
+   * @param item - 按钮信息
+   */
   const handlers = new Map<string, (value: any) => any>([
     ['status', (value) => (value === 'running' ? '运行' : value === 'stop' ? '停止' : '')],
     [
@@ -256,6 +265,7 @@ const connectToMQTT = () => {
   // #endif
 
   const deviceID = `status/${liftInfo.value.registerCode}`
+
   // 连接成功时的回调
   client.on('connect', () => {
     console.log('连接成功')

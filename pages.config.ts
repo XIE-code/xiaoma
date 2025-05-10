@@ -17,7 +17,7 @@ export default defineUniPages({
     },
   },
   tabBar: {
-    custom: false,
+    custom: true,
     color: '#8A8A8A',
     selectedColor: '#539DF3',
     backgroundColor: '#F8F8F8',
